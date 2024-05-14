@@ -37,6 +37,7 @@ func main() {
 
 	app.Post("/login", handle.Login)
 	app.Post("/logout", handle.Logout)
+	app.Get("/me", middleware.Protected(), handle.GetMe)
 
 	app.Use("/api", middleware.Protected())
 
@@ -45,7 +46,6 @@ func main() {
 	app.Post("/api/employees", middleware.Authorize("Manager"), handle.CreateEmployee)
 	app.Put("/api/employees/:id", middleware.Authorize("Manager"), handle.UpdateEmployee)
 	app.Delete("/api/employees/:id", middleware.Authorize("Manager"), handle.DeleteEmployee)
-	app.Get("/me", handle.GetMe)
 
 	app.Listen(":8080")
 }

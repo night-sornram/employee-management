@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -8,8 +9,6 @@ import (
 	"github.com/night-sornram/employee-management/repository"
 	"golang.org/x/crypto/bcrypt"
 )
-
-const Secret = "secret"
 
 type handleFiber struct {
 	service repository.EmployeeService
@@ -129,7 +128,9 @@ func (h *handleFiber) Login(c *fiber.Ctx) error {
 		"role":  Employee.Role,
 	})
 
-	token, err := claims.SignedString([]byte(Secret))
+	secretKey := os.Getenv("SECRET")
+
+	token, err := claims.SignedString([]byte(secretKey))
 
 	if err != nil {
 		c.Status(fiber.StatusInternalServerError)
@@ -170,9 +171,10 @@ func (h *handleFiber) Logout(c *fiber.Ctx) error {
 
 func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
+	secretKey := os.Getenv("SECRET")
 
 	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(Secret), nil
+		return []byte(secretKey), nil
 	})
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)

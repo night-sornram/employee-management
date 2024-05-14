@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,7 +23,7 @@ func Protected() fiber.Handler {
 			})
 		}
 
-		secretKey := "secret"
+		secretKey := os.Getenv("SECRET")
 		token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 			// Don't forget to validate the alg is what you expect:
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
