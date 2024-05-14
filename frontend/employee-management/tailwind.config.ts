@@ -16,7 +16,8 @@ const config: Config = {
       colors: {
         'p-darkgray' : "#323232",
         'p-lightgray' : "#D9D9D9",
-        'p-gray' : "#656565"
+        'p-gray' : "#656565",
+        'p-gray-2' : "#a7a7a7"
       }
     },
   },

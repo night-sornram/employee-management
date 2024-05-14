@@ -30,7 +30,7 @@ export default function LoginPage () {
                         <input type="password" placeholder="Your ID" className="bg-p-lightgray placeholder-gray-500 rounded px-3 py-2 w-full"/>
                     </div>
                     <div className="flex flex-col items-center">
-                        <button type="submit" className="bg-p-darkgray px-3 py-2 rounded text-white">
+                        <button type="submit" className="custom-btn-dark hover:custom-btn-dark-hover">
                             Login
                         </button>
                     </div>  
