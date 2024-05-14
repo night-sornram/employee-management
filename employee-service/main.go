@@ -37,7 +37,7 @@ func main() {
 
 	app.Post("/login", handle.Login)
 	app.Post("/logout", handle.Logout)
-	app.Get("/me", middleware.Protected(), handle.GetMe)
+	app.Get("/me", handle.GetMe)
 
 	app.Use("/api", middleware.Protected())
 

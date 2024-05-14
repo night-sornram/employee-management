@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -170,10 +171,24 @@ func (h *handleFiber) Logout(c *fiber.Ctx) error {
 }
 
 func (h *handleFiber) GetMe(c *fiber.Ctx) error {
-	cookie := c.Cookies("jwt")
-	secretKey := os.Getenv("SECRET")
 
-	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+	tokenString := c.Get("Authorization")
+	secretKey := os.Getenv("SECRET")
+	if tokenString == "" {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	tokenArr := strings.Split(tokenString, " ")
+	if len(tokenArr) != 2 || tokenArr[0] != "Bearer" {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+	token, err := jwt.ParseWithClaims(tokenArr[1], &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
