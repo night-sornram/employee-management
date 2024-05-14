@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"github.com/night-sornram/employee-management/repository"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -50,4 +51,25 @@ func (g *GormAdapter) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (g *GormAdapter) Login(email string, password string) (repository.Employee, error) {
+	var Employee repository.Employee
+
+	if err := g.db.Where("email = ?", email).First(&Employee).Error; err != nil {
+		return repository.Employee{}, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
+		return repository.Employee{}, err
+	}
+	return Employee, nil
+}
+
+func (g *GormAdapter) GetMe(id string) (repository.Employee, error) {
+	var Employee repository.Employee
+	if err := g.db.Where("employee_id = ?", id).First(&Employee).Error; err != nil {
+		return repository.Employee{}, err
+	}
+
+	return Employee, nil
 }

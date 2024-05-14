@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/adapter"
+	"github.com/night-sornram/employee-management/middleware"
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -31,12 +33,19 @@ func main() {
 	handle := adapter.NewHandleFiber(service)
 
 	db.AutoMigrate(&repository.Employee{})
+	app.Use(cors.New())
 
-	app.Get("/employees", handle.GetEmployees)
-	app.Get("/employees/:id", handle.GetEmployee)
-	app.Post("/employees", handle.CreateEmployee)
-	app.Put("/employees/:id", handle.UpdateEmployee)
-	app.Delete("/employees/:id", handle.DeleteEmployee)
+	app.Post("/login", handle.Login)
+	app.Post("/logout", handle.Logout)
+
+	app.Use("/api", middleware.Protected())
+
+	app.Get("/api/employees", middleware.Authorize("Manager"), handle.GetEmployees)
+	app.Get("/api/employees/:id", middleware.Authorize("Manager"), handle.GetEmployee)
+	app.Post("/api/employees", middleware.Authorize("Manager"), handle.CreateEmployee)
+	app.Put("/api/employees/:id", middleware.Authorize("Manager"), handle.UpdateEmployee)
+	app.Delete("/api/employees/:id", middleware.Authorize("Manager"), handle.DeleteEmployee)
+	app.Get("/me", handle.GetMe)
 
 	app.Listen(":8080")
 }

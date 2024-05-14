@@ -1,8 +1,8 @@
 package repository
 
 type Employee struct {
-	ID          int    `db:"id" json:"id"`
-	EmployeeID  string `db:"employee_id" json:"employee_id"`
+	ID          int    `db:"id" json:"id" gorm:"primaryKey"`
+	EmployeeID  string `db:"employee_id" json:"employee_id" gorm:"unique"`
 	TitleTH     string `db:"title_th" json:"title_th"`
 	FirstNameTH string `db:"first_name_th" json:"first_name_th"`
 	LastNameTH  string `db:"last_name_th" json:"last_name_th"`
@@ -14,6 +14,6 @@ type Employee struct {
 	Department  string `db:"department" json:"department"`
 	Role        string `db:"role" json:"role"`
 	Phone       string `db:"phone" json:"phone"`
-	Email       string `db:"email" json:"email"`
+	Email       string `db:"email" json:"email" gorm:"unique"`
 	Password    string `db:"password" json:"password"`
 }
