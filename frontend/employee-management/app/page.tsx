@@ -1,5 +1,4 @@
-import NavBar from "@/components/NavBar/NavBar";
-import TopBar from "@/components/TopBar/TopBar";
+
 import Image from "next/image";
 import Link from "next/link";
 
