@@ -1,11 +1,12 @@
 @tailwind base;
+
 @tailwind components;
 @tailwind utilities;
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: 241, 245, 249;
+  --background-end-rgb: 241, 245, 249;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,6 +27,12 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+@layer base {
+  html {
+    @apply text-slate-900;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -34,7 +41,7 @@ body {
 
 @layer components {
   .custom-btn-dark {
-    background-color: #323232;
+    background-color: #1e293b;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     padding-top: 0.5rem;
@@ -44,7 +51,7 @@ body {
     text-align: center;
   }
   .custom-btn-dark-hover {
-    background-color: black;
+    background-color: #0f172a;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     padding-top: 0.5rem;

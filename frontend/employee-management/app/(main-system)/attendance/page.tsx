@@ -27,7 +27,7 @@ export default function AttendancePage () {
             <h1 className="text-2xl">Date: {date}</h1>
             <table className="shadow-md table-fixed">
                 <thead>
-                    <tr className="bg-p-gray-2">
+                    <tr className="bg-slate-400">
                         <th className="py-4 font-semibold w-[50%]">
                                 Check-in
                         </th>
@@ -37,7 +37,7 @@ export default function AttendancePage () {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="bg-p-lightgray py-5">
+                    <tr className="bg-slate-300 py-5">
                         <td className="text-center py-4 w-[50%] h-20">
                             {
                                 checkedIn? time : 

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="bg-gray-200">
+    <main className="bg-slate-100">
         <div className="flex flex-row h-screen justify-center">
             <div className="flex flex-col justify-center self-center">
               <h1 className="text-2xl font-semibold">Please login to use service</h1>

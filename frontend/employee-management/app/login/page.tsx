@@ -14,8 +14,8 @@ export default function LoginPage () {
 
     return (
       <div className="flex flex-row h-screen">
-        <div className="bg-p-darkgray w-[60%] flex flex-col justify-center">
-            <h1 className="text-white text-center">Cover Image</h1>
+        <div className="bg-slate-800 w-[60%] flex flex-col justify-center">
+            <h1 className="text-white text-center">Some Organization</h1>
         </div>
         <div className="w-[40%] flex flex-col">
             <div className="px-[10%] pt-[30%]">
@@ -23,11 +23,13 @@ export default function LoginPage () {
                 <form onSubmit={handleLogin}>
                     <div className="mb-[5%]">
                         <h2>ID</h2>
-                        <input type="text" placeholder="Your ID" className="bg-p-lightgray placeholder-gray-500 rounded px-3 py-2 w-full"/>
+                        <input type="text" placeholder="Your ID" className="bg-slate-100 placeholder-slate-400 rounded px-3 py-2 w-full
+                        border border-slate-300 shadow-sm focus:outline-none focus:border-slate-400 invalid:border-red-600 invalid:text-red-600 focus:invalid:border-red-700"/>
                     </div>
                     <div className="mb-[5%]">
                         <h2>Password</h2>
-                        <input type="password" placeholder="Your ID" className="bg-p-lightgray placeholder-gray-500 rounded px-3 py-2 w-full"/>
+                        <input type="password" placeholder="Password" className="bg-slate-100 placeholder-slate-400 rounded px-3 py-2 w-full
+                        border border-slate-300 shadow-sm focus:outline-none focus:border-slate-400 invalid:border-red-600 invalid:text-red-600 focus:invalid:border-red-700"/>
                     </div>
                     <div className="flex flex-col items-center">
                         <button type="submit" className="custom-btn-dark hover:custom-btn-dark-hover">
