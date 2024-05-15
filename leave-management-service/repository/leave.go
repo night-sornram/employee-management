@@ -10,3 +10,9 @@ type Leave struct {
 	Reason     string    `db:"reason" json:"reason"`
 	Status     string    `db:"status" json:"status"`
 }
+
+type LeaveStatus struct {
+	ID         int       `db:"id" json:"id"`
+	EmployeeID string    `db:"employee_id" json:"employee_id"`
+	Status     string    `db:"status" json:"status"`
+}

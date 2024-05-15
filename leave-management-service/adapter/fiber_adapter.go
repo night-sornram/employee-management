@@ -94,3 +94,25 @@ func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	var leaveStatus repository.LeaveStatus
+	if err := c.BodyParser(&leaveStatus); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	updateStatus, err := f.service.UpdateStatus(id, leaveStatus)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(updateStatus)
+}

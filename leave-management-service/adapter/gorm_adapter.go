@@ -16,33 +16,33 @@ func NewGormAdapter(db *gorm.DB) repository.LeaveRepository {
 }
 
 func (g *GormAdapter) GetAll() ([]repository.Leave, error) {
-	var Leaves []repository.Leave
-	if err := g.db.Find(&Leaves).Error; err != nil {
+	var leaves []repository.Leave
+	if err := g.db.Find(&leaves).Error; err != nil {
 		return nil, err
 	}
-	return Leaves, nil
+	return leaves, nil
 }
 
 func (g *GormAdapter) GetByID(id int) (repository.Leave, error) {
-	var Leave repository.Leave
-	if err := g.db.First(&Leave, id).Error; err != nil {
-		return Leave, err
+	var leave repository.Leave
+	if err := g.db.First(&leave, id).Error; err != nil {
+		return leave, err
 	}
-	return Leave, nil
+	return leave, nil
 }
 
-func (g *GormAdapter) Create(Leave repository.Leave) (repository.Leave, error) {
-	if err := g.db.Create(&Leave).Error; err != nil {
-		return Leave, err
+func (g *GormAdapter) Create(leave repository.Leave) (repository.Leave, error) {
+	if err := g.db.Create(&leave).Error; err != nil {
+		return leave, err
 	}
-	return Leave, nil
+	return leave, nil
 }
 
-func (g *GormAdapter) Update(id int, Leave repository.Leave) (repository.Leave, error) {
-	if err := g.db.Model(&Leave).Where("id = ?", id).Updates(Leave).Error; err != nil {
-		return Leave, err
+func (g *GormAdapter) Update(id int, leave repository.Leave) (repository.Leave, error) {
+	if err := g.db.Model(&leave).Where("id = ?", id).Updates(leave).Error; err != nil {
+		return leave, err
 	}
-	return Leave, nil
+	return leave, nil
 }
 
 func (g *GormAdapter) Delete(id int) error {
@@ -50,4 +50,14 @@ func (g *GormAdapter) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (g *GormAdapter) UpdateStatus(id int, leaveStatus repository.LeaveStatus) (repository.Leave, error) {
+	newLeave := repository.Leave{
+		Status: leaveStatus.Status,
+	}
+	if err := g.db.Model(&newLeave).Where("id = ?", id).Updates(newLeave).Error; err != nil {
+		return newLeave, err
+	}
+	return newLeave, nil
 }

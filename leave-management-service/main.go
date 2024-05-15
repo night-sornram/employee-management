@@ -17,7 +17,7 @@ func main() {
 		port     = 5432
 		user     = "postgres"
 		password = "password"
-		dbname   = "leave"
+		dbname   = "postgres"
 	)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -36,6 +36,7 @@ func main() {
 	app.Post("/leaves", handle.CreateLeave)
 	app.Put("/leaves/:id", handle.UpdateLeave)
 	app.Delete("/leaves/:id", handle.DeleteLeave)
+	app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
 	app.Listen(":8082")
 }

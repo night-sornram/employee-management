@@ -6,4 +6,5 @@ type LeaveRepository interface {
 	Create(Leave Leave) (Leave, error)
 	Update(id int, Leave Leave) (Leave, error)
 	Delete(id int) error
+	UpdateStatus(id int, LeaveStatus LeaveStatus) (Leave, error)
 }
