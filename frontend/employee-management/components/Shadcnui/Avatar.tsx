@@ -41,7 +41,7 @@ export function AvatarImpl() {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={
             ()=>{
-              router.push("/setting")
+              router.push("/setting/profile")
             }
           }>
             Profile
@@ -49,7 +49,7 @@ export function AvatarImpl() {
           <DropdownMenuItem
           onClick={
             ()=>{
-              router.push("/setting")
+              router.push("/setting/appearance")
           }}
           >
             Settings

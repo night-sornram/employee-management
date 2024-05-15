@@ -23,7 +23,7 @@ const components: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Leave Request",
-    href: "/leave-request",
+    href: "/leave-request/request",
     description:
       "A component that allows an employee to request for leave.",
   },

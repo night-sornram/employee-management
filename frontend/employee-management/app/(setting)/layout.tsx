@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "@/components/Header";
+import SettingSideBar from "@/components/SettingSideBar";
 
 
 
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
           <Header />
+          <SettingSideBar >
             {children}
+          </SettingSideBar>
       </body>
     </html>
   );
