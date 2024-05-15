@@ -1,9 +1,11 @@
+"use client";
+
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
   } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +20,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { signOut } from "next-auth/react"
+import { useTheme } from "next-themes"
  
 
 export function AvatarImpl() {
+  const { setTheme } = useTheme()
+  const router = useRouter()
   return (
     <DropdownMenu >
       <DropdownMenuTrigger className=" cursor-pointer" asChild>
@@ -33,10 +39,19 @@ export function AvatarImpl() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={
+            ()=>{
+              router.push("/setting")
+            }
+          }>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem
+          onClick={
+            ()=>{
+              router.push("/setting")
+          }}
+          >
             Settings
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -46,15 +61,18 @@ export function AvatarImpl() {
             <DropdownMenuSubTrigger>Theme</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuItem>Dark</DropdownMenuItem>
-                <DropdownMenuItem>Light</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")} >Dark</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={()=>{
+          signOut()
+        }}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

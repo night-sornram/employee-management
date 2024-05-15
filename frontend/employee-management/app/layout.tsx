@@ -4,6 +4,7 @@ import "./globals.css";
 import { getServerSession } from "next-auth";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,9 +25,18 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextAuthProvider session={session}>
-            {children}
-        </NextAuthProvider>
+        
+        <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+          <NextAuthProvider session={session}>
+              
+              {children}
+          </NextAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
