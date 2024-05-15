@@ -4,6 +4,7 @@
 
   @layer base {
     :root {
+      --font-sans: 'Inter', sans-serif;
       --background: 0 0% 100%;
       --foreground: 222.2 84% 4.9%;
 
@@ -36,6 +37,7 @@
     }
 
     .dark {
+      --font-sans: 'Inter', sans-serif;
       --background: 222.2 84% 4.9%;
       --foreground: 210 40% 98%;
 
@@ -72,5 +74,6 @@
     }
     body {
       @apply bg-background text-foreground;
+      font-family: var(--selected-font);
     }
   }

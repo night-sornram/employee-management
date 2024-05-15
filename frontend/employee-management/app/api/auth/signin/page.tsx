@@ -20,14 +20,14 @@ import { Label } from "@/components/ui/label"
 
 const LoginPage = () => {
   
-  const [email, setEmail] = useState("");
+  const [id, setId] = useState("");
   const [pass, setPass] = useState("");
   const { data:session } = useSession();
   if(!session){
     const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         await signIn("credentials", {
-          email: email, 
+          id: id, 
           password: pass,
           redirect: true,
           callbackUrl: "/",
@@ -48,8 +48,8 @@ const LoginPage = () => {
                     <form onSubmit={onSubmit}>
                       <div className="grid w-full items-center gap-4">
                           <div className="flex flex-col space-y-1.5">
-                          <Label htmlFor="email">Email</Label>
-                          <Input onChange={(e)=>{setEmail(e.currentTarget.value)}} type="email" id="email" placeholder="john.doe@gmail.com" />
+                          <Label htmlFor="id">EmployeeID</Label>
+                          <Input onChange={(e)=>{setId(e.currentTarget.value)}} type="string" id="id" placeholder="Your employee id" />
                           </div>
                           <div className="flex flex-col space-y-1.5">
                           <Label htmlFor="password">Password</Label>
