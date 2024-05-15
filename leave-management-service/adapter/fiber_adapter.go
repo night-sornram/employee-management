@@ -102,13 +102,13 @@ func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	var leaveStatus repository.LeaveStatus
-	if err := c.BodyParser(&leaveStatus); err != nil {
+	var leave repository.Leave
+	if err := c.BodyParser(&leave); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	updateStatus, err := f.service.UpdateStatus(id, leaveStatus)
+	updateStatus, err := f.service.UpdateStatus(id, leave)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

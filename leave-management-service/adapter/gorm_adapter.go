@@ -1,6 +1,8 @@
 package adapter
 
 import (
+	"fmt"
+
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/gorm"
 )
@@ -52,12 +54,17 @@ func (g *GormAdapter) Delete(id int) error {
 	return nil
 }
 
-func (g *GormAdapter) UpdateStatus(id int, leaveStatus repository.LeaveStatus) (repository.Leave, error) {
-	newLeave := repository.Leave{
-		Status: leaveStatus.Status,
+func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.Leave, error) {
+	var existingLeave  repository.Leave
+	if err := g.db.Where("id = ?", id).First(&existingLeave).Error; err != nil {
+		return leave, err
 	}
-	if err := g.db.Model(&newLeave).Where("id = ?", id).Updates(newLeave).Error; err != nil {
-		return newLeave, err
+
+	fmt.Println(existingLeave)
+	existingLeave.Status = leave.Status
+
+	if err := g.db.Save(&existingLeave).Error; err != nil {
+		return existingLeave, err
 	}
-	return newLeave, nil
+	return existingLeave, nil
 }
