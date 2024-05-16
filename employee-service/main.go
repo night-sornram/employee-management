@@ -39,13 +39,13 @@ func main() {
 	app.Post("/logout", handle.Logout)
 	app.Get("/me", handle.GetMe)
 
-	app.Use("/api", middleware.Protected())
-
-	app.Get("/api/employees", middleware.Authorize("Manager"), handle.GetEmployees)
-	app.Get("/api/employees/:id", middleware.Authorize("Manager"), handle.GetEmployee)
-	app.Post("/api/employees", middleware.Authorize("Manager"), handle.CreateEmployee)
-	app.Put("/api/employees/:id", middleware.Authorize("Manager"), handle.UpdateEmployee)
-	app.Delete("/api/employees/:id", middleware.Authorize("Manager"), handle.DeleteEmployee)
+	// app.Use("/api", middleware.Protected())
+	//app.Post("/api/changePassword", handle.ChangePassword)
+	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
+	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
+	app.Post("/api/employees", handle.CreateEmployee)
+	app.Put("/api/employees/:id", middleware.Authorize("admin", "user"), handle.UpdateEmployee)
+	app.Delete("/api/employees/:id", middleware.Authorize("admin"), handle.DeleteEmployee)
 
 	app.Listen(":8080")
 }

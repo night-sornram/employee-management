@@ -7,10 +7,13 @@ export default async function UserLogIn(userId : string, userPassword : string) 
         body: JSON.stringify({ 
             id : userId,
             password : userPassword
+            // id: "E12345",
+            // password: "123456"
         }),
     });
 
     if(!response.ok){
+        console.log(userId + " " + userPassword);
         throw new Error('Failed to login');
     }
 
