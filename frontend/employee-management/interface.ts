@@ -1,5 +1,4 @@
 export interface UserJson {
-
     date_of_birth : string
     department : string
     email : string
@@ -15,4 +14,23 @@ export interface UserJson {
     role : string
     title_en : string
     title_th : string
+}
+
+export interface Attendance {
+    id: number,
+	employee_id: string,
+	check_in: string,
+	check_out: string,
+	date: string,
+	leave_id: number | null,
+    duration: string
+}
+
+export interface Leave {
+    id: number,
+	employee_id: string,
+	date_start: string,
+	date_end: string,
+	reason: string,
+	status: string
 }
