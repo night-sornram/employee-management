@@ -10,3 +10,15 @@ type Attendance struct {
 	Date       time.Time `db:"date" json:"date"`
 	LeaveID    int       `db:"leave_id" json:"leave_id"`
 }
+
+type CheckIn struct {
+	ID         int       `db:"id" json:"id"`
+	EmployeeID string    `db:"employee_id" json:"employee_id"`
+	CheckIn    time.Time `db:"check_in" json:"check_in"`
+}
+
+type CheckOut struct {
+	ID         int       `db:"id" json:"id"`
+	EmployeeID string    `db:"employee_id" json:"employee_id"`
+	CheckOut   time.Time `db:"check_out" json:"check_out"`
+}

@@ -72,25 +72,22 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 }
 
 func (h *handleFiber) UpdateEmployee(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	id := c.Params("id")
 	var Employee repository.Employee
 	if err := c.BodyParser(&Employee); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	updateEmployee, err := h.service.UpdateEmployee(id, Employee)
+	_, err := h.service.UpdateEmployee(id, Employee)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updateEmployee)
+	return c.Status(200).JSON(fiber.Map{
+		"message": "success",
+	})
 }
 
 func (h *handleFiber) DeleteEmployee(c *fiber.Ctx) error {
@@ -115,7 +112,7 @@ func (h *handleFiber) Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(&data); err != nil {
 		return err
 	}
-	Employee, err := h.service.Login(data["email"], data["password"])
+	Employee, err := h.service.Login(data["id"], data["password"])
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "could not login",
@@ -212,4 +209,22 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(Employee)
+}
+
+func (h *handleFiber) ChangePassword(c *fiber.Ctx) error {
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	_, err := h.service.ChangePassword(data["id"], data["password"], data["new_password"])
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(200).JSON(fiber.Map{
+		"message": "success",
+	})
 }
