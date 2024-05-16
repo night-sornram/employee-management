@@ -3,8 +3,6 @@ package repository
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"time"
 )
@@ -57,48 +55,42 @@ type Attendance struct {
 	LeaveID    int       `db:"leave_id" json:"leave_id"`
 }
 
-func (u *LeaveServiceDB) UpdateStatus(id int, leave Leave) (Leave, error) {
-	fmt.Println(leave)
-	if leave.Status == "approve" {
-		fmt.Println(leave.DateStart.Format("2006-January-02"))
-		fmt.Println(leave.DateEnd.Format("2006-January-02"))
+func (u *LeaveServiceDB) UpdateStatus(id int, leave Leave) (Leave, error) {	
+	existsLeave, err := u.repo.GetByID(id);
+	if err != nil {
+		return Leave{}, err
+	}
 
-		for d := leave.DateStart ; !d.After(leave.DateEnd) ; d = d.AddDate(0, 0, 1) {
-			fmt.Println(d.Format("2006-January-02"))
-			payload  := Attendance{
-				EmployeeID: leave.EmployeeID,
+	if leave.Status == "approve" {
+		for d := existsLeave.DateStart; !d.After(existsLeave.DateEnd); d = d.AddDate(0, 0, 1) {
+			payload := Attendance{
+				EmployeeID: existsLeave.EmployeeID,
 				CheckIn:    d,
-				CheckOut: d,
-				Date: d,
-				LeaveID: 1,
+				CheckOut:   d,
+				Date:       d,
+				LeaveID:    existsLeave.ID,
 			}
 			jsonData, err := json.Marshal(payload)
 			if err != nil {
 				return Leave{}, err
 			}
-	
+
 			req, err := http.NewRequest("POST", "http://localhost:8081/attendance", bytes.NewBuffer(jsonData))
 			if err != nil {
 				return Leave{}, err
 			}
-	
+
 			req.Header.Set("Content-Type", "application/json")
-	
+
 			client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
-				fmt.Println(err)
+				return Leave{}, err
 			}
 			defer resp.Body.Close()
-	
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				fmt.Println(err)
-			}
-	
-				fmt.Println(string(body))
-		}
 
 		}
+
+	}
 	return u.repo.UpdateStatus(id, leave)
 }
