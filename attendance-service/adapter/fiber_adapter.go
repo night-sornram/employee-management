@@ -95,3 +95,35 @@ func (f *handlerFiber) DeleteAttendance(c *fiber.Ctx) error {
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
+	var checkIn repository.CheckIn
+	if err := c.BodyParser(&checkIn); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	newCheckIn, err := f.service.CheckIn(checkIn)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(newCheckIn)
+}
+
+func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
+	var checkOut repository.CheckOut
+	if err := c.BodyParser(&checkOut); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	newCheckOut, err := f.service.CheckOut(checkOut)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(newCheckOut)
+}

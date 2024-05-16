@@ -1,6 +1,8 @@
 package adapter
 
 import (
+	"time"
+
 	"github.com/night-sornram/employee-management/repository"
 
 	"gorm.io/gorm"
@@ -56,4 +58,46 @@ func (g *GormAdapter) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (g *GormAdapter) CheckIn(checkIn repository.CheckIn) (repository.Attendance, error) {
+
+	newAttendance := repository.Attendance{
+		EmployeeID: checkIn.EmployeeID,
+		CheckIn:    checkIn.CheckIn,
+		CheckOut:   time.Time{},
+		Date:       checkIn.CheckIn,
+		LeaveID:    0,
+	}
+	err := g.db.Create(&newAttendance).Error
+	if err != nil {
+		return newAttendance, err
+	}
+
+	return newAttendance, nil
+}
+
+func (g *GormAdapter) CheckOut(checkOut repository.CheckOut) (repository.Attendance, error) {
+
+	var latestAttendance repository.Attendance
+	newAttendance := repository.Attendance{
+		CheckOut: checkOut.CheckOut,
+	}
+	err := g.db.Model(&latestAttendance).
+    Where("employee_id = ?", checkOut.EmployeeID).
+    Order("check_in desc").
+	Limit(1).
+	First(&latestAttendance).Error
+
+	if err != nil {
+		return newAttendance, err
+	}
+
+	err = g.db.Model(&latestAttendance).Updates(newAttendance).Error
+
+	if err != nil {
+		return newAttendance, err
+	}
+
+	return newAttendance, nil
 }

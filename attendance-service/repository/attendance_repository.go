@@ -6,4 +6,6 @@ type AttendanceRepository interface {
 	Create(attendance Attendance) (Attendance, error)
 	Update(id int, attendance Attendance) (Attendance, error)
 	Delete(id int) error
+	CheckIn(checkIn CheckIn) (Attendance, error)
+	CheckOut(checkOut CheckOut) (Attendance, error)
 }
