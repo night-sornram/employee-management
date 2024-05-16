@@ -6,6 +6,9 @@ type EmployeeService interface {
 	CreateEmployee(Employee Employee) (Employee, error)
 	UpdateEmployee(id int, Employee Employee) (Employee, error)
 	DeleteEmployee(id int) error
+	Login(email string, password string) (Employee, error)
+	Logout() error
+	GetMe(id string) (Employee, error)
 }
 
 type EmployeeServiceDB struct {
@@ -36,4 +39,16 @@ func (u *EmployeeServiceDB) UpdateEmployee(id int, Employee Employee) (Employee,
 
 func (u *EmployeeServiceDB) DeleteEmployee(id int) error {
 	return u.repo.Delete(id)
+}
+
+func (u *EmployeeServiceDB) Login(email string, password string) (Employee, error) {
+	return u.repo.Login(email, password)
+}
+
+func (u *EmployeeServiceDB) Logout() error {
+	return nil
+}
+
+func (u *EmployeeServiceDB) GetMe(id string) (Employee, error) {
+	return u.repo.GetMe(id)
 }
