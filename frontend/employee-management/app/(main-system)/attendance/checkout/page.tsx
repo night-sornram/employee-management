@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { UserJson } from "@/interface";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Cross1Icon , CheckIcon , ExitIcon } from "@radix-ui/react-icons"
+import { Cross1Icon , CheckIcon , ExitIcon , CalendarIcon } from "@radix-ui/react-icons"
 
 
 export default function Page() {
@@ -18,7 +18,7 @@ export default function Page() {
     const [user, setUser] = useState<UserJson | null>(null)
     const [loading, setLoading] = useState(true)
     const [time , setTime] = useState(new Date())
-    const [mock, setMock] = useState("checked out")
+    const [mock, setMock] = useState("leave")
 
 
     useEffect(() => {
@@ -76,16 +76,34 @@ export default function Page() {
                             </Alert> 
                         )
                         :
-                    ( 
-                        <Alert className=" w-full h-20" variant="default">
-                            <CheckIcon className="h-4 w-4" />
-                            <AlertTitle>
-                                ALREADY CHECKED OUT
-                            </AlertTitle>
-                            <AlertDescription>
-                                You have checked out at 17:30
-                            </AlertDescription>
-                        </Alert> )
+                        ( 
+                            mock === "checked out" ?
+                            (
+                                <Alert className=" w-full h-20" variant="default">
+                                    <CheckIcon className="h-4 w-4" />
+                                    <AlertTitle>
+                                        ALREADY CHECKED OUT
+                                    </AlertTitle>
+                                    <AlertDescription>
+                                        You have checked out at 17:30
+                                    </AlertDescription>
+                                </Alert> 
+                            )
+                            :
+                            (
+                                <Alert className=" w-full h-20" variant="default">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <AlertTitle>
+                                        Leave
+                                    </AlertTitle>
+                                    <AlertDescription>
+                                        Today you have leave
+                                    </AlertDescription>
+                                </Alert> 
+
+                            )
+                        
+                        )
                     )
                 )
             }
@@ -124,7 +142,14 @@ export default function Page() {
                             )
                             :
                             (
-                                <Input disabled type="string" placeholder="17:30" />
+                                mock === "checked out" ?
+                                (
+                                    <Input disabled type="string" placeholder="17:30" />
+                                )
+                                :
+                                (
+                                    <Input disabled type="string" placeholder="Leave" />
+                                )
                             )
 
                         )
@@ -152,7 +177,15 @@ export default function Page() {
                         )
                         :
                         (
-                            <Button disabled className=" w-full flex justify-center" >Already Check-Out</Button>
+                            mock === "checked out" 
+                            ?   
+                            (
+                                <Button disabled className=" w-full flex justify-center" >Already Check-Out</Button>
+                            )
+                            :
+                            (
+                                <Button disabled className=" w-full flex justify-center" >Check-Out</Button> 
+                            )
                         )
                         
                     )

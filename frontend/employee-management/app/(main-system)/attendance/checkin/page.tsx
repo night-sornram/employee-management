@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { UserJson } from "@/interface";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Cross1Icon , CheckIcon } from "@radix-ui/react-icons"
+import { Cross1Icon , CheckIcon , CalendarIcon } from "@radix-ui/react-icons"
 
 
 export default function Page() {
@@ -18,7 +18,7 @@ export default function Page() {
     const [user, setUser] = useState<UserJson | null>(null)
     const [loading, setLoading] = useState(true)
     const [time , setTime] = useState(new Date())
-    const mock = true
+    const [mock , setMock] = useState("leave")
 
 
     useEffect(() => {
@@ -50,7 +50,8 @@ export default function Page() {
                 )
                 :
                 (
-                    !mock ? (
+                    
+                    mock === "not checked in" ?(
                         <Alert className=" w-full h-20" variant="destructive">
                             <Cross1Icon className="h-4 w-4" />
                             <AlertTitle>
@@ -61,19 +62,33 @@ export default function Page() {
                             </AlertDescription>
                         </Alert> 
                     )
-                    : 
+                    :
                     (
-                        <Alert className=" w-full h-20" variant="default">
-                            <CheckIcon className="h-4 w-4" />
-                            <AlertTitle>
-                                ALREADY CHECKED IN
-                            </AlertTitle>
-                            <AlertDescription>
-                                You have checked in at 09:00
-                            </AlertDescription>
-                        </Alert> 
-                    )
-                    
+                        mock === "checked in" ? (
+                            <Alert className=" w-full h-20" variant="default">
+                                <CheckIcon className="h-4 w-4" />
+                                <AlertTitle>
+                                    ALREADY CHECKED IN
+                                </AlertTitle>
+                                <AlertDescription>
+                                    You have checked in at 09:00
+                                </AlertDescription>
+                            </Alert> 
+                        )
+                        :
+                        (
+
+                            <Alert className=" w-full h-20" variant="default">
+                                <CalendarIcon className="h-4 w-4" />
+                                <AlertTitle>
+                                    LEAVE
+                                </AlertTitle>
+                                <AlertDescription>
+                                    Today have leave request
+                                </AlertDescription>
+                            </Alert>
+                        )
+                    )          
                 )
                 
             }
@@ -100,14 +115,20 @@ export default function Page() {
                 )
                 : 
                 ( 
-                        !mock ?
-                        (
-                            <Input disabled type="string" placeholder={time.toUTCString()} />
+                    mock === "not checked in" ?(
+                        <Input disabled type="string" placeholder={time.toUTCString()} /> 
+                    )
+                    :
+                    (
+                        mock === "checked in" ? (
+                            <Input disabled type="string" placeholder="09:00" />
                         )
                         :
                         (
-                            <Input disabled type="string" placeholder="09:00" />
+
+                            <Input disabled type="string" placeholder="Leave" />
                         )
+                    )       
                     
                 )
             }
@@ -120,13 +141,18 @@ export default function Page() {
                 ) 
                 :
                 (
-                    !mock ?
-                    (
+                    mock === "not checked in" ?(
                         <Button className=" w-full flex justify-center" >Check-In</Button>
                     )
                     :
                     (
-                        <Button disabled className=" w-full flex justify-center" >Already Checked-In</Button>
+                        mock === "checked in" ? (
+                            <Button disabled className=" w-full flex justify-center" >Already Checked-In</Button>
+                        )
+                        :
+                        (
+                            <Button disabled className=" w-full flex justify-center" >Check-In</Button>
+                        )
                     )
                 )
             }
