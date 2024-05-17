@@ -67,7 +67,7 @@ func (g *GormAdapter) CheckIn(checkIn repository.CheckIn) (repository.Attendance
 		CheckIn:    checkIn.CheckIn,
 		CheckOut:   time.Time{},
 		Date:       checkIn.CheckIn,
-		LeaveID:    0,
+		LeaveID:    -1,
 	}
 	err := g.db.Create(&newAttendance).Error
 	if err != nil {
