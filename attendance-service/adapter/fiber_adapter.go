@@ -1,8 +1,8 @@
 package adapter
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-
 	"github.com/night-sornram/employee-management/repository"
 )
 
@@ -49,6 +49,14 @@ func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err := validate.Struct(attendance)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	newAttendance, err := f.service.CreateAttendance(attendance)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -68,6 +76,14 @@ func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
 	var attendance repository.Attendance
 	if err := c.BodyParser(&attendance); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	validate := validator.New()
+	err = validate.Struct(attendance)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -103,6 +119,15 @@ func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err := validate.Struct(checkIn)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	
 	newCheckIn, err := f.service.CheckIn(checkIn)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -116,6 +141,13 @@ func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
 	var checkOut repository.CheckOut
 	if err := c.BodyParser(&checkOut); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	validate := validator.New()
+	err := validate.Struct(checkOut)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
