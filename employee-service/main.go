@@ -43,6 +43,12 @@ func main() {
 	app.Post("/api/changePassword", handle.ChangePassword)
 	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
 	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
+	app.Post("/api/employees", handle.CreateEmployee)
+
+	app.Use("/api", middleware.Protected())
+	app.Post("/api/changePassword", handle.ChangePassword)
+	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
+	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
 	app.Post("/api/employees", middleware.Authorize("admin"), handle.CreateEmployee)
 	app.Put("/api/employees/:id", middleware.Authorize("admin", "user"), handle.UpdateEmployee)
 	app.Delete("/api/employees/:id", middleware.Authorize("admin"), handle.DeleteEmployee)

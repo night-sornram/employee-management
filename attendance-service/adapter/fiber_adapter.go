@@ -127,3 +127,19 @@ func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
 	}
 	return c.JSON(newCheckOut)
 }
+
+func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
+	eid := c.Params("eid")
+	if eid == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	attendances, err := f.service.GetMyAttendances(eid)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(attendances)
+}

@@ -84,10 +84,10 @@ func (g *GormAdapter) CheckOut(checkOut repository.CheckOut) (repository.Attenda
 		CheckOut: checkOut.CheckOut,
 	}
 	err := g.db.Model(&latestAttendance).
-    Where("employee_id = ?", checkOut.EmployeeID).
-    Order("check_in desc").
-	Limit(1).
-	First(&latestAttendance).Error
+		Where("employee_id = ?", checkOut.EmployeeID).
+		Order("check_in desc").
+		Limit(1).
+		First(&latestAttendance).Error
 
 	if err != nil {
 		return newAttendance, err
@@ -100,4 +100,13 @@ func (g *GormAdapter) CheckOut(checkOut repository.CheckOut) (repository.Attenda
 	}
 
 	return newAttendance, nil
+}
+
+func (g *GormAdapter) GetAllMe(eid string) ([]repository.Attendance, error) {
+	var attendances []repository.Attendance
+	err := g.db.Where("employee_id = ?", eid).Find(&attendances).Error
+	if err != nil {
+		return nil, err
+	}
+	return attendances, nil
 }

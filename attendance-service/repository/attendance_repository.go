@@ -8,4 +8,5 @@ type AttendanceRepository interface {
 	Delete(id int) error
 	CheckIn(checkIn CheckIn) (Attendance, error)
 	CheckOut(checkOut CheckOut) (Attendance, error)
+	GetAllMe(eid string) ([]Attendance, error)
 }

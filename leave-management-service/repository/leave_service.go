@@ -6,6 +6,7 @@ type LeaveService interface {
 	CreateLeave(Leave Leave) (Leave, error)
 	UpdateLeave(id int, Leave Leave) (Leave, error)
 	DeleteLeave(id int) error
+	GetMyLeaves(eid string) ([]Leave, error)
 }
 
 type LeaveServiceDB struct {
@@ -36,4 +37,8 @@ func (u *LeaveServiceDB) UpdateLeave(id int, Leave Leave) (Leave, error) {
 
 func (u *LeaveServiceDB) DeleteLeave(id int) error {
 	return u.repo.Delete(id)
+}
+
+func (u *LeaveServiceDB) GetMyLeaves(eid string) ([]Leave, error) {
+	return u.repo.GetAllMe(eid)
 }

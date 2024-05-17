@@ -8,6 +8,7 @@ type AttendanceService interface {
 	DeleteAttendance(id int) error
 	CheckIn(CheckIn CheckIn) (Attendance, error)
 	CheckOut(checkOut CheckOut) (Attendance, error)
+	GetMyAttendances(eid string) ([]Attendance, error)
 }
 
 type AttendanceServiceDB struct {
@@ -46,4 +47,8 @@ func (a *AttendanceServiceDB) CheckIn(checkIn CheckIn) (Attendance, error) {
 
 func (a *AttendanceServiceDB) CheckOut(checkOut CheckOut) (Attendance, error) {
 	return a.repo.CheckOut(checkOut)
+}
+
+func (a *AttendanceServiceDB) GetMyAttendances(eid string) ([]Attendance, error) {
+	return a.repo.GetAllMe(eid)
 }

@@ -19,7 +19,7 @@ func main() {
 		port     = 5432
 		user     = "postgres"
 		password = "password"
-		dbname   = "postgres"
+		dbname   = "attendance"
 	)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	err = db.AutoMigrate(&repository.Attendance{})
-	
+
 	if err != nil {
 		log.Fatalf("Failed to auto-migrate: %v", err)
 	}
@@ -47,6 +47,7 @@ func main() {
 	app.Put("/attendance/check-out", handle.CheckOut)
 	app.Put("/attendance/:id", handle.UpdateAttendance)
 	app.Delete("/attendance/:id", handle.DeleteAttendance)
+	app.Get("/attendance/me/:eid", handle.GetMyAttendances)
 
 	app.Listen(":8081")
 }

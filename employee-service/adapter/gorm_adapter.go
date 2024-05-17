@@ -56,7 +56,7 @@ func (g *GormAdapter) Delete(id int) error {
 func (g *GormAdapter) Login(id string, password string) (repository.Employee, error) {
 	var Employee repository.Employee
 
-	if err := g.db.Where("employee_id = ?", id).First(&Employee).Error; err != nil {
+	if err := g.db.First(&Employee, "employee_id = ?", id).Error; err != nil {
 		return repository.Employee{}, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {

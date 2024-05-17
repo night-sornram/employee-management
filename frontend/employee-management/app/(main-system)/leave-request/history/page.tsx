@@ -1,37 +1,30 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Leave } from "@/interface";
+import { Leave, UserJson } from "@/interface";
+import GetMyLeaves from "@/lib/GetMyLeaves";
+import GetUserProfile from "@/lib/GetUserProfile";
+import dayjs from "dayjs";
+import { getServerSession } from "next-auth";
 
-export default function Page() {
+export default async function Page() {
 
-    const mockData: Leave[] = [{
-        id: 1,
-        employee_id: "E01",
-        date_start: "13/05/2024",
-        date_end: "15/05/2024",
-        reason: "",
-        status: "Approved",
-        duration: 3
-    },
-    {
-        id: 2,
-        employee_id: "E01",
-        date_start: "20/05/2024",
-        date_end: "21/05/2024",
-        reason: "",
-        status: "Denied",
-        duration: 2
-    },
-    {
-        id: 3,
-        employee_id: "E01",
-        date_start: "28/05/2024",
-        date_end: "30/05/2024",
-        reason: "",
-        status: "Pending",
-        duration: 3
+    const session = await getServerSession(authOptions);
+    if (!session) return null;
+    const userProfile:UserJson = await GetUserProfile(session?.user.token);
+    const data: Leave[] = await GetMyLeaves(userProfile.employee_id, session.user.token);
+    let approved = 0, denied = 0, pending = 0;
+    for (let leave of data) {
+        if (leave.status == 'Approved') {
+            approved += 1;
+        }
+        if (leave.status == 'Denied') {
+            denied += 1;
+        }
+        if (leave.status == 'Pending') {
+            pending += 1;
+        }
     }
-]
 
     return(
         <main className=' p-10 h-[93vh] w-screen flex flex-col gap-10'>
@@ -48,7 +41,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        1
+                        {approved}
                     </CardContent>
                 </Card>
                 <Card className="w-[20%]">
@@ -58,7 +51,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        1
+                        {denied}
                     </CardContent>
                 </Card>
                 <Card className="w-[20%]">
@@ -68,7 +61,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        1
+                        {pending}
                     </CardContent>
                 </Card>
             </div>
@@ -92,28 +85,28 @@ export default function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            mockData.map((att) => 
+                            data.map((leave) => 
                             <TableRow>
                                 <TableCell>
-                                    {att.date_start}
+                                    {dayjs(leave.date_start).format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.date_end}
+                                    {dayjs(leave.date_end).format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.duration}
+                                    {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day')}
                                 </TableCell>
                                 {
-                                    att.status == "Approved" ? 
+                                    leave.status == "Approved" ? 
                                     <TableCell className="text-green-600">
-                                        {att.status}
+                                        {leave.status}
                                     </TableCell> : 
-                                    att.status == "Denied" ?
+                                    leave.status == "Denied" ?
                                     <TableCell className="text-red-600">
-                                        {att.status}
+                                        {leave.status}
                                     </TableCell> :
                                     <TableCell className="text-blue-600">
-                                        {att.status}
+                                        {leave.status}
                                     </TableCell>
                                 }
                             </TableRow>)
