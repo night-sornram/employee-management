@@ -43,30 +43,39 @@ export default function Page() {
     return(
         <div className="flex flex-col px-[10%] py-[5%] w-[60%] gap-[5%]">
             {
-                !mock ? 
+                loading ? 
                 (
-                    <Alert variant="destructive">
-                        <Cross1Icon className="h-4 w-4" />
-                        <AlertTitle>
-                            NOT CHECKED IN
-                        </AlertTitle>
-                        <AlertDescription>
-                            Please check in before 10:00
-                        </AlertDescription>
-                    </Alert> 
+                    <Skeleton className="w-full h-20"/>
+
                 )
-                : 
+                :
                 (
-                    <Alert variant="default">
-                        <CheckIcon className="h-4 w-4" />
-                        <AlertTitle>
-                            ALREADY CHECKED IN
-                        </AlertTitle>
-                        <AlertDescription>
-                            You have checked in at 09:00
-                        </AlertDescription>
-                    </Alert> 
+                    !mock ? (
+                        <Alert className=" w-full h-20" variant="destructive">
+                            <Cross1Icon className="h-4 w-4" />
+                            <AlertTitle>
+                                NOT CHECKED IN
+                            </AlertTitle>
+                            <AlertDescription>
+                                Please check in before 10:00
+                            </AlertDescription>
+                        </Alert> 
+                    )
+                    : 
+                    (
+                        <Alert className=" w-full h-20" variant="default">
+                            <CheckIcon className="h-4 w-4" />
+                            <AlertTitle>
+                                ALREADY CHECKED IN
+                            </AlertTitle>
+                            <AlertDescription>
+                                You have checked in at 09:00
+                            </AlertDescription>
+                        </Alert> 
+                    )
+                    
                 )
+                
             }
             <h1 className="text-2xl font-bold">Check In</h1>
             <div className="flex flex-col space-y-3 justify-between w-full">
@@ -105,13 +114,20 @@ export default function Page() {
         </div>
         <div className="items-center w-full text-center ">
             {
-                !mock ?
+                loading ?
                 (
-                    <Button className=" w-full flex justify-center" >Check-In</Button>
-                )
+                    <Skeleton className=" w-full h-10" />
+                ) 
                 :
                 (
-                    <Button disabled className=" w-full flex justify-center" >Already Checked-In</Button>
+                    !mock ?
+                    (
+                        <Button className=" w-full flex justify-center" >Check-In</Button>
+                    )
+                    :
+                    (
+                        <Button disabled className=" w-full flex justify-center" >Already Checked-In</Button>
+                    )
                 )
             }
         </div>
