@@ -19,7 +19,7 @@ func main() {
 		port     = 5432
 		user     = "postgres"
 		password = "password"
-		dbname   = "postgres"
+		dbname   = "employee"
 	)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -39,19 +39,11 @@ func main() {
 	app.Post("/logout", handle.Logout)
 	app.Get("/me", handle.GetMe)
 
-<<<<<<< HEAD
-	// app.Use("/api", middleware.Protected())
-	//app.Post("/api/changePassword", handle.ChangePassword)
-	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
-	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
-	app.Post("/api/employees", handle.CreateEmployee)
-=======
 	app.Use("/api", middleware.Protected())
 	app.Post("/api/changePassword", handle.ChangePassword)
 	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
 	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
 	app.Post("/api/employees", middleware.Authorize("admin"), handle.CreateEmployee)
->>>>>>> dab7382a996a0cf624187a5665547ebbcf54d257
 	app.Put("/api/employees/:id", middleware.Authorize("admin", "user"), handle.UpdateEmployee)
 	app.Delete("/api/employees/:id", middleware.Authorize("admin"), handle.DeleteEmployee)
 
