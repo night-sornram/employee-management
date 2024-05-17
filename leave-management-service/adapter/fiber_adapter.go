@@ -53,7 +53,7 @@ func (f *handlerFiber) CreateLeave(c *fiber.Ctx) error {
 	validate := validator.New()
 	err := validate.Struct(leave)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -84,7 +84,7 @@ func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
 	validate := validator.New()
 	err = validate.Struct(leave)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -130,7 +130,7 @@ func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
 	validate := validator.New()
 	err = validate.Struct(leave)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
