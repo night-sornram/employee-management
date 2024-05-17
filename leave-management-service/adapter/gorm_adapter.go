@@ -1,8 +1,6 @@
 package adapter
 
 import (
-	"fmt"
-
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/gorm"
 )
@@ -60,8 +58,8 @@ func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.L
 		return leave, err
 	}
 
-	fmt.Println(existingLeave)
 	existingLeave.Status = leave.Status
+	existingLeave.ManagerOpinion = leave.ManagerOpinion
 
 	if err := g.db.Save(&existingLeave).Error; err != nil {
 		return existingLeave, err
