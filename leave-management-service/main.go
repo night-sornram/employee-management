@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func setup() *fiber.App{
 	app := fiber.New()
 	const (
 		host     = "localhost"
@@ -37,6 +37,11 @@ func main() {
 	app.Put("/leaves/:id", handle.UpdateLeave)
 	app.Delete("/leaves/:id", handle.DeleteLeave)
 	app.Put("/leaves/approval/:id", handle.UpdateStatus)
-
-	app.Listen(":8082")
+	
+	return app
 }
+
+func main() {
+	app := setup()
+	app.Listen(":8002")
+  }

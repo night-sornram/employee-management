@@ -10,8 +10,8 @@ import (
 type LeaveService interface {
 	GetLeaves() ([]Leave, error)
 	GetLeave(id int) (Leave, error)
-	CreateLeave(Leave Leave) (Leave, error)
-	UpdateLeave(id int, Leave Leave) (Leave, error)
+	CreateLeave(leave Leave) (Leave, error)
+	UpdateLeave(id int, leave Leave) (Leave, error)
 	DeleteLeave(id int) error
 	UpdateStatus(id int, leave Leave) (Leave, error)
 }
@@ -34,12 +34,12 @@ func (u *LeaveServiceDB) GetLeave(id int) (Leave, error) {
 	return u.repo.GetByID(id)
 }
 
-func (u *LeaveServiceDB) CreateLeave(Leave Leave) (Leave, error) {
-	return u.repo.Create(Leave)
+func (u *LeaveServiceDB) CreateLeave(leave Leave) (Leave, error) {
+	return u.repo.Create(leave)
 }
 
-func (u *LeaveServiceDB) UpdateLeave(id int, Leave Leave) (Leave, error) {
-	return u.repo.Update(id, Leave)
+func (u *LeaveServiceDB) UpdateLeave(id int, leave Leave) (Leave, error) {
+	return u.repo.Update(id, leave)
 }
 
 func (u *LeaveServiceDB) DeleteLeave(id int) error {
