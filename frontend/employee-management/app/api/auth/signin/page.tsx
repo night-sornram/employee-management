@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import UserLogIn from "@/lib/UserLogin";
 
 
 
@@ -23,21 +22,15 @@ const LoginPage = () => {
   
   const [id, setId] = useState("");
   const [pass, setPass] = useState("");
-  const { data:session } = useSession();
-  const router = useRouter();
-  
     const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
-        console.log(id + " " + pass);
-    //     await signIn("credentials", {
-    //       id: id, 
-    //       password: pass,
-    //       redirect: true,
-    //       callbackUrl: "/attendance/checkin",
-    // });
-    await UserLogIn(id, pass);
-    router.push('/attendance/checkin');
-    router.refresh();
+        await signIn("credentials", {
+          id: id, 
+          password: pass,
+          redirect: true,
+          callbackUrl: "/attendance/checkin",
+    });
+
   };
         
   

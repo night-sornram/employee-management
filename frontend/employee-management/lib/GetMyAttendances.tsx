@@ -1,5 +1,5 @@
 export default async function GetMyAttendances (eid: string, token: string) {
-    const response = await fetch(`http://127.0.0.1:8081/attendance/me/${eid}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/me/${eid}`, {
         method: 'GET',
         headers: {
             authorization: `Bearer ${token}`,
