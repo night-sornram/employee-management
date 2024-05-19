@@ -7,6 +7,7 @@ type AttendanceRepository interface {
 	Update(id int, attendance Attendance) (Attendance, error)
 	Delete(id int) error
 	CheckIn(checkIn CheckIn) (Attendance, error)
-	CheckOut(checkOut CheckOut) (Attendance, error)
+	CheckOut(id int) (Attendance, error)
 	GetAllMe(eid string) ([]Attendance, error)
+	CheckToday(eid string) (Attendance, error)
 }

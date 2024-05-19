@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input"
 import GetUserProfile from "@/lib/GetUserProfile";
 import { useState , useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { UserJson } from "@/interface";
+import { Attendance, UserJson } from "@/interface";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Cross1Icon , CheckIcon , ExitIcon , CalendarIcon } from "@radix-ui/react-icons"
+import GetTodayCheckIn from "@/lib/GetTodayCheckIn";
+import Checkin from "@/lib/Checkin";
+import Checkout from "@/lib/Checkout";
 
 
 export default function Page() {
@@ -18,7 +21,7 @@ export default function Page() {
     const [user, setUser] = useState<UserJson | null>(null)
     const [loading, setLoading] = useState(true)
     const [time , setTime] = useState(new Date())
-    const [mock, setMock] = useState("leave")
+    const [data, setData] = useState<Attendance | null>(null)
 
 
     useEffect(() => {
@@ -28,6 +31,9 @@ export default function Page() {
                     setUser(res)
                     setLoading(false)
                  })
+                 GetTodayCheckIn(session.user.employee_id, session.user.token).then((res) => {
+                    setData(res)
+                })
             }
     },[])
 
@@ -40,6 +46,15 @@ export default function Page() {
             }
         }
 
+    const handleCheckOut = async () => {
+        try {
+            await Checkout(session.user.token, data?.id as Number)
+            window.location.reload()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return(
         <div className="flex flex-col px-[10%] py-[5%] w-[60%] gap-[5%]">
             {
@@ -49,7 +64,7 @@ export default function Page() {
                 ) 
                 :
                 (
-                    mock === "not checked in" ? 
+                    data === null ? 
                     (
                         <Alert className=" w-full h-20" variant="destructive">
                             <Cross1Icon className="h-4 w-4" />
@@ -63,8 +78,22 @@ export default function Page() {
                     )
                     : 
                     (
-                        mock === "not checked out" ?
+                        data.leave_id !== -1   ?
                         (
+                            <Alert className=" w-full h-20" variant="default">
+                                <CalendarIcon className="h-4 w-4" />
+                                <AlertTitle>
+                                    Leave
+                                </AlertTitle>
+                                <AlertDescription>
+                                    Today you have leave
+                                </AlertDescription>
+                            </Alert> 
+                        )
+                        :
+                        ( 
+                            data.check_out === "0001-01-01T07:00:00+07:00"?
+                            (
                             <Alert className=" w-full h-20" variant="default">
                                 <ExitIcon className="h-4 w-4" />
                                 <AlertTitle>
@@ -74,10 +103,8 @@ export default function Page() {
                                     Please check out before 18:00 
                                 </AlertDescription>
                             </Alert> 
-                        )
-                        :
-                        ( 
-                            mock === "checked out" ?
+                            )
+                            :
                             (
                                 <Alert className=" w-full h-20" variant="default">
                                     <CheckIcon className="h-4 w-4" />
@@ -85,19 +112,7 @@ export default function Page() {
                                         ALREADY CHECKED OUT
                                     </AlertTitle>
                                     <AlertDescription>
-                                        You have checked out at 17:30
-                                    </AlertDescription>
-                                </Alert> 
-                            )
-                            :
-                            (
-                                <Alert className=" w-full h-20" variant="default">
-                                    <CalendarIcon className="h-4 w-4" />
-                                    <AlertTitle>
-                                        Leave
-                                    </AlertTitle>
-                                    <AlertDescription>
-                                        Today you have leave
+                                        You have checked out at {new Date(data.check_out).getHours() + ":" + new Date(data.check_out).getMinutes()}
                                     </AlertDescription>
                                 </Alert> 
 
@@ -130,25 +145,25 @@ export default function Page() {
                 )
                 : 
                 ( 
-                        mock === "not checked in" ?
+                        data === null ?
                         (
                             <Input disabled type="string" placeholder={time.toUTCString()} />
                         )
                         :
                         (
-                            mock === "not checked out" ?
+                            data.leave_id !== -1 ?
                             (
-                                <Input disabled type="string" placeholder={time.toUTCString()} />
+                                <Input disabled type="string" placeholder="Leave" />
                             )
                             :
                             (
-                                mock === "checked out" ?
+                                data.check_out === "0001-01-01T07:00:00+07:00" ?
                                 (
-                                    <Input disabled type="string" placeholder="17:30" />
+                                    <Input disabled type="string" placeholder={time.toUTCString()} />
                                 )
                                 :
                                 (
-                                    <Input disabled type="string" placeholder="Leave" />
+                                    <Input disabled type="string" placeholder={new Date(data.check_out).getHours() + ":" + new Date(data.check_out).getMinutes()} />
                                 )
                             )
 
@@ -165,26 +180,26 @@ export default function Page() {
                 )
                 :
                 (
-                    mock === "not checked in" ?
+                   data === null ?
                     (
                         <Button disabled className=" w-full flex justify-center" >Check-Out</Button>
                     )
                     :
                     (
-                        mock === "not checked out" ?
+                       data.leave_id !== -1 ?
                         (
-                            <Button  className=" w-full flex justify-center" >Check-Out</Button>
+                            <Button disabled className=" w-full flex justify-center" >Check-Out</Button> 
                         )
                         :
                         (
-                            mock === "checked out" 
+                            data.check_out === "0001-01-01T07:00:00+07:00"
                             ?   
                             (
-                                <Button disabled className=" w-full flex justify-center" >Already Check-Out</Button>
+                                <Button onClick={handleCheckOut}  className=" w-full flex justify-center" >Check-Out</Button>
                             )
                             :
                             (
-                                <Button disabled className=" w-full flex justify-center" >Check-Out</Button> 
+                                <Button disabled className=" w-full flex justify-center" >Already Check-Out</Button>
                             )
                         )
                         

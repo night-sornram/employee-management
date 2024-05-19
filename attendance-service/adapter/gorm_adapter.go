@@ -66,7 +66,7 @@ func (g *GormAdapter) CheckIn(checkIn repository.CheckIn) (repository.Attendance
 		EmployeeID: checkIn.EmployeeID,
 		CheckIn:    checkIn.CheckIn,
 		CheckOut:   time.Time{},
-		Date:       checkIn.CheckIn,
+		Date:       checkIn.CheckIn.Format("2006-01-02"),
 		LeaveID:    -1,
 	}
 	err := g.db.Create(&newAttendance).Error
@@ -77,29 +77,20 @@ func (g *GormAdapter) CheckIn(checkIn repository.CheckIn) (repository.Attendance
 	return newAttendance, nil
 }
 
-func (g *GormAdapter) CheckOut(checkOut repository.CheckOut) (repository.Attendance, error) {
+func (g *GormAdapter) CheckOut(id int) (repository.Attendance, error) {
 
-	var latestAttendance repository.Attendance
-	newAttendance := repository.Attendance{
-		CheckOut: checkOut.CheckOut,
-	}
-	err := g.db.Model(&latestAttendance).
-		Where("employee_id = ?", checkOut.EmployeeID).
-		Order("check_in desc").
-		Limit(1).
-		First(&latestAttendance).Error
-
+	var attendance repository.Attendance
+	err := g.db.First(&attendance, id).Error
 	if err != nil {
-		return newAttendance, err
+		return attendance, err
 	}
-
-	err = g.db.Model(&latestAttendance).Updates(newAttendance).Error
-
+	attendance.CheckOut = time.Now()
+	err = g.db.Save(&attendance).Error
 	if err != nil {
-		return newAttendance, err
+		return attendance, err
 	}
+	return attendance, nil
 
-	return newAttendance, nil
 }
 
 func (g *GormAdapter) GetAllMe(eid string) ([]repository.Attendance, error) {
@@ -109,4 +100,13 @@ func (g *GormAdapter) GetAllMe(eid string) ([]repository.Attendance, error) {
 		return nil, err
 	}
 	return attendances, nil
+}
+
+func (g *GormAdapter) CheckToday(eid string) (repository.Attendance, error) {
+	var attendance repository.Attendance
+	err := g.db.Where("employee_id = ? AND date = ?", eid, time.Now().Format(time.DateOnly)).First(&attendance).Error
+	if err != nil {
+		return attendance, nil
+	}
+	return attendance, nil
 }

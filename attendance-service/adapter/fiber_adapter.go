@@ -127,7 +127,7 @@ func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	
+
 	newCheckIn, err := f.service.CheckIn(checkIn)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -138,20 +138,14 @@ func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
 }
 
 func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
-	var checkOut repository.CheckOut
-	if err := c.BodyParser(&checkOut); err != nil {
+	var data map[string]int
+	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	validate := validator.New()
-	err := validate.Struct(checkOut)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
-	newCheckOut, err := f.service.CheckOut(checkOut)
+
+	newCheckOut, err := f.service.CheckOut(data["id"])
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
@@ -174,4 +168,19 @@ func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
 		})
 	}
 	return c.JSON(attendances)
+}
+
+func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
+	eid := c.Params("eid")
+	if eid == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	attendance, _ := f.service.CheckToday(eid)
+	if attendance.ID == 0 {
+		return c.JSON(nil)
+	}
+	return c.JSON(attendance)
+
 }
