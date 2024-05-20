@@ -13,14 +13,31 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import dayjs from "dayjs"
+
+interface DatePickerRangeProps extends React.HTMLAttributes<HTMLDivElement> {
+  onStartDateChange: Function,
+  onEndDateChange: Function
+}
 
 export default function DatePickerRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+  className, onStartDateChange, onEndDateChange
+}: DatePickerRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 3),
   })
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDate(range);
+    onStartDateChange(range?.from);
+    onEndDateChange(range?.to);
+  }
+
+  React.useEffect(() => {
+    onStartDateChange(date?.from);
+    onEndDateChange(date?.to);
+  }, [])
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -55,7 +72,7 @@ export default function DatePickerRange({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={handleDateChange}
             numberOfMonths={2}
           />
         </PopoverContent>

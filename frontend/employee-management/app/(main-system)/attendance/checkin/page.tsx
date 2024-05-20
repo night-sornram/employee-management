@@ -132,7 +132,7 @@ export default function Page() {
                 : 
                 ( 
                     data === null ?(
-                        <Input disabled type="string" placeholder={time.toUTCString()} /> 
+                        <Input disabled type="string" placeholder={time.toLocaleString()} /> 
                     )
                     :
                     (

@@ -22,15 +22,16 @@ const LoginPage = () => {
   
   const [id, setId] = useState("");
   const [pass, setPass] = useState("");
+  const router = useRouter();
     const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         await signIn("credentials", {
           id: id, 
           password: pass,
-          redirect: true,
+          redirect: false,
           callbackUrl: "/attendance/checkin",
     });
-
+    router.push('/attendance/checkin');
   };
         
   

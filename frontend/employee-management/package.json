@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "all": "concurrently \"npm run front\" \"npm run back\"",
+    "front": "npm run dev",
+    "back": "concurrently \"cd ../../employee-service && go run .\" \"cd ../../attendance-service && go run .\" \"cd ../../leave-management-service && go run .\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -55,6 +58,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^8.2.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

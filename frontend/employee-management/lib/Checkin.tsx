@@ -7,8 +7,8 @@ export default async function Checkin(token : string, employee_id : string){
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            "employee_id" :  employee_id,
-            "check_in" : new Date().toISOString()
+            employee_id :  employee_id,
+            check_in : new Date().toLocaleString()
         })
 
     })

@@ -6,6 +6,8 @@ import GetMyLeaves from "@/lib/GetMyLeaves";
 import GetUserProfile from "@/lib/GetUserProfile";
 import dayjs from "dayjs";
 import { getServerSession } from "next-auth";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export default async function Page() {
 
@@ -94,7 +96,7 @@ export default async function Page() {
                                     {dayjs(leave.date_end).format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day')}
+                                    {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
                                 </TableCell>
                                 {
                                     leave.status == "Approved" ? 
