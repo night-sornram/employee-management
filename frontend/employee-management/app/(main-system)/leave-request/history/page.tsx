@@ -7,6 +7,7 @@ import GetUserProfile from "@/lib/GetUserProfile";
 import dayjs from "dayjs";
 import { getServerSession } from "next-auth";
 import utc from "dayjs/plugin/utc";
+import { LapTimerIcon , CheckIcon ,Cross1Icon  } from "@radix-ui/react-icons";
 dayjs.extend(utc);
 
 export default async function Page() {
@@ -100,15 +101,15 @@ export default async function Page() {
                                 </TableCell>
                                 {
                                     leave.status == "Approved" ? 
-                                    <TableCell className="text-green-600">
-                                        {leave.status}
+                                    <TableCell className=" flex flex-row">
+                                        <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
                                     leave.status == "Denied" ?
-                                    <TableCell className="text-red-600">
-                                        {leave.status}
+                                    <TableCell className=" flex flex-row">
+                                        <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :
-                                    <TableCell className="text-blue-600">
-                                        {leave.status}
+                                    <TableCell className=" flex flex-row">
+                                        <LapTimerIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell>
                                 }
                             </TableRow>)

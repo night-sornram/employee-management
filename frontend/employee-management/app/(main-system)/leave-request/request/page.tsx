@@ -14,12 +14,11 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CreateLeaveRequest from "@/lib/CreateLeaveRequest";
 import { useSession } from "next-auth/react";
 import { UserJson } from "@/interface";
 import GetUserProfile from "@/lib/GetUserProfile";
 import { useToast } from "@/components/ui/use-toast";
-import { CreateLeaveRequestAction } from "./CreateRequestAction";
+import { CreateLeaveRequestAction } from "../../../../lib/CreateRequestAction";
 dayjs.extend(utc);
 
 export default function LeaveRequestPage () {

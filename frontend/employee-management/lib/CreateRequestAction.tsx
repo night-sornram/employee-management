@@ -1,6 +1,6 @@
 'use server'
 export async function CreateLeaveRequestAction (token: string, eid: string, start: string, end: string, reasons: string) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/leaves`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves`, {
         method: 'POST',
         mode: 'cors',
         headers: {
