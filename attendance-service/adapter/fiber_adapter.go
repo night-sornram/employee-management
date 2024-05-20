@@ -113,22 +113,13 @@ func (f *handlerFiber) DeleteAttendance(c *fiber.Ctx) error {
 }
 
 func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
-	var checkIn repository.CheckIn
-	if err := c.BodyParser(&checkIn); err != nil {
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-
-	validate := validator.New()
-	err := validate.Struct(checkIn)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
-
-	newCheckIn, err := f.service.CheckIn(checkIn)
+	newCheckIn, err := f.service.CheckIn(data["eid"])
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

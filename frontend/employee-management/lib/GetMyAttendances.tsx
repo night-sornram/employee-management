@@ -1,5 +1,5 @@
 export default async function GetMyAttendances (eid: string, token: string) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/attendance/me/${eid}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendance/me/${eid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {

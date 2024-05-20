@@ -112,7 +112,7 @@ export default function Page() {
                                         ALREADY CHECKED OUT
                                     </AlertTitle>
                                     <AlertDescription>
-                                        You have checked out at {new Date(data.check_out).getHours() + ":" + new Date(data.check_out).getMinutes()}
+                                        You have checked out at {new Date(data.check_out).toLocaleTimeString("th-TH")}
                                     </AlertDescription>
                                 </Alert> 
 
@@ -163,7 +163,7 @@ export default function Page() {
                                 )
                                 :
                                 (
-                                    <Input disabled type="string" placeholder={new Date(data.check_out).getHours() + ":" + new Date(data.check_out).getMinutes()} />
+                                    <Input disabled type="string" placeholder={new Date(data.check_out).toLocaleTimeString("th-TH")} />
                                 )
                             )
 

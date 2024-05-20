@@ -16,5 +16,5 @@ type Attendance struct {
 type CheckIn struct {
 	ID         int       `db:"id" json:"id" gor:"primaryKey"`
 	EmployeeID string    `db:"employee_id" json:"employee_id" validate:"required"`
-	CheckIn    time.Time `db:"check_in" json:"check_in" validate:"required"`
+	CheckIn    time.Time `db:"check_in" json:"check_in"`
 }

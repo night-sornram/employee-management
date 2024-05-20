@@ -40,16 +40,17 @@ func main() {
 	handle := adapter.NewhandlerFiber(service)
 
 	app.Use(cors.New())
-	app.Use("/attendance", middleware.Protected())
-	app.Get("/attendance", handle.GetAttendances)
-	app.Get("/attendance/:id", handle.GetAttendance)
-	app.Post("/attendance", handle.CreateAttendance)
-	app.Post("/attendance/check-in", handle.CheckIn)
-	app.Put("/attendance/check-out", handle.CheckOut)
-	app.Put("/attendance/:id", handle.UpdateAttendance)
-	app.Delete("/attendance/:id", handle.DeleteAttendance)
-	app.Get("/attendance/me/:eid", handle.GetMyAttendances)
-	app.Get("/attendance/check-today/:eid", handle.CheckToday)
+	app.Use("/api", middleware.Protected())
+
+	app.Get("/api/attendance", handle.GetAttendances)
+	app.Get("/api/attendance/:id", handle.GetAttendance)
+	app.Post("/api/attendance", handle.CreateAttendance)
+	app.Post("/api/attendance/check-in", handle.CheckIn)
+	app.Put("/api/attendance/check-out", handle.CheckOut)
+	app.Put("/api/attendance/:id", handle.UpdateAttendance)
+	app.Delete("/api/attendance/:id", handle.DeleteAttendance)
+	app.Get("/api/attendance/me/:eid", handle.GetMyAttendances)
+	app.Get("/api/attendance/check-today/:eid", handle.CheckToday)
 
 	app.Listen(":8081")
 }

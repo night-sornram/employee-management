@@ -41,6 +41,7 @@ export const authOptions:AuthOptions = {
             session.user.employee_id = res.employee_id
             session.user.name = res.name
             session.user.role = res.role
+            token.role = res.role
             session.user.token = token.token as string
 
           }

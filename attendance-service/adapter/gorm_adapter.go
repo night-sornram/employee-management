@@ -60,13 +60,13 @@ func (g *GormAdapter) Delete(id int) error {
 	return nil
 }
 
-func (g *GormAdapter) CheckIn(checkIn repository.CheckIn) (repository.Attendance, error) {
+func (g *GormAdapter) CheckIn(eid string) (repository.Attendance, error) {
 
 	newAttendance := repository.Attendance{
-		EmployeeID: checkIn.EmployeeID,
-		CheckIn:    checkIn.CheckIn,
+		EmployeeID: eid,
+		CheckIn:    time.Now(),
 		CheckOut:   time.Time{},
-		Date:       checkIn.CheckIn.Format("2006-01-02"),
+		Date:       time.Now().Format("2006-01-02"),
 		LeaveID:    -1,
 	}
 	err := g.db.Create(&newAttendance).Error

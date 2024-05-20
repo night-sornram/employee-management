@@ -99,7 +99,7 @@ export default function Page() {
                                     ALREADY CHECKED IN
                                 </AlertTitle>
                                 <AlertDescription>
-                                    You have checked in at {new Date(data.check_in).getHours() + ":" + new Date(data.check_in).getMinutes()}
+                                    You have checked in at {new Date(data.check_in).toLocaleTimeString("th-TH")}
                                 </AlertDescription>
                             </Alert> 
                             
@@ -141,7 +141,7 @@ export default function Page() {
                         )
                         :
                         (
-                            <Input disabled type="string" placeholder={new Date(data.check_in).getHours() + ":" + new Date(data.check_in).getMinutes()} />
+                            <Input disabled type="string" placeholder={new Date(data.check_in).toLocaleTimeString("th-TH")} />
 
                         )
                     )       

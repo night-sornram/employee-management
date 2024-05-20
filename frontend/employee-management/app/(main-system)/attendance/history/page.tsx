@@ -66,18 +66,37 @@ export default async function Page() {
                     <TableBody>
                         {
                             data.map((att) => 
-                            <TableRow>
+                            <TableRow key={att.id}>
                                 <TableCell>
-                                    {dayjs(att.date).utc().format('DD/MM/YYYY')}
+                                    {dayjs(att.date).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(att.check_in).utc().format('HH:mm:ss')}
+                                    {dayjs(att.check_in).local().format('HH:mm:ss')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(att.check_out).utc().format('HH:mm:ss')}
+                                    {
+                                        dayjs(att.check_out).utc().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" 
+                                        ?(
+                                            "-" 
+                                        ) 
+                                        : 
+                                        (
+                                            dayjs(att.check_out).local().format('HH:mm:ss')
+                                        )
+                                    }
+                                    
                                 </TableCell>
                                 <TableCell>
-                                    {(Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2)} Hrs 
+                                    {
+                                        dayjs(att.check_out).utc().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" 
+                                        ?(
+                                            "-" 
+                                        ) 
+                                        : 
+                                        (
+                                            (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 
+                                        )
+                                    } 
                                 </TableCell>
                             </TableRow>)
                         }
