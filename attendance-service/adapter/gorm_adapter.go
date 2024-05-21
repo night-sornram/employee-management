@@ -95,7 +95,7 @@ func (g *GormAdapter) CheckOut(id int) (repository.Attendance, error) {
 
 func (g *GormAdapter) GetAllMe(eid string) ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
-	err := g.db.Where("employee_id = ?", eid).Find(&attendances).Error
+	err := g.db.Where("employee_id = ?", eid).Find(&attendances).Order("date DESC").Error
 	if err != nil {
 		return nil, err
 	}
