@@ -5,6 +5,7 @@ import UpdateLeave from "./UpdateLeave"
 import { redirect } from "next/navigation";
 import dayjs from "dayjs";
 import CreateAttendance from "./CreateAttendance";
+import CreateNotification from "./CreateNotification";
 
 const handleApprove = async (token: string, lid: number, status: string, start: string, end: string, eid: string) => {
     await UpdateLeave(token, lid, status);
@@ -20,6 +21,11 @@ const handleApprove = async (token: string, lid: number, status: string, start: 
             console.log(formattedDate);
             await CreateAttendance(token, eid, formattedDateTime, formattedDate, lid);
         }
+        await CreateNotification(token, "Leave Approved", `Your leave has been approved`, false, eid);
+
+    }
+    else {
+        await CreateNotification(token, "Leave Denied", `Your leave has been denied`, false, eid);
     }
     revalidateTag('leaves');
     redirect('/dashboard/approve-leave');

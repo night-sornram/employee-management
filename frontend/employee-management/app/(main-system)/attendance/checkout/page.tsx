@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Cross1Icon , CheckIcon , ExitIcon , CalendarIcon } from "@radix-ui/react-icons"
 import GetTodayCheckIn from "@/lib/GetTodayCheckIn";
-import Checkin from "@/lib/Checkin";
+import { useToast } from "@/components/ui/use-toast"
 import Checkout from "@/lib/Checkout";
 
 
@@ -22,6 +22,8 @@ export default function Page() {
     const [loading, setLoading] = useState(true)
     const [time , setTime] = useState(new Date())
     const [data, setData] = useState<Attendance | null>(null)
+    const { toast } = useToast()
+
 
 
     useEffect(() => {
@@ -49,9 +51,19 @@ export default function Page() {
     const handleCheckOut = async () => {
         try {
             await Checkout(session.user.token, data?.id as Number)
-            window.location.reload()
+            toast({
+                title: "Check-Out Success",
+                description: "You have checked out successfully",
+              })
+              setTimeout(() => {
+                window.location.reload()
+            }, 1000)
         } catch (error) {
-            console.log(error)
+            toast({
+                title: "Check-Out Failed",
+                variant: "destructive",
+                description: "Please try again",
+              })
         }
     }
 

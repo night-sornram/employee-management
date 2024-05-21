@@ -33,3 +33,11 @@ export interface Leave {
 	reason: string,
 	status: string,
 }
+
+export interface Notification {
+    id: number,
+    employee_id: string,
+    title: string,
+    message: string,
+    read: boolean,
+}

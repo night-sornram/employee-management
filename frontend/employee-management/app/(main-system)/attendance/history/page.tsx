@@ -65,21 +65,18 @@ export default async function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            data.map((att) => 
+                            data.sort(function(a,b){
+                                return Number(new Date(a.date)) - Number(new Date(b.date));
+                            }).map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.leave_id? "LEAVE" : dayjs(att.check_in).local().format('HH:mm:ss')}
+                                    {att.leave_id !== -1 ? "LEAVE" : dayjs(att.check_in).local().format('HH:mm:ss')}
                                 </TableCell>
                                 <TableCell>
-                                    {   att.leave_id? "LEAVE" :
-                                        dayjs(att.check_out).utc().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" 
-                                        ?(
-                                            "-" 
-                                        ) 
-                                        : 
+                                    {   att.leave_id !== -1? "LEAVE" :
                                         (
                                             dayjs(att.check_out).local().format('HH:mm:ss')
                                         )
@@ -88,10 +85,7 @@ export default async function Page() {
                                 </TableCell>
                                 <TableCell>
                                     {
-                                        dayjs(att.check_out).utc().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" 
-                                        ?(
-                                            "-" 
-                                        ) 
+                                        att.leave_id !== -1? "LEAVE" 
                                         : 
                                         (
                                             (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 

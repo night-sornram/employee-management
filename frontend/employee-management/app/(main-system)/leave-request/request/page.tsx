@@ -19,6 +19,7 @@ import { UserJson } from "@/interface";
 import GetUserProfile from "@/lib/GetUserProfile";
 import { useToast } from "@/components/ui/use-toast";
 import { CreateLeaveRequestAction } from "../../../../lib/CreateRequestAction";
+import CreateNotification from "@/lib/CreateNotification";
 dayjs.extend(utc);
 
 export default function LeaveRequestPage () {
@@ -48,11 +49,16 @@ export default function LeaveRequestPage () {
         let startFormatted = dayjs(start).format('YYYY-MM-DDT[00:00:00Z]');
         let endFormatted = dayjs(end).format('YYYY-MM-DDT[00:00:00Z]');
         let reasonFormatted = category + ": " + reason;
-        // alert(startFormatted + " " + endFormatted + "\n" + reasonFormatted + "\n" + userProfile.employee_id);
-        // //alert(`${process.env.NEXT_PUBLIC_LEAVE_URL}/leaves`);
         await CreateLeaveRequestAction(session.user.token, userProfile.employee_id, startFormatted, endFormatted, reasonFormatted);
-        router.refresh();
-        router.push('/leave-request/history');
+        await CreateNotification(session.user.token, "Leave Request", "You have new leave request", false, userProfile.employee_id);
+        toast({
+            title: "Request Submitted",
+            description: "Your leave request has been submitted successfully",
+          })
+        setTimeout(() => {
+            router.push('/leave-request/history');
+        }
+        , 1000)
     }
 
     return (

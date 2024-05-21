@@ -1,6 +1,6 @@
 export default function Page(){
     return(
-        <div className=" w-auto px-5  ">
+        <div className=" w-[50vw] px-5 space-y-5 ">
             <div className=" flex flex-col">
                 <h1 className=" text-lg font-medium">
                     Notification
@@ -9,6 +9,7 @@ export default function Page(){
                     Manage your notifications settings
                 </p>
             </div>
+            <hr />
 
         </div>
     )

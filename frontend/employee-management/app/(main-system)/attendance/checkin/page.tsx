@@ -12,6 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Cross1Icon , CheckIcon , CalendarIcon } from "@radix-ui/react-icons"
 import GetTodayCheckIn from "@/lib/GetTodayCheckIn";
 import Checkin from "@/lib/Checkin";
+import { useToast } from "@/components/ui/use-toast"
+
 
 
 export default function Page() {
@@ -21,6 +23,7 @@ export default function Page() {
     const [loading, setLoading] = useState(true)
     const [time , setTime] = useState(new Date())
     const [data, setData] = useState<Attendance | null>(null)
+    const { toast } = useToast()
 
 
     useEffect(() => {
@@ -49,9 +52,20 @@ export default function Page() {
     const checkIn = async () => {
         try {
             await Checkin(session.user.token, session.user.employee_id)
-            window.location.reload()
+            toast({
+                title: "Check-In Success",
+                description: "You have checked in successfully",
+              })
+            setTimeout(() => {
+                window.location.reload()
+            }
+            , 1000)
         } catch (error) {
-            console.log(error)
+            toast({
+                title: "Check-In Failed",
+                variant: "destructive",
+                description: "Please try again",
+              })
         }
     }
     

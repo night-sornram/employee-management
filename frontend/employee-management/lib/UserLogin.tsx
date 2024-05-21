@@ -11,7 +11,6 @@ export default async function UserLogIn(userId : string, userPassword : string) 
     });
 
     if(!response.ok){
-        console.log(userId + " " + userPassword);
         throw new Error('Failed to login');
     }
 

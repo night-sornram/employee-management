@@ -89,7 +89,7 @@ export default async function Page() {
                     <TableBody>
                         {
                             data.map((leave) => 
-                            <TableRow>
+                            <TableRow key={leave.id}>
                                 <TableCell>
                                     {dayjs(leave.date_start).format('DD/MM/YYYY')}
                                 </TableCell>

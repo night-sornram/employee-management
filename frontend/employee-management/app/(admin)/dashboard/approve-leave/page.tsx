@@ -71,6 +71,9 @@ export default async function Page() {
                 </Card>
             </div>
             <div className="w-[60%]">
+                <h1 className="font-bold text-2xl">
+                    Pending Request
+                </h1>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -96,8 +99,78 @@ export default async function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            data.map((leave) => 
-                            <TableRow>
+                            data.filter((leave) => leave.status == 'Pending').map((leave) =>
+                            <TableRow  key={leave.id}>
+                                <TableCell>
+                                    {leave.employee_id}
+                                </TableCell>
+                                <TableCell>
+                                    {dayjs(leave.date_start).format('DD/MM/YYYY')}
+                                </TableCell>
+                                <TableCell>
+                                    {dayjs(leave.date_end).format('DD/MM/YYYY')}
+                                </TableCell>
+                                <TableCell>
+                                    {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
+                                </TableCell>
+                                {
+                                    leave.status == "Approved" ? 
+                                    <TableCell className=" flex flex-row">
+                                        <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
+                                    </TableCell> : 
+                                    leave.status == "Denied" ?
+                                    <TableCell className=" flex flex-row">
+                                        <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
+                                    </TableCell> :
+                                    <TableCell className=" flex flex-row">
+                                        <LapTimerIcon className="mr-2 h-5 w-5"/> {leave.status}
+                                    </TableCell>
+                                }
+                                <TableCell>                                    
+                                    <Link href={`/dashboard/approve-leave/${leave.id}`} className="hover:underline text-sky-600">
+                                        Details
+                                    </Link>                                   
+                                </TableCell>
+                            </TableRow>)
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+            <div className="w-[60%]">
+                <h1 className="font-bold text-2xl">
+                    Success Request
+                </h1>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                Employee ID
+                            </TableHead>
+                            <TableHead>
+                                From
+                            </TableHead>
+                            <TableHead>
+                                To
+                            </TableHead>
+                            <TableHead>
+                                Duration (days)
+                            </TableHead>
+                            <TableHead>
+                                Status
+                            </TableHead>
+                            <TableHead>
+                                Details
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {
+                            data.filter((leave) => leave.status !== 'Pending').sort(
+                                function(a,b){
+                                    return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
+                                }
+                            ).map((leave) => 
+                            <TableRow key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
                                 </TableCell>

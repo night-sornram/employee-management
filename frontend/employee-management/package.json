@@ -9,7 +9,7 @@
     "lint": "next lint",
     "all": "concurrently \"npm run front\" \"npm run back\"",
     "front": "npm run dev",
-    "back": "concurrently \"cd ../../employee-service && go run .\" \"cd ../../attendance-service && go run .\" \"cd ../../leave-management-service && go run .\""
+    "back": "concurrently \"cd ../../employee-service && go run .\" \"cd ../../attendance-service && go run .\" \"cd ../../leave-management-service && go run .\" \"cd ../../notification-service && go run .\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -51,6 +51,7 @@
     "react-hot-toast": "^2.4.1",
     "sweetalert2": "^11.11.0",
     "tailwind-merge": "^2.3.0",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
