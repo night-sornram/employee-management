@@ -71,10 +71,10 @@ export default async function Page() {
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(att.check_in).local().format('HH:mm:ss')}
+                                    {att.leave_id? "LEAVE" : dayjs(att.check_in).local().format('HH:mm:ss')}
                                 </TableCell>
                                 <TableCell>
-                                    {
+                                    {   att.leave_id? "LEAVE" :
                                         dayjs(att.check_out).utc().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" 
                                         ?(
                                             "-" 

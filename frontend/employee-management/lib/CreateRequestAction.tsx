@@ -1,4 +1,7 @@
 'use server'
+
+import { revalidateTag } from "next/cache";
+
 export async function CreateLeaveRequestAction (token: string, eid: string, start: string, end: string, reasons: string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves`, {
         method: 'POST',
@@ -13,12 +16,16 @@ export async function CreateLeaveRequestAction (token: string, eid: string, star
             date_end: end,
             reason: reasons,
             status: "Pending"
-        })
+        }),
+        next: {
+            tags: ['leaves']
+        }
     });
 
     if (!response.ok) {
         throw new Error('Fuck you');
     }
 
+    revalidateTag('leaves');
     return await response.json();
 }
