@@ -23,7 +23,7 @@ func (f *handlerFiber) GetLeaves(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(leaves)
+	return c.Status(fiber.StatusOK).JSON(leaves)
 }
 
 func (f *handlerFiber) GetLeave(c *fiber.Ctx) error {
@@ -39,7 +39,7 @@ func (f *handlerFiber) GetLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(leave)
+	return c.Status(fiber.StatusOK).JSON(leave)
 }
 
 func (f *handlerFiber) CreateLeave(c *fiber.Ctx) error {
@@ -64,7 +64,7 @@ func (f *handlerFiber) CreateLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newLeave)
+	return c.Status(fiber.StatusCreated).JSON(newLeave)
 }
 
 func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
@@ -94,7 +94,7 @@ func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updateLeave)
+	return c.Status(fiber.StatusOK).JSON(updateLeave)
 }
 
 func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
@@ -110,7 +110,7 @@ func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.Status(fiber.StatusOK).SendStatus(fiber.StatusNoContent)
 }
 
 func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
