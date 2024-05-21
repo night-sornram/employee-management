@@ -6,6 +6,9 @@ export default async function GetMyLeaves (eid: string, token: string) {
             authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
         },
+        next: {
+            tags: ['leaves']
+        }
     });
     if (!response.ok) {
         throw new Error("Cannot get your leaves for some reason");

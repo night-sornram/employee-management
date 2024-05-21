@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import { getServerSession } from "next-auth";
 import utc from "dayjs/plugin/utc";
 import { LapTimerIcon , CheckIcon ,Cross1Icon  } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 dayjs.extend(utc);
 
 export default async function Page() {
@@ -87,6 +89,9 @@ export default async function Page() {
                             <TableHead>
                                 Status
                             </TableHead>
+                            <TableHead>
+                                Details
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -118,6 +123,11 @@ export default async function Page() {
                                         <LapTimerIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell>
                                 }
+                                <TableCell>                                    
+                                    <Link href={`/dashboard/approve-leave/${leave.id}`} className="hover:underline text-sky-600">
+                                        Details
+                                    </Link>                                   
+                                </TableCell>
                             </TableRow>)
                         }
                     </TableBody>
