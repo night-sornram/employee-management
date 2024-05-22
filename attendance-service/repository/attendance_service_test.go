@@ -69,13 +69,13 @@ func (m *mockAttendanceRepo) CheckOut(id int) (Attendance, error) {
 }
 
 func (m *mockAttendanceRepo) GetAllMe(eid string) ([]Attendance, error) {
-	if m.CheckOutFunc != nil {
+	if m.GetAllMeFunc != nil {
 		return m.GetAllMeFunc(eid)
 	}
 	return []Attendance{}, errors.New("not implemented")
 }
 func (m *mockAttendanceRepo) CheckToday(eid string) (Attendance, error) {
-	if m.CheckOutFunc != nil {
+	if m.CheckTodayFunc != nil {
 		return m.CheckTodayFunc(eid)
 	}
 	return Attendance{}, errors.New("not implemented")
@@ -169,6 +169,34 @@ func TestCheckOut(t *testing.T) {
 		}
 		service := NewAttendanceService(mockRepo)
 		_, err := service.CheckOut(1)
+		assert.NoError(t, err)
+	})
+}
+
+func TestGetMyAttendances(t *testing.T) {
+	t.Run("Valid-GetMyAttendances", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			GetAllMeFunc: func(eid string) ([]Attendance, error) {
+				return []Attendance{}, nil
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.GetMyAttendances("1")
+		assert.NoError(t, err)
+	})
+}
+
+func TestCheckToday(t *testing.T) {
+	t.Run("Valid-CheckToday", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			CheckTodayFunc: func(eid string) (Attendance, error) {
+				return Attendance{}, nil
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.CheckToday("1")
 		assert.NoError(t, err)
 	})
 }
