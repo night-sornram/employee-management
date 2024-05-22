@@ -13,6 +13,7 @@ import { Cross1Icon , CheckIcon , CalendarIcon } from "@radix-ui/react-icons"
 import GetTodayCheckIn from "@/lib/GetTodayCheckIn";
 import Checkin from "@/lib/Checkin";
 import { useToast } from "@/components/ui/use-toast"
+import CreateNotification from "@/lib/CreateNotification";
 
 
 
@@ -52,6 +53,7 @@ export default function Page() {
     const checkIn = async () => {
         try {
             await Checkin(session.user.token, session.user.employee_id)
+            await CreateNotification(session.user.token, `Check In`,`You have checked-In on ${new Date().toLocaleDateString('th-TH')}`, false, session.user.employee_id);
             toast({
                 title: "Check-In Success",
                 description: "You have checked in successfully",

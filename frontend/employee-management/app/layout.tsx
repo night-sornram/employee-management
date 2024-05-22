@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-
+import ReduxProvider from "@/providers/ReduxProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +35,9 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <NextAuthProvider session={session}>
+              <ReduxProvider>
                 {children}
+              </ReduxProvider>
             </NextAuthProvider>
           </ThemeProvider>
       </body>
