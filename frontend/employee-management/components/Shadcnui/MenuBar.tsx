@@ -16,10 +16,28 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import MakeReadNotification from "@/lib/MakeReadNotification"
+import { RootState, useAppSelector } from '@/store/store'
+import { useDispatch } from "react-redux"
+import { AppDispatch } from "@/store/store"
+
 
 export  function MenuBar() {
+  const dispatch = useDispatch<AppDispatch>()
+  const noti = useAppSelector((state: RootState) => state.appReducer)
   const { data: session } = useSession()
   const [notifications, setNotifications] = useState<Notification[] | []>([])
+  const dataFilter = (data : Notification[]) =>{
+    if (noti.notification === "all") {
+      return data.filter((notification : Notification) => notification.title !== "Leave Request")
+    }
+    else if (noti.notification === "check") {
+      return data.filter((notification : Notification) => notification.title === "Check In" || notification.title === "Check Out")
+    }
+    else {
+      return data.filter((notification : Notification) => notification.title === "Leave Approved" || notification.title === "Leave Denied")
+    }
+
+  }
 
   useEffect(() => {
     if(session){
@@ -30,7 +48,7 @@ export  function MenuBar() {
         }
         else{
           setNotifications(data)
-          setNotifications(data.filter((notification : Notification) => notification.title !== "Leave Request" && notification.read === false))
+          setNotifications(dataFilter(data.filter((notification : Notification) =>  notification.read === false)))
         }
       })
     }
@@ -43,6 +61,14 @@ export  function MenuBar() {
    
   }
   
+  const handleMarkAll = () => {
+    if(session){
+      notifications.map((notification : Notification) => {
+        MakeReadNotification(session?.user.token, notification.id)
+      })
+    }
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -58,7 +84,10 @@ export  function MenuBar() {
       <PopoverContent className="w-60 mr-20">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">Notifications</h4>
+            <div className=" flex flex-row w-full justify-between">
+              <h4 className="font-medium leading-none">Notifications</h4>
+              <button onClick={handleMarkAll} className="text-xs text-gray-500">Mark all as read</button>
+            </div>
             <hr />
             <div className=" h-40 space-y-2 overflow-y-scroll scrollbar-hide">
             {

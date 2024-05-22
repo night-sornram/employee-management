@@ -13,6 +13,7 @@ import { Cross1Icon , CheckIcon , ExitIcon , CalendarIcon } from "@radix-ui/reac
 import GetTodayCheckIn from "@/lib/GetTodayCheckIn";
 import { useToast } from "@/components/ui/use-toast"
 import Checkout from "@/lib/Checkout";
+import CreateNotification from "@/lib/CreateNotification";
 
 
 export default function Page() {
@@ -51,6 +52,7 @@ export default function Page() {
     const handleCheckOut = async () => {
         try {
             await Checkout(session.user.token, data?.id as Number)
+            await CreateNotification(session.user.token, `Check Out`,`You have checked-Out on ${new Date().toLocaleDateString('th-TH')}`, false, session.user.employee_id);
             toast({
                 title: "Check-Out Success",
                 description: "You have checked out successfully",

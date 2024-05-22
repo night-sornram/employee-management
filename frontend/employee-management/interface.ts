@@ -41,3 +41,8 @@ export interface Notification {
     message: string,
     read: boolean,
 }
+
+export interface StateProp {
+    notification : string,
+    email : boolean
+}
