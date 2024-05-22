@@ -23,7 +23,7 @@ func (f *handlerFiber) GetAttendances(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(attendances)
+	return c.Status(fiber.StatusOK).JSON(attendances)
 }
 
 func (f *handlerFiber) GetAttendance(c *fiber.Ctx) error {
@@ -39,7 +39,7 @@ func (f *handlerFiber) GetAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(attendance)
+	return c.Status(fiber.StatusOK).JSON(attendance)
 }
 
 func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
@@ -63,7 +63,7 @@ func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newAttendance)
+	return c.Status(fiber.StatusCreated).JSON(newAttendance)
 }
 
 func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
@@ -93,7 +93,7 @@ func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updatedAttendance)
+	return c.Status(fiber.StatusOK).JSON(updatedAttendance)
 }
 
 func (f *handlerFiber) DeleteAttendance(c *fiber.Ctx) error {
@@ -125,7 +125,7 @@ func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newCheckIn)
+	return c.Status(fiber.StatusCreated).JSON(newCheckIn)
 }
 
 func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
@@ -142,7 +142,7 @@ func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newCheckOut)
+	return c.Status(fiber.StatusOK).JSON(newCheckOut)
 }
 
 func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
@@ -158,7 +158,7 @@ func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(attendances)
+	return c.Status(fiber.StatusOK).JSON(attendances)
 }
 
 func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
@@ -172,6 +172,6 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 	if attendance.ID == 0 {
 		return c.JSON(nil)
 	}
-	return c.JSON(attendance)
+	return c.Status(fiber.StatusOK).JSON(attendance)
 
 }
