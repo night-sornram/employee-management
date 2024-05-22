@@ -6,7 +6,7 @@ type AttendanceService interface {
 	CreateAttendance(attendance Attendance) (Attendance, error)
 	UpdateAttendance(id int, attendance Attendance) (Attendance, error)
 	DeleteAttendance(id int) error
-	CheckIn(CheckIn CheckIn) (Attendance, error)
+	CheckIn(checkIn CheckIn) (Attendance, error)
 	CheckOut(checkOut CheckOut) (Attendance, error)
 }
 
