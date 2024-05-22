@@ -43,5 +43,5 @@ func setup() *fiber.App{
 
 func main() {
 	app := setup()
-	app.Listen(":8002")
+	app.Listen(":8082")
   }

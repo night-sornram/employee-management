@@ -135,8 +135,9 @@ func TestUpdateStatus(t *testing.T){
 			},
 		}
 
-		mockUpdateStatus := Leave{
+		mockUpdateStatus := LeaveStatus{
 			Status: "approve",
+			ManagerOpinion: "OK, approve",
 		}
 
 		service := NewLeaveService(mockRepo)
@@ -154,8 +155,9 @@ func TestUpdateStatus(t *testing.T){
 			},
 		}
 
-		mockUpdateStatus := Leave{
+		mockUpdateStatus := LeaveStatus{
 			Status: "approve",
+			ManagerOpinion: "OK, approve",
 		}
 
 		service := NewLeaveService(mockRepo)

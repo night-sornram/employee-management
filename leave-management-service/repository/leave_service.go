@@ -13,7 +13,7 @@ type LeaveService interface {
 	CreateLeave(leave Leave) (Leave, error)
 	UpdateLeave(id int, leave Leave) (Leave, error)
 	DeleteLeave(id int) error
-	UpdateStatus(id int, leave Leave) (Leave, error)
+	UpdateStatus(id int, leave LeaveStatus) (Leave, error)
 }
 
 type LeaveServiceDB struct {
@@ -55,7 +55,7 @@ type Attendance struct {
 	LeaveID    int       `db:"leave_id" json:"leave_id"`
 }
 
-func (u *LeaveServiceDB) UpdateStatus(id int, leave Leave) (Leave, error) {	
+func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) {	
 	existsLeave, err := u.repo.GetByID(id);
 	if err != nil {
 		return Leave{}, err
@@ -90,7 +90,10 @@ func (u *LeaveServiceDB) UpdateStatus(id int, leave Leave) (Leave, error) {
 			defer resp.Body.Close()
 
 		}
-
 	}
-	return u.repo.UpdateStatus(id, leave)
+
+	existsLeave.Status = leave.Status
+	existsLeave.ManagerOpinion = leave.ManagerOpinion
+
+	return u.repo.UpdateStatus(id, existsLeave)
 }

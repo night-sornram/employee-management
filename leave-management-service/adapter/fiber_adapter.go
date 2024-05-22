@@ -110,7 +110,7 @@ func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.Status(fiber.StatusOK).SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
@@ -120,7 +120,7 @@ func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	var leave repository.Leave
+	var leave repository.LeaveStatus
 	if err := c.BodyParser(&leave); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
@@ -140,5 +140,5 @@ func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updateStatus)
+	return c.Status(fiber.StatusOK).JSON(updateStatus)
 }
