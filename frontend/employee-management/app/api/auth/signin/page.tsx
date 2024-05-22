@@ -1,6 +1,6 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import { redirect } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useState } from "react";
 import * as React from "react"
 
@@ -22,17 +22,19 @@ const LoginPage = () => {
   
   const [id, setId] = useState("");
   const [pass, setPass] = useState("");
-  const { data:session } = useSession();
-  if(!session){
+  const router = useRouter();
     const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         await signIn("credentials", {
           id: id, 
           password: pass,
-          redirect: true,
-          callbackUrl: "/",
+          redirect: false,
+          callbackUrl: "/attendance/checkin",
     });
+    router.push('/attendance/checkin');
   };
+        
+  
   return (
     <main className="flex flex-row w-screen h-screen">
         <div className=" w-1/2 h-full bg-zinc-800">
@@ -69,10 +71,6 @@ const LoginPage = () => {
      
     </main>
   );
-}else {
-  
-  redirect('/')
-}
 };
 
 export default LoginPage;

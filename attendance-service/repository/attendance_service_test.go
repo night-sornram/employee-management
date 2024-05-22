@@ -8,60 +8,75 @@ import (
 )
 
 type mockAttendanceRepo struct {
-	GetAttendancesFunc   func() ([]Attendance, error)
-	GetAttendanceFunc    func(id int) (Attendance, error)
-	CreateAttendanceFunc func(attendance Attendance) (Attendance, error)
-	UpdateAttendanceFunc func(id int, attendance Attendance) (Attendance, error)
-	DeleteAttendanceFunc func(id int) error
-	CheckInFunc          func(checkIn CheckIn) (Attendance, error)
-	CheckOutFunc         func(checkOut CheckOut) (Attendance, error)
+	GetAllFunc     func() ([]Attendance, error)
+	GetByIDFunc    func(id int) (Attendance, error)
+	CreateFunc     func(attendance Attendance) (Attendance, error)
+	UpdateFunc     func(id int, attendance Attendance) (Attendance, error)
+	DeleteFunc     func(id int) error
+	CheckInFunc    func(eid string) (Attendance, error)
+	CheckOutFunc   func(id int) (Attendance, error)
+	GetAllMeFunc   func(eid string) ([]Attendance, error)
+	CheckTodayFunc func(eid string) (Attendance, error)
 }
 
-func (m *mockAttendanceRepo) GetAll()([]Attendance, error) {
-	if m.GetAttendancesFunc != nil {
-		return m.GetAttendancesFunc()
+func (m *mockAttendanceRepo) GetAll() ([]Attendance, error) {
+	if m.GetAllFunc != nil {
+		return m.GetAllFunc()
 	}
 	return nil, errors.New("not implemented")
 }
 
 func (m *mockAttendanceRepo) GetByID(id int) (Attendance, error) {
-	if m.GetAttendanceFunc != nil {
-		return m.GetAttendanceFunc(id)
+	if m.GetByIDFunc != nil {
+		return m.GetByIDFunc(id)
 	}
 	return Attendance{}, errors.New("not implemented")
 }
 
 func (m *mockAttendanceRepo) Create(attendance Attendance) (Attendance, error) {
-	if m.CreateAttendanceFunc != nil {
-		return m.CreateAttendanceFunc(attendance)
+	if m.CreateFunc != nil {
+		return m.CreateFunc(attendance)
 	}
 	return Attendance{}, errors.New("not implemented")
 }
 
 func (m *mockAttendanceRepo) Update(id int, attendance Attendance) (Attendance, error) {
-	if m.UpdateAttendanceFunc != nil {
-		return m.UpdateAttendanceFunc(id, attendance)
+	if m.UpdateFunc != nil {
+		return m.UpdateFunc(id, attendance)
 	}
 	return Attendance{}, errors.New("not implemented")
 }
 
 func (m *mockAttendanceRepo) Delete(id int) error {
-	if m.DeleteAttendanceFunc != nil {
-		return m.DeleteAttendanceFunc(id)
+	if m.DeleteFunc != nil {
+		return m.DeleteFunc(id)
 	}
 	return errors.New("not implemented")
 }
 
-func (m *mockAttendanceRepo) CheckIn(checkIn CheckIn) (Attendance, error) {
+func (m *mockAttendanceRepo) CheckIn(eid string) (Attendance, error) {
 	if m.CheckInFunc != nil {
-		return m.CheckInFunc(checkIn)
+		return m.CheckInFunc(eid)
 	}
 	return Attendance{}, errors.New("not implemented")
 }
 
-func (m *mockAttendanceRepo) CheckOut(checkOut CheckOut) (Attendance, error) {
+func (m *mockAttendanceRepo) CheckOut(id int) (Attendance, error) {
 	if m.CheckOutFunc != nil {
-		return m.CheckOutFunc(checkOut)
+		return m.CheckOutFunc(id)
+	}
+	return Attendance{}, errors.New("not implemented")
+}
+
+func (m *mockAttendanceRepo) GetAllMe(eid string) ([]Attendance, error) {
+	if m.CheckOutFunc != nil {
+		return m.GetAllMeFunc(eid)
+	}
+	return []Attendance{}, errors.New("not implemented")
+}
+func (m *mockAttendanceRepo) CheckToday(eid string) (Attendance, error) {
+	if m.CheckOutFunc != nil {
+		return m.CheckTodayFunc(eid)
 	}
 	return Attendance{}, errors.New("not implemented")
 }
@@ -69,7 +84,7 @@ func (m *mockAttendanceRepo) CheckOut(checkOut CheckOut) (Attendance, error) {
 func TestGetAll(t *testing.T) {
 	t.Run("Valid-GetAll", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			GetAttendancesFunc: func() ([]Attendance, error) {
+			GetAllFunc: func() ([]Attendance, error) {
 				return []Attendance{}, nil
 			},
 		}
@@ -83,7 +98,7 @@ func TestGetAll(t *testing.T) {
 func TestGetByID(t *testing.T) {
 	t.Run("Valid-GetByID", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			GetAttendanceFunc: func(id int) (Attendance, error) {
+			GetByIDFunc: func(id int) (Attendance, error) {
 				return Attendance{}, nil
 			},
 		}
@@ -97,7 +112,7 @@ func TestGetByID(t *testing.T) {
 func TestCreate(t *testing.T) {
 	t.Run("Valid-Create", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			CreateAttendanceFunc: func(attendance Attendance) (Attendance, error) {
+			CreateFunc: func(attendance Attendance) (Attendance, error) {
 				return Attendance{}, nil
 			},
 		}
@@ -109,7 +124,7 @@ func TestCreate(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Run("Valid-Update", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			UpdateAttendanceFunc: func(id int, attendance Attendance) (Attendance, error) {
+			UpdateFunc: func(id int, attendance Attendance) (Attendance, error) {
 				return Attendance{}, nil
 			},
 		}
@@ -122,7 +137,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Run("Valid-Delete", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			DeleteAttendanceFunc: func(id int) error {
+			DeleteFunc: func(id int) error {
 				return nil
 			},
 		}
@@ -135,12 +150,12 @@ func TestDelete(t *testing.T) {
 func TestCheckIn(t *testing.T) {
 	t.Run("Valid-CheckIn", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			CheckInFunc: func(checkIn CheckIn) (Attendance, error) {
+			CheckInFunc: func(eid string) (Attendance, error) {
 				return Attendance{}, nil
 			},
 		}
 		service := NewAttendanceService(mockRepo)
-		_, err := service.CheckIn(CheckIn{})
+		_, err := service.CheckIn("1")
 		assert.NoError(t, err)
 	})
 }
@@ -148,15 +163,12 @@ func TestCheckIn(t *testing.T) {
 func TestCheckOut(t *testing.T) {
 	t.Run("Valid-CheckOut", func(t *testing.T) {
 		mockRepo := &mockAttendanceRepo{
-			CheckOutFunc: func(checkOut CheckOut) (Attendance, error) {
+			CheckOutFunc: func(id int) (Attendance, error) {
 				return Attendance{}, nil
 			},
 		}
 		service := NewAttendanceService(mockRepo)
-		_, err := service.CheckOut(CheckOut{})
+		_, err := service.CheckOut(1)
 		assert.NoError(t, err)
 	})
 }
-
-
-

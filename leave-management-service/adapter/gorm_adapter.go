@@ -51,3 +51,12 @@ func (g *GormAdapter) Delete(id int) error {
 	}
 	return nil
 }
+
+func (g *GormAdapter) GetAllMe(eid string) ([]repository.Leave, error) {
+	var Leaves []repository.Leave
+	err := g.db.Where("employee_id = ?", eid).Find(&Leaves).Order("id DESC").Error
+	if err != nil {
+		return nil, err
+	}
+	return Leaves, nil
+}

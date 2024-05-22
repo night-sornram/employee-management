@@ -94,3 +94,19 @@ func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (f *handlerFiber) GetMyLeaves(c *fiber.Ctx) error {
+	eid := c.Params("eid")
+	if eid == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	leaves, err := f.service.GetMyLeaves(eid)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(leaves)
+}

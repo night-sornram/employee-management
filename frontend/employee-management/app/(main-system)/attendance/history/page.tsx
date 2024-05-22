@@ -1,36 +1,20 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Attendance } from "@/interface";
+import { Attendance, UserJson } from "@/interface";
+import GetMyAttendances from "@/lib/GetMyAttendances";
+import GetUserProfile from "@/lib/GetUserProfile";
+import dayjs from "dayjs";
+import { getServerSession } from "next-auth";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
-export default function Page() {
+export default async function Page() {
 
-    const mockData: Attendance[] = [{
-        id: 1,
-        employee_id: "E01",
-        check_in: "8:30",
-        check_out: "17:00",
-        date: "19/05/2024",
-        leave_id: null,
-        duration: "8:21"
-    },
-    {
-        id: 2,
-        employee_id: "E02",
-        check_in: "8:30",
-        check_out: "17:00",
-        date: "19/05/2024",
-        leave_id: null,
-        duration: "8:10"
-    },
-    {
-        id: 3,
-        employee_id: "E03",
-        check_in: "8:30",
-        check_out: "17:00",
-        date: "19/05/2024",
-        leave_id: null,
-        duration: "8:04"
-    }]
+    const session = await getServerSession(authOptions);
+    if (!session) return null;
+    const userProfile:UserJson = await GetUserProfile(session?.user.token);
+    const data: Attendance[] = await GetMyAttendances(userProfile.employee_id, session.user.token);
 
     return(
         <main className=' p-10 h-[93vh] w-screen flex flex-col gap-10'>
@@ -47,7 +31,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {mockData.length}
+                        {data.length}
                     </CardContent>
                 </Card>
                 <Card className="w-[20%]">
@@ -57,7 +41,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {mockData.length - 3}
+                        0
                     </CardContent>
                 </Card>
             </div>
@@ -75,25 +59,38 @@ export default function Page() {
                                 Check-out Time
                             </TableHead>
                             <TableHead>
-                                Duration
+                                Duration (Hour)
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {
-                            mockData.map((att) => 
-                            <TableRow>
+                            data.sort(function(a,b){
+                                return Number(new Date(a.date)) - Number(new Date(b.date));
+                            }).map((att) => 
+                            <TableRow key={att.id}>
                                 <TableCell>
-                                    {att.date}
+                                    {dayjs(att.date).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.check_in}
+                                    {att.leave_id !== -1 ? "LEAVE" : dayjs(att.check_in).local().format('HH:mm:ss')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.check_out}
+                                    {   att.leave_id !== -1? "LEAVE" :
+                                        (
+                                            dayjs(att.check_out).local().format('HH:mm:ss')
+                                        )
+                                    }
+                                    
                                 </TableCell>
                                 <TableCell>
-                                    {att.duration}
+                                    {
+                                        att.leave_id !== -1? "LEAVE" 
+                                        : 
+                                        (
+                                            (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 
+                                        )
+                                    } 
                                 </TableCell>
                             </TableRow>)
                         }

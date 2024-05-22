@@ -29,6 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import ChangeEmail from "@/lib/ChangeEmail"
 import ChangePhone from "@/lib/ChangePhone"
 import ChangePassword from "@/lib/ChangePassword"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 
 
 export default  function Page(){
@@ -148,8 +150,10 @@ export default  function Page(){
                             
                             : (
                                 <div className=" flex pt-6 flex-row items-center space-x-10 ">
-                                    <div className=" w-20 h-20 bg-red-500 rounded-full">
-                                    </div>
+                                    <Avatar className=" w-20 h-20">
+                                        <AvatarImage src="https://github.com/shadcn.png" />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
                                     <div className=" flex flex-col justify-start items-start space-y-2">
                                         <Label className=" text-xl font-bold" htmlFor="name">{user?.title_en + " " +  user?.first_name_en + "  " +   user?.last_name_en}</Label>
                                         <Label className=" text-lg " htmlFor="name">{user?.title_th + " " +  user?.first_name_th + "  " +   user?.last_name_th}</Label>

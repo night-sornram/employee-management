@@ -5,7 +5,9 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/adapter"
+	"github.com/night-sornram/employee-management/middleware"
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,7 +20,7 @@ func main() {
 		port     = 5432
 		user     = "postgres"
 		password = "password"
-		dbname   = "postgres"
+		dbname   = "attendance"
 	)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -28,7 +30,7 @@ func main() {
 	}
 
 	err = db.AutoMigrate(&repository.Attendance{})
-	
+
 	if err != nil {
 		log.Fatalf("Failed to auto-migrate: %v", err)
 	}
@@ -37,13 +39,18 @@ func main() {
 	service := repository.NewAttendanceService(repo)
 	handle := adapter.NewhandlerFiber(service)
 
-	app.Get("/attendance", handle.GetAttendances)
-	app.Get("/attendance/:id", handle.GetAttendance)
-	app.Post("/attendance", handle.CreateAttendance)
-	app.Post("/attendance/check-in", handle.CheckIn)
-	app.Put("/attendance/check-out", handle.CheckOut)
-	app.Put("/attendance/:id", handle.UpdateAttendance)
-	app.Delete("/attendance/:id", handle.DeleteAttendance)
+	app.Use(cors.New())
+	app.Use("/api", middleware.Protected())
+
+	app.Get("/api/attendance", handle.GetAttendances)
+	app.Get("/api/attendance/:id", handle.GetAttendance)
+	app.Post("/api/attendance", handle.CreateAttendance)
+	app.Post("/api/attendance/check-in", handle.CheckIn)
+	app.Put("/api/attendance/check-out", handle.CheckOut)
+	app.Put("/api/attendance/:id", handle.UpdateAttendance)
+	app.Delete("/api/attendance/:id", handle.DeleteAttendance)
+	app.Get("/api/attendance/me/:eid", handle.GetMyAttendances)
+	app.Get("/api/attendance/check-today/:eid", handle.CheckToday)
 
 	app.Listen(":8081")
 }
