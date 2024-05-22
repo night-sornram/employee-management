@@ -185,7 +185,7 @@ func TestChangePassword(t *testing.T) {
 		}
 
 		service := NewEmployeeService(mockRepo)
-		_, err := service.ChangePassword("1", "password", "password")
+		_, err := service.ChangePassword("1", "password", "newPassword")
 		assert.NoError(t, err)
 	})
 }
