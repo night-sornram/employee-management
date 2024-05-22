@@ -28,7 +28,7 @@ func (h *handleFiber) GetEmployees(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(Employees)
+	return c.Status(fiber.StatusOK).JSON(Employees)
 }
 
 func (h *handleFiber) GetEmployee(c *fiber.Ctx) error {
@@ -44,7 +44,7 @@ func (h *handleFiber) GetEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(Employee)
+	return c.Status(fiber.StatusOK).JSON(Employee)
 }
 
 func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
@@ -63,7 +63,7 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(
+	return c.Status(fiber.StatusCreated).JSON(
 		fiber.Map{
 			"message": "success",
 			"data":    newEmployee,
@@ -85,7 +85,7 @@ func (h *handleFiber) UpdateEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.Status(200).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 	})
 }
@@ -103,7 +103,7 @@ func (h *handleFiber) DeleteEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.SendStatus(204)
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 func (h *handleFiber) Login(c *fiber.Ctx) error {
@@ -146,7 +146,7 @@ func (h *handleFiber) Login(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 		"token":   token,
 	})
@@ -162,7 +162,7 @@ func (h *handleFiber) Logout(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 	})
 }
@@ -208,7 +208,7 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(Employee)
+	return c.Status(fiber.StatusOK).JSON(Employee)
 }
 
 func (h *handleFiber) ChangePassword(c *fiber.Ctx) error {
@@ -224,7 +224,7 @@ func (h *handleFiber) ChangePassword(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.Status(200).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 	})
 }

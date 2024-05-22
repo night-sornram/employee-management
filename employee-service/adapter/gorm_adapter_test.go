@@ -92,20 +92,20 @@ func TestUpdate(t *testing.T) {
 	repo := NewGormAdapter(db)
 	t.Run("Valid-Update", func(t *testing.T) {
 		employee := repository.Employee{
-			EmployeeID:  "E0001",
+			EmployeeID:  "ADMIN",
 			TitleTH:     "นาย",
 			FirstNameTH: "สมชาย",
-			LastNameTH:  "สมหมาย",
+			LastNameTH:  "ใจดี",
 			TitleEN:     "Mr.",
 			FirstNameEN: "Somchai",
-			LastNameEN:  "Sommai",
-			DateOfBirth: "1990-05-15",
+			LastNameEN:  "Jaidee",
+			DateOfBirth: "1990-01-01",
 			Gender:      "Male",
 			Department:  "IT",
-			Role:        "Developer",
-			Phone:       "0812345678",
-			Email:       "somchai@example.com",
-			Password:    "securepassword",
+			Role:        "admin",
+			Phone:       "080-123-4567",
+			Email:       "admin@example.com",
+			Password:    "123456",
 		}
 		mock.ExpectBegin()
 		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE employee_id = \$15`).
