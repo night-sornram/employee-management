@@ -59,7 +59,7 @@ func (m *mockLeaveRepo) UpdateStatus(id int, leave Leave) (Leave, error) {
 }
 
 func TestGetAll(t *testing.T) {
-	t.Run("Valid GetAll", func(t *testing.T) {
+	t.Run("Valid-GetAll", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			GetAllFunc: func() ([]Leave, error) {
 				return []Leave{}, nil
@@ -73,7 +73,7 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestGetByID(t *testing.T) {
-	t.Run("Valid GetByID", func(t *testing.T) {
+	t.Run("Valid-GetByID", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			GetByIDFunc: func(id int) (Leave, error) {
 				return Leave{}, nil
@@ -87,7 +87,7 @@ func TestGetByID(t *testing.T) {
 }
 
 func TestCreate(t *testing.T){
-	t.Run("Valid Create", func(t *testing.T){
+	t.Run("Valid-Create", func(t *testing.T){
 		mockRepo := &mockLeaveRepo{
 			CreateFunc: func(leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -99,7 +99,7 @@ func TestCreate(t *testing.T){
 	})
 }
 func TestUpdate(t *testing.T){
-	t.Run("Valid Update", func(t *testing.T){
+	t.Run("Valid-Update", func(t *testing.T){
 		mockRepo := &mockLeaveRepo{
 			UpdateFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave {}, nil
@@ -112,7 +112,7 @@ func TestUpdate(t *testing.T){
 }
 
 func TestDelete(t *testing.T){
-	t.Run("Valid Delete", func(t *testing.T){
+	t.Run("Valid-Delete", func(t *testing.T){
 		mockRepo := &mockLeaveRepo{
 			DeleteFunc: func(id int) error {
 				return nil
@@ -125,7 +125,7 @@ func TestDelete(t *testing.T){
 }
 
 func TestUpdateStatus(t *testing.T){
-	t.Run("Valid UpdateStatus", func(t *testing.T){
+	t.Run("Valid-UpdateStatus", func(t *testing.T){
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -145,7 +145,7 @@ func TestUpdateStatus(t *testing.T){
 		assert.NoError(t, err)
 	})
 
-	t.Run("Invalid ID UpdateStatus", func(t *testing.T){
+	t.Run("Invalid-ID UpdateStatus", func(t *testing.T){
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
