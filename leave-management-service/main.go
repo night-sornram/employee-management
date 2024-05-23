@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/adapter"
+	"github.com/night-sornram/employee-management/middleware"
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,9 +20,10 @@ func setup() *fiber.App{
 		user     = "postgres"
 		password = "password"
 		dbname   = "leave"
+		tz       = "Asia/Bangkok"
 	)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=%s", host, port, user, password, dbname, tz)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -31,13 +34,19 @@ func setup() *fiber.App{
 	service := repository.NewLeaveService(repo)
 	handle := adapter.NewhandlerFiber(service)
 
-	app.Get("/leaves", handle.GetLeaves)
-	app.Get("/leaves/:id", handle.GetLeave)
-	app.Post("/leaves", handle.CreateLeave)
-	app.Put("/leaves/:id", handle.UpdateLeave)
-	app.Delete("/leaves/:id", handle.DeleteLeave)
-	app.Put("/leaves/approval/:id", handle.UpdateStatus)
-	
+	app.Use(cors.New())
+
+	app.Use("/api", middleware.Protected())
+
+	app.Get("/api/leaves", handle.GetLeaves)
+	app.Get("/api/leaves/me/:eid", handle.GetMyLeaves)
+	app.Get("/api/leaves/:id", handle.GetLeave)
+	app.Post("/api/leaves", handle.CreateLeave)
+	app.Put("/api/leaves/:id", handle.UpdateLeave)
+	app.Delete("/api/leaves/:id", handle.DeleteLeave)
+
+	app.Listen(":8082")
+
 	return app
 }
 

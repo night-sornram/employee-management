@@ -14,6 +14,7 @@ type mockLeaveRepo struct {
 	UpdateFunc       func(id int, leave Leave) (Leave, error)
 	DeleteFunc       func(id int) error
 	UpdateStatusFunc func(id int, leave Leave) (Leave, error)
+	GetAllMeFunc  func(eid string) ([]Leave, error)
 }
 
 func (m *mockLeaveRepo) GetAll() ([]Leave, error) {
@@ -58,6 +59,13 @@ func (m *mockLeaveRepo) UpdateStatus(id int, leave Leave) (Leave, error) {
 	return Leave{}, errors.New("not implemented")
 }
 
+func (m *mockLeaveRepo) GetAllMe(eid string) ([]Leave, error) {
+	if m.GetAllMeFunc != nil {
+		return m.GetAllMeFunc(eid)
+	}
+	return []Leave{}, errors.New("not implemented")
+}
+
 func TestGetAll(t *testing.T) {
 	t.Run("Valid-GetAll", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
@@ -86,8 +94,8 @@ func TestGetByID(t *testing.T) {
 	})
 }
 
-func TestCreate(t *testing.T){
-	t.Run("Valid-Create", func(t *testing.T){
+func TestCreate(t *testing.T) {
+	t.Run("Valid-Create", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			CreateFunc: func(leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -98,11 +106,11 @@ func TestCreate(t *testing.T){
 		assert.NoError(t, err)
 	})
 }
-func TestUpdate(t *testing.T){
-	t.Run("Valid-Update", func(t *testing.T){
+func TestUpdate(t *testing.T) {
+	t.Run("Valid-Update", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateFunc: func(id int, leave Leave) (Leave, error) {
-				return Leave {}, nil
+				return Leave{}, nil
 			},
 		}
 		service := NewLeaveService(mockRepo)
@@ -111,8 +119,8 @@ func TestUpdate(t *testing.T){
 	})
 }
 
-func TestDelete(t *testing.T){
-	t.Run("Valid-Delete", func(t *testing.T){
+func TestDelete(t *testing.T) {
+	t.Run("Valid-Delete", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			DeleteFunc: func(id int) error {
 				return nil
@@ -124,19 +132,19 @@ func TestDelete(t *testing.T){
 	})
 }
 
-func TestUpdateStatus(t *testing.T){
-	t.Run("Valid-UpdateStatus", func(t *testing.T){
+func TestUpdateStatus(t *testing.T) {
+	t.Run("Valid-UpdateStatus", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
 			},
-			GetByIDFunc: func(id int) (Leave, error){
+			GetByIDFunc: func(id int) (Leave, error) {
 				return Leave{}, nil
 			},
 		}
 
 		mockUpdateStatus := LeaveStatus{
-			Status: "approve",
+			Status:         "approve",
 			ManagerOpinion: "OK, approve",
 		}
 
@@ -145,18 +153,18 @@ func TestUpdateStatus(t *testing.T){
 		assert.NoError(t, err)
 	})
 
-	t.Run("Invalid-ID UpdateStatus", func(t *testing.T){
+	t.Run("Invalid-ID UpdateStatus", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
 			},
-			GetByIDFunc: func(id int) (Leave, error){
+			GetByIDFunc: func(id int) (Leave, error) {
 				return Leave{}, errors.New("ID not found")
 			},
 		}
 
 		mockUpdateStatus := LeaveStatus{
-			Status: "approve",
+			Status:         "approve",
 			ManagerOpinion: "OK, approve",
 		}
 

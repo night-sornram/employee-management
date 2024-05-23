@@ -10,14 +10,14 @@ export const authOptions:AuthOptions = {
         CredentialsProvider({
           name: "Credentials",
           credentials: {
-            email: { label: "email", type: "email", placeholder: "email" },
+            id: { label: "id", type: "string", placeholder: "id" },
             password: { label: "Password", type: "password" }
           },
           async authorize(credentials, req) {
 
             if(!credentials) return null
 
-            const user = await UserLogin(credentials.email, credentials.password)
+            const user = await UserLogin(credentials.id, credentials.password)
 
             if (user) {
               return user
@@ -37,10 +37,11 @@ export const authOptions:AuthOptions = {
           if(token.token){
             
             const res = await getUserProfile(token.token as string)
-            session.user.employee_id = res.employee_id
             session.user.email = res.email
-            session.user.name = res.first_name_en
+            session.user.employee_id = res.employee_id
+            session.user.name = res.name
             session.user.role = res.role
+            token.role = res.role
             session.user.token = token.token as string
 
           }

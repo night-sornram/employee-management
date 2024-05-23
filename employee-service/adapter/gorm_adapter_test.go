@@ -1,0 +1,197 @@
+package adapter
+
+import (
+	"database/sql"
+	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/night-sornram/employee-management/repository"
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+func DbMock(t *testing.T) (*sql.DB, *gorm.DB, sqlmock.Sqlmock) {
+	sqlDB, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("An error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	db, err := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("Failed to open gorm database: %v", err)
+	}
+
+	return sqlDB, db, mock
+}
+
+func TestGetAll(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-GetAll", func(t *testing.T) {
+		mock.ExpectQuery(`SELECT (.+) FROM "employees"`).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		_, err := repo.GetAll()
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+func TestGetByID(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-GetByID", func(t *testing.T) {
+		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE "employees"."id" = \$1 ORDER BY "employees"."id" LIMIT \$2`).
+			WithArgs(1, 1).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		_, err := repo.GetByID(1)
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestCreate(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-Create", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectQuery(`INSERT INTO "employees" (.+) RETURNING "id"`).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		mock.ExpectCommit()
+
+		_, err := repo.Create(repository.Employee{
+			EmployeeID:  "E0001",
+			TitleTH:     "นาย",
+			FirstNameTH: "สมชาย",
+			LastNameTH:  "สมหมาย",
+			TitleEN:     "Mr.",
+			FirstNameEN: "Somchai",
+			LastNameEN:  "Sommai",
+			DateOfBirth: "1990-05-15",
+			Gender:      "Male",
+			Department:  "IT",
+			Role:        "Developer",
+			Phone:       "0812345678",
+			Email:       "somchai@example.com",
+			Password:    "securepassword",
+		})
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-Update", func(t *testing.T) {
+		employee := repository.Employee{
+			EmployeeID:  "ADMIN",
+			TitleTH:     "นาย",
+			FirstNameTH: "สมชาย",
+			LastNameTH:  "ใจดี",
+			TitleEN:     "Mr.",
+			FirstNameEN: "Somchai",
+			LastNameEN:  "Jaidee",
+			DateOfBirth: "1990-01-01",
+			Gender:      "Male",
+			Department:  "IT",
+			Role:        "admin",
+			Phone:       "080-123-4567",
+			Email:       "admin@example.com",
+			Password:    "123456",
+		}
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE employee_id = \$15`).
+    		WithArgs(employee.EmployeeID, employee.TitleTH, employee.FirstNameTH, employee.LastNameTH, employee.TitleEN, employee.FirstNameEN, employee.LastNameEN, employee.DateOfBirth, employee.Gender, employee.Department, employee.Role, employee.Phone, employee.Email, employee.Password, "1").
+			WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+
+		_, err := repo.Update("1", employee)
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestDelete(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-Delete", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(`DELETE FROM "employees" WHERE "employees"."id" = \$1`).
+			WithArgs(1).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+
+		err := repo.Delete(1)
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestLogin(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-Login", func(t *testing.T) {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
+		
+		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
+			WithArgs("id", 1).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "password"}).AddRow(1, hashedPassword))
+
+        _, err := repo.Login("id", "password")
+        assert.NoError(t, err)
+        assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestGetMe(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-GetMe", func(t *testing.T) {
+		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
+			WithArgs("id", 1).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+
+		_, err := repo.GetMe("id")
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestChangePassword(t *testing.T) {
+	sqlDB, db, mock := DbMock(t)
+	defer sqlDB.Close()
+
+	repo := NewGormAdapter(db)
+	t.Run("Valid-ChangePassword", func(t *testing.T) {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
+
+		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
+			WithArgs("id", 1).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "password"}).AddRow(1, hashedPassword))
+
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE "id" = \$15`).
+            WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), 1).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+
+		_, err := repo.ChangePassword("id", "password", "newPassword")
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+

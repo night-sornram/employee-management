@@ -66,3 +66,12 @@ func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.L
 	}
 	return existingLeave, nil
 }
+
+func (g *GormAdapter) GetAllMe(eid string) ([]repository.Leave, error) {
+	var Leaves []repository.Leave
+	err := g.db.Where("employee_id = ?", eid).Find(&Leaves).Order("id DESC").Error
+	if err != nil {
+		return nil, err
+	}
+	return Leaves, nil
+}

@@ -1,11 +1,11 @@
-export default async function UserLogIn(userEmail : string, userPassword : string) {
+export default async function UserLogIn(userId : string, userPassword : string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-            email : userEmail,
+            id : userId,
             password : userPassword
         }),
     });

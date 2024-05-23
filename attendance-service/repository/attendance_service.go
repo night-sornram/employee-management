@@ -6,6 +6,10 @@ type AttendanceService interface {
 	CreateAttendance(attendance Attendance) (Attendance, error)
 	UpdateAttendance(id int, attendance Attendance) (Attendance, error)
 	DeleteAttendance(id int) error
+	CheckIn(eid string) (Attendance, error)
+	CheckOut(id int) (Attendance, error)
+	GetMyAttendances(eid string) ([]Attendance, error)
+	CheckToday(eid string) (Attendance, error)
 }
 
 type AttendanceServiceDB struct {
@@ -36,4 +40,20 @@ func (a *AttendanceServiceDB) UpdateAttendance(id int, attendance Attendance) (A
 
 func (a *AttendanceServiceDB) DeleteAttendance(id int) error {
 	return a.repo.Delete(id)
+}
+
+func (a *AttendanceServiceDB) CheckIn(eid string) (Attendance, error) {
+	return a.repo.CheckIn(eid)
+}
+
+func (a *AttendanceServiceDB) CheckOut(id int) (Attendance, error) {
+	return a.repo.CheckOut(id)
+}
+
+func (a *AttendanceServiceDB) GetMyAttendances(eid string) ([]Attendance, error) {
+	return a.repo.GetAllMe(eid)
+}
+
+func (a *AttendanceServiceDB) CheckToday(eid string) (Attendance, error) {
+	return a.repo.CheckToday(eid)
 }

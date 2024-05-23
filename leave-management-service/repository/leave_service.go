@@ -14,6 +14,7 @@ type LeaveService interface {
 	UpdateLeave(id int, leave Leave) (Leave, error)
 	DeleteLeave(id int) error
 	UpdateStatus(id int, leave LeaveStatus) (Leave, error)
+	GetMyLeaves(eid string) ([]Leave, error)
 }
 
 type LeaveServiceDB struct {
@@ -44,6 +45,10 @@ func (u *LeaveServiceDB) UpdateLeave(id int, leave Leave) (Leave, error) {
 
 func (u *LeaveServiceDB) DeleteLeave(id int) error {
 	return u.repo.Delete(id)
+}
+
+func (u *LeaveServiceDB) GetMyLeaves(eid string) ([]Leave, error) {
+	return u.repo.GetAllMe(eid)
 }
 
 type Attendance struct {
@@ -96,4 +101,8 @@ func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) 
 	existsLeave.ManagerOpinion = leave.ManagerOpinion
 
 	return u.repo.UpdateStatus(id, existsLeave)
+}
+
+func (u *LeaveServiceDB) GetMyLeaves(eid string) ([]Leave, error) {
+	return u.repo.GetAllMe(eid)
 }

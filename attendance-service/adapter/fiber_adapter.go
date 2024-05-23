@@ -1,8 +1,8 @@
 package adapter
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-
 	"github.com/night-sornram/employee-management/repository"
 )
 
@@ -23,7 +23,7 @@ func (f *handlerFiber) GetAttendances(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(attendances)
+	return c.Status(fiber.StatusOK).JSON(attendances)
 }
 
 func (f *handlerFiber) GetAttendance(c *fiber.Ctx) error {
@@ -39,7 +39,7 @@ func (f *handlerFiber) GetAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(attendance)
+	return c.Status(fiber.StatusOK).JSON(attendance)
 }
 
 func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
@@ -49,13 +49,21 @@ func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err := validate.Struct(attendance)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	newAttendance, err := f.service.CreateAttendance(attendance)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newAttendance)
+	return c.Status(fiber.StatusCreated).JSON(newAttendance)
 }
 
 func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
@@ -71,13 +79,21 @@ func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err = validate.Struct(attendance)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	updatedAttendance, err := f.service.UpdateAttendance(id, attendance)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updatedAttendance)
+	return c.Status(fiber.StatusOK).JSON(updatedAttendance)
 }
 
 func (f *handlerFiber) DeleteAttendance(c *fiber.Ctx) error {
@@ -94,4 +110,68 @@ func (f *handlerFiber) DeleteAttendance(c *fiber.Ctx) error {
 		})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (f *handlerFiber) CheckIn(c *fiber.Ctx) error {
+	var data map[string]string
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	newCheckIn, err := f.service.CheckIn(data["eid"])
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusCreated).JSON(newCheckIn)
+}
+
+func (f *handlerFiber) CheckOut(c *fiber.Ctx) error {
+	var data map[string]int
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	newCheckOut, err := f.service.CheckOut(data["id"])
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(newCheckOut)
+}
+
+func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
+	eid := c.Params("eid")
+	if eid == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	attendances, err := f.service.GetMyAttendances(eid)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
+	eid := c.Params("eid")
+	if eid == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	attendance, _ := f.service.CheckToday(eid)
+	if attendance.ID == 0 {
+		return c.JSON(nil)
+	}
+	return c.Status(fiber.StatusOK).JSON(attendance)
+
 }
