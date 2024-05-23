@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/night-sornram/employee-management/repository"
 )
@@ -22,7 +23,7 @@ func (f *handlerFiber) GetLeaves(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(leaves)
+	return c.Status(fiber.StatusOK).JSON(leaves)
 }
 
 func (f *handlerFiber) GetLeave(c *fiber.Ctx) error {
@@ -38,7 +39,7 @@ func (f *handlerFiber) GetLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(leave)
+	return c.Status(fiber.StatusOK).JSON(leave)
 }
 
 func (f *handlerFiber) CreateLeave(c *fiber.Ctx) error {
@@ -48,13 +49,22 @@ func (f *handlerFiber) CreateLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err := validate.Struct(leave)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
 	newLeave, err := f.service.CreateLeave(leave)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newLeave)
+	return c.Status(fiber.StatusCreated).JSON(newLeave)
 }
 
 func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
@@ -70,13 +80,21 @@ func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err = validate.Struct(leave)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	updateLeave, err := f.service.UpdateLeave(id, leave)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(updateLeave)
+	return c.Status(fiber.StatusOK).JSON(updateLeave)
 }
 
 func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
@@ -92,7 +110,37 @@ func (f *handlerFiber) DeleteLeave(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	var leave repository.LeaveStatus
+	if err := c.BodyParser(&leave); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	validate := validator.New()
+	err = validate.Struct(leave)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	updateStatus, err := f.service.UpdateStatus(id, leave)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(updateStatus)
 }
 
 func (f *handlerFiber) GetMyLeaves(c *fiber.Ctx) error {
