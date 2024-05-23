@@ -17,14 +17,14 @@ export default async function Page() {
     const data: Attendance[] = await GetMyAttendances(userProfile.employee_id, session.user.token);
 
     return(
-        <main className=' p-10 h-[93vh] w-screen flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%] md:px-[10%] h-[93vh] md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     History of Attendance
                 </h1>
             </div>
-            <div className="flex flex-row gap-10">
-                <Card className="w-[20%]">
+            <div className="flex flex-row gap-10 md:overflow-y-hidden overflow-y-scroll">
+                <Card className="w-[320px] ">
                     <CardHeader>
                         <CardTitle className="text-lg">
                             All-time Attendance
@@ -34,7 +34,7 @@ export default async function Page() {
                         {data.length}
                     </CardContent>
                 </Card>
-                <Card className="w-[20%]">
+                <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
                             All-time Absence
@@ -45,7 +45,7 @@ export default async function Page() {
                     </CardContent>
                 </Card>
             </div>
-            <div className="w-[60%]">
+            <div className="">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -73,12 +73,21 @@ export default async function Page() {
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {att.leave_id !== -1 ? "LEAVE" : dayjs(att.check_in).local().format('HH:mm:ss')}
+                                    {att.leave_id !== -1 ? "LEAVE" : 
+                                        (
+                                            dayjs(att.check_in).local().format('HH:mm:ss')
+                                        )
+                                    }
+                                    
                                 </TableCell>
                                 <TableCell>
                                     {   att.leave_id !== -1? "LEAVE" :
                                         (
-                                            dayjs(att.check_out).local().format('HH:mm:ss')
+                                            dayjs(att.check_out).local().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" ?
+                                            "-" :
+                                            (
+                                                dayjs(att.check_out).local().format('HH:mm:ss')
+                                            )
                                         )
                                     }
                                     
@@ -88,7 +97,11 @@ export default async function Page() {
                                         att.leave_id !== -1? "LEAVE" 
                                         : 
                                         (
-                                            (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 
+                                            dayjs(att.check_out).local().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" ?
+                                            "-" :
+                                            (
+                                                (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 
+                                            )
                                         )
                                     } 
                                 </TableCell>

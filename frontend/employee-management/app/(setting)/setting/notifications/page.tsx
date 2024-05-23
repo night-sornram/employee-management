@@ -22,7 +22,7 @@ export default function Page(){
     const [notification, setNotification] = useState(data.notification)
     const [email, setEmail] = useState(data.email)
     return(
-        <div className=" w-[50vw] px-5 space-y-5 ">
+        <div className="w-screen md:w-[50vw] md:px-5 space-y-5 ">
             <div className=" flex flex-col">
                 <h1 className=" text-lg font-medium">
                     Notification

@@ -37,10 +37,10 @@ const LoginPage = () => {
   
   return (
     <main className="flex flex-row w-screen h-screen">
-        <div className=" w-1/2 h-full bg-zinc-800">
+        <div className=" hidden md:flex  w-1/2 h-full bg-zinc-800">
 
         </div>
-        <div className=" w-1/2 h-full flex bg-white justify-center items-center">
+        <div className=" w-screen md:p-5 p-3 md:w-1/2 h-full flex bg-white justify-center items-center">
             <Card className="w-[550px]">
                 <CardHeader>
                     <CardTitle>Login</CardTitle>

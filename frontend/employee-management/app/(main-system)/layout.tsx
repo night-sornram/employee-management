@@ -20,14 +20,12 @@ export default function RootLayout({
 
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
+      <>
           <Header />
           <SideBar >
             {children}
             <Toaster/>
           </SideBar>
-      </body>
-    </html>
+      </>
   );
 }

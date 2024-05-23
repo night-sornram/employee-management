@@ -15,6 +15,7 @@ import storage from "./storage"
 
 import appReducer from "./slices/appSlice";
 import { cache } from "react";
+import fontSlice from "./slices/fontSlice";
 
 const persistConfig = {
     key: "rootPersist",
@@ -26,6 +27,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     appReducer,
+    fontSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -13,8 +13,14 @@ import {
 import { useState } from "react"
 import { useTheme } from "next-themes"
 import { useToast } from "@/components/ui/use-toast"
+import { RootState, useAppSelector } from '@/store/store'
+import { useDispatch } from "react-redux"
+import { AppDispatch } from "@/store/store"
+import { updateFont } from "@/store/slices/fontSlice"
 
 export default function Page(){
+    const dispatch = useDispatch<AppDispatch>()
+    const data = useAppSelector((state: RootState) => state.fontSlice)
     const { toast } = useToast()
     const { setTheme } = useTheme()
     const [themes, setThemes] = useState("")
@@ -25,10 +31,11 @@ export default function Page(){
                 title: "Error",
                 description: "Please select a theme and font",
               })
-        }else{
-            setTheme(themes)
-            document.documentElement.style.setProperty("--font-sans", font)
-            
+            }else{
+                setTheme(themes)
+                dispatch(updateFont({
+                    font : font
+                }))
             toast({
                 title: "Success",
                 description: "Preference updated successfully",
@@ -38,7 +45,7 @@ export default function Page(){
     }
     
     return(
-        <div className=" w-[50vw] px-5 space-y-5">
+        <div className="w-screen md:w-[50vw] px-5 space-y-5">
             <div className=" flex flex-col">
                 <h1 className=" text-lg font-medium">
                     Appearance
@@ -48,7 +55,7 @@ export default function Page(){
                 </div>
             </div>
             <hr />
-            <div className="w-2/3 space-y-10">
+            <div className="w-full space-y-10">
                 <div className="grid w-full max-w-sm items-center gap-1.5 space-y-2">
                     <Label htmlFor="font">Font</Label>
                     <Select
@@ -75,7 +82,7 @@ export default function Page(){
                     <div className=" text-xs text-gray-500">
                         The theme used in the app
                     </div>
-                    <div className=" flex flex-row space-x-4">
+                    <div className=" flex flex-col min-[500px]:flex-row min-[500px]:space-x-4">
                         <div onClick={()=>{setThemes("light")}} className=" flex flex-col space-y-2 justify-center items-center">
                             <div className={` cursor-pointer w-[215px] ring-1 rounded-md ${themes === "light" ? "ring-gray-700 dark:ring-gray-100" : "ring-gray-200 dark:ring-gray-700"}  flex justify-center items-center h-[165px]`}>
                                 <div className=" hover:bg-gray-200 p-3 flex flex-col justify-center items-center space-y-2  w-[200px] rounded-md bg-gray-200 h-[150px]">

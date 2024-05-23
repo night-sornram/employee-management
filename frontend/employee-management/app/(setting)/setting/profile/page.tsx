@@ -122,7 +122,7 @@ export default  function Page(){
 
     
     return(
-        <div className=" w-[50vw] px-5 space-y-5">
+        <div className=" md:w-[70vw] 2xl:w-[50vw] md:px-5 space-y-5">
             <div className=" flex flex-col">
                 <h1 className=" text-lg font-medium">
                     Profile
@@ -132,13 +132,13 @@ export default  function Page(){
                 </div>
             </div>
             <hr />
-            <div className=" flex flex-col space-y-5">
-                <Card className="w-[50vw] ">
+            <div className=" flex flex-col space-y-5 px-4 ">
+                <Card className="w-full ">
                     <CardContent>
                         {
                             loading ? 
                             (
-                                <div className="flex pt-6 items-center space-x-4">
+                                <div className="flex pt-6 flex-col min-[500px]:flex-row min-[500px]:space-y-0 space-y-3 items-center  space-x-4">
                                     <Skeleton className="h-20 w-20 rounded-full" />
                                     <div className="space-y-2">
                                         <Skeleton className="h-4 w-[250px]" />
@@ -149,13 +149,13 @@ export default  function Page(){
                             
                             
                             : (
-                                <div className=" flex pt-6 flex-row items-center space-x-10 ">
+                                <div className=" flex pt-6 flex-col min-[500px]:flex-row min-[500px]:space-y-0 space-y-3 items-center min-[500px]:space-x-10 ">
                                     <Avatar className=" w-20 h-20">
                                         <AvatarImage src="https://github.com/shadcn.png" />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                     <div className=" flex flex-col justify-start items-start space-y-2">
-                                        <Label className=" text-xl font-bold" htmlFor="name">{user?.title_en + " " +  user?.first_name_en + "  " +   user?.last_name_en}</Label>
+                                        <Label className="  text-xl font-bold" htmlFor="name">{user?.title_en + " " +  user?.first_name_en + "  " +   user?.last_name_en}</Label>
                                         <Label className=" text-lg " htmlFor="name">{user?.title_th + " " +  user?.first_name_th + "  " +   user?.last_name_th}</Label>
                                     </div>
                                 </div>
@@ -164,9 +164,9 @@ export default  function Page(){
                         }
                     </CardContent>
                 </Card>
-                <Card className="w-[50vw] p-4 ">
-                    <div className=" flex flex-row justify-between items-center">
-                        <div className=" flex flex-row space-x-5 items-center">            
+                <Card className="w-full p-4 ">
+                    <div className=" flex flex-col min-[500px]:space-y-0 space-y-3 min-[500px]:flex-row justify-between items-center">
+                        <div className=" flex flex-row space-x-5 items-center justify-between w-full min-[500px]:justify-normal min-[500px]:w-auto">            
                             <Label className=" text-lg font-bold" htmlFor="email">Email</Label>
                             {
                                 loading ? 
@@ -178,9 +178,9 @@ export default  function Page(){
                                 )
                             }
                         </div>
-                        <Dialog>
+                        <Dialog >
                             <DialogTrigger asChild>
-                                <Button variant="outline">Edit Email</Button>
+                                <Button className="min-[500px]:w-auto w-full flex justify-center items-center" variant="outline">Edit Email</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
@@ -201,9 +201,9 @@ export default  function Page(){
                         </Dialog>
                     </div>
                 </Card>
-                <Card className="w-[50vw] p-4 ">
-                    <div className=" flex flex-row justify-between items-center">
-                        <div className=" flex flex-row space-x-5 items-center">            
+                <Card className="w-full p-4 ">
+                    <div className=" flex flex-col min-[500px]:space-y-0 space-y-3 min-[500px]:flex-row justify-between items-center">
+                        <div className=" flex flex-row space-x-5 items-center justify-between w-full min-[500px]:justify-normal min-[500px]:w-auto">            
                             <Label className=" text-lg font-bold" htmlFor="email">Phone</Label>
                             {
                                 loading ? 
@@ -217,7 +217,7 @@ export default  function Page(){
                         </div>
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="outline">Edit Phone</Button>
+                                <Button className="min-[500px]:w-auto w-full flex justify-center items-center "  variant="outline">Edit Phone</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
@@ -238,7 +238,7 @@ export default  function Page(){
                         </Dialog>
                     </div>
                 </Card>
-                <Card className="w-[50vw]">
+                <Card className="w-full">
                     <CardHeader>
                         <CardTitle>Change Password</CardTitle>
                         <CardDescription>

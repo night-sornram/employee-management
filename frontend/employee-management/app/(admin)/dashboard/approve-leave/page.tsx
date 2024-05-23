@@ -32,14 +32,14 @@ export default async function Page() {
     }
 
     return(
-        <main className=' p-10 h-[93vh] w-screen flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%]  h-[93vh]  md:w-[70%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     History of Leave
                 </h1>
             </div>
-            <div className="flex flex-row gap-10">
-                <Card className="w-[20%]">
+            <div className="flex flex-row gap-10 md:overflow-y-hidden overflow-y-scroll">
+                <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
                             Approved Leave
@@ -49,7 +49,7 @@ export default async function Page() {
                         {approved}
                     </CardContent>
                 </Card>
-                <Card className="w-[20%]">
+                <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
                             Denied Leave
@@ -59,7 +59,7 @@ export default async function Page() {
                         {denied}
                     </CardContent>
                 </Card>
-                <Card className="w-[20%]">
+                <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
                             Pending Leave
@@ -70,7 +70,7 @@ export default async function Page() {
                     </CardContent>
                 </Card>
             </div>
-            <div className="w-[60%]">
+            <div className="">
                 <h1 className="font-bold text-2xl">
                     Pending Request
                 </h1>
@@ -136,7 +136,7 @@ export default async function Page() {
                     </TableBody>
                 </Table>
             </div>
-            <div className="w-[60%]">
+            <div className="">
                 <h1 className="font-bold text-2xl">
                     Success Request
                 </h1>

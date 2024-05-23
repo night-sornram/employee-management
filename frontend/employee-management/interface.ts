@@ -46,3 +46,7 @@ export interface StateProp {
     notification : string,
     email : boolean
 }
+
+export interface FontProp{
+    font : string
+}

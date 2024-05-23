@@ -99,7 +99,7 @@ export  function MenuBar() {
                   notifications.filter(
                   (notification : Notification) => notification.title === "Leave Request"
                 ).map((notification : Notification) => (
-                <Card className=" relative">
+                <Card key={notification.id} className=" relative">
                   <CardContent>
                     <div className=" flex flex-row w-full space-x-3 justify-between pt-7">
                       <CalendarIcon className="h-6 w-6 " />
@@ -121,7 +121,7 @@ export  function MenuBar() {
                 notifications.filter(
                   (notification : Notification) => notification.title !== "Leave Request"
                 ).map((notification : Notification) => (
-                <Card className=" relative">
+                <Card key={notification.id} className=" relative">
                   <CardContent>
                     <div className=" flex flex-row w-full space-x-3 justify-between pt-7">
                       {

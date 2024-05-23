@@ -18,19 +18,17 @@ export default function SettingSideBar({
                 </p>
             </div>
             <hr className=" border" />
-            <div className=" flex flex-row" >
-                <div className=" w-[15vw] space-y-1 flex flex-col">
-                    <Button className={` ${ params === "/setting/profile" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""}   `} onClick={()=>{router.push("/setting/profile")}} variant="ghost">
+            <div className=" flex md:flex-row flex-col " >
+                <div className=" w-full md:w-[15vw] space-y-1 md:py-0 py-3 flex flex-row md:flex-col">
+                    <Button className={` ${ params === "/setting/profile" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""} w-auto`} onClick={()=>{router.push("/setting/profile")}} variant="ghost">
                         Profile
                     </Button>
-                    <Button className={` ${ params === "/setting/appearance" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""}   `} onClick={()=>{router.push("/setting/appearance")}} variant="ghost">
+                    <Button className={` ${ params === "/setting/appearance" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""}  w-auto `} onClick={()=>{router.push("/setting/appearance")}} variant="ghost">
                         Appearance
                     </Button>
-                    <Button className={` ${ params === "/setting/notifications" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""}   `} onClick={()=>{router.push("/setting/notifications")}} variant="ghost">
+                    <Button className={` ${ params === "/setting/notifications" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""} w-auto  `} onClick={()=>{router.push("/setting/notifications")}} variant="ghost">
                         Notifications
                     </Button>
-                    
-
                 </div>
                 {children}
                 
