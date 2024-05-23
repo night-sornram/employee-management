@@ -102,7 +102,3 @@ func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) 
 
 	return u.repo.UpdateStatus(id, existsLeave)
 }
-
-func (u *LeaveServiceDB) GetMyLeaves(eid string) ([]Leave, error) {
-	return u.repo.GetAllMe(eid)
-}

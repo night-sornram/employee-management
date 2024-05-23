@@ -46,6 +46,11 @@ func (m *MockLeaveService) UpdateStatus(id int, leave repository.LeaveStatus) (r
 	return args.Get(0).(repository.Leave), args.Error(1)
 }
 
+func (m *MockLeaveService) GetMyLeaves(eid string) ([]repository.Leave, error) {
+	args := m.Called(eid)
+	return args.Get(0).([]repository.Leave), args.Error(1)
+}
+
 func TestGetLeavesHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
 	handle := NewhandlerFiber(mockService)
