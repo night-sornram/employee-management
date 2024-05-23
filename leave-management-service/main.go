@@ -44,6 +44,7 @@ func setup() *fiber.App{
 	app.Post("/api/leaves", handle.CreateLeave)
 	app.Put("/api/leaves/:id", handle.UpdateLeave)
 	app.Delete("/api/leaves/:id", handle.DeleteLeave)
+	app.Put("/api/leaves/approval/:id", handle.UpdateStatus)
 
 	app.Listen(":8082")
 
