@@ -143,14 +143,14 @@ func (f *handlerFiber) UpdateStatus(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updateStatus)
 }
 
-func (f *handlerFiber) GetMyLeaves(c *fiber.Ctx) error {
+func (f *handlerFiber) GetAllMe(c *fiber.Ctx) error {
 	eid := c.Params("eid")
 	if eid == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Not found",
 		})
 	}
-	leaves, err := f.service.GetMyLeaves(eid)
+	leaves, err := f.service.GetAllMe(eid)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

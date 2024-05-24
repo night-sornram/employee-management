@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func setup() *fiber.App{
+func setup() *fiber.App {
 	app := fiber.New()
 	const (
 		host     = "localhost"
@@ -39,7 +39,7 @@ func setup() *fiber.App{
 	app.Use("/api", middleware.Protected())
 
 	app.Get("/api/leaves", handle.GetLeaves)
-	app.Get("/api/leaves/me/:eid", handle.GetMyLeaves)
+	app.Get("/api/leaves/me/:eid", handle.GetAllMe)
 	app.Get("/api/leaves/:id", handle.GetLeave)
 	app.Post("/api/leaves", handle.CreateLeave)
 	app.Put("/api/leaves/:id", handle.UpdateLeave)
@@ -54,4 +54,4 @@ func setup() *fiber.App{
 func main() {
 	app := setup()
 	app.Listen(":8082")
-  }
+}
