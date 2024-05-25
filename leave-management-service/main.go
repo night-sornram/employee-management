@@ -32,7 +32,7 @@ func setup() *fiber.App {
 	db.AutoMigrate(&repository.Leave{})
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewLeaveService(repo)
-	handle := adapter.NewhandlerFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 
 	app.Use(cors.New())
 

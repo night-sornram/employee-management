@@ -46,14 +46,14 @@ func (m *MockLeaveService) UpdateStatus(id int, leave repository.LeaveStatus) (r
 	return args.Get(0).(repository.Leave), args.Error(1)
 }
 
-func (m *MockLeaveService) GetMyLeaves(eid string) ([]repository.Leave, error) {
+func (m *MockLeaveService) GetAllMe(eid string) ([]repository.Leave, error) {
 	args := m.Called(eid)
 	return args.Get(0).([]repository.Leave), args.Error(1)
 }
 
 func TestGetLeavesHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Get("/leaves", handle.GetLeaves)
 
@@ -84,7 +84,7 @@ func TestGetLeavesHandler(t *testing.T) {
 
 func TestGetLeaveHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Get("/leaves/:id", handle.GetLeave)
 
@@ -113,7 +113,7 @@ func TestGetLeaveHandler(t *testing.T) {
 
 func TestCreateLeaveHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Post("/leaves", handle.CreateLeave)
 
@@ -148,7 +148,7 @@ func TestCreateLeaveHandler(t *testing.T) {
 
 func TestUpdateLeaveHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -183,7 +183,7 @@ func TestUpdateLeaveHandler(t *testing.T) {
 
 func TestDeleteLeaveHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Delete("/leaves/:id", handle.DeleteLeave)
 
@@ -202,7 +202,7 @@ func TestDeleteLeaveHandler(t *testing.T) {
 
 func TestUpdateStatusHandler(t *testing.T) {
 	mockService := new(MockLeaveService)
-	handle := NewhandlerFiber(mockService)
+	handle := NewHandlerFiber(mockService)
 	app := fiber.New()
 	app.Put("/leaves/approval/:id", handle.UpdateStatus)
 

@@ -10,7 +10,7 @@ type handlerFiber struct {
 	service repository.LeaveService
 }
 
-func NewhandlerFiber(service repository.LeaveService) handlerFiber {
+func NewHandlerFiber(service repository.LeaveService) handlerFiber {
 	return handlerFiber{
 		service: service,
 	}
