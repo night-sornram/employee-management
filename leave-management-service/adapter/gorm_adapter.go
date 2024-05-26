@@ -17,9 +17,14 @@ func NewGormAdapter(db *gorm.DB) repository.LeaveRepository {
 
 func (g *GormAdapter) GetAll() ([]repository.Leave, error) {
 	var leaves []repository.Leave
-	if err := g.db.Find(&leaves).Error; err != nil {
+	query := `select * from leaves l join dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	as employees(employee_id text, employee_name text, employee_lastname text) on l.employee_id = employees.employee_id;`
+	if err := g.db.Raw(query).Scan(&leaves).Error; err != nil {
 		return nil, err
 	}
+	// if err := g.db.Find(&leaves).Error; err != nil {
+	// 	return nil, err
+	// }
 	return leaves, nil
 }
 
@@ -53,7 +58,7 @@ func (g *GormAdapter) Delete(id int) error {
 }
 
 func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.Leave, error) {
-	var existingLeave  repository.Leave
+	var existingLeave repository.Leave
 	if err := g.db.Where("id = ?", id).First(&existingLeave).Error; err != nil {
 		return leave, err
 	}

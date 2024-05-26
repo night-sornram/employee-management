@@ -30,6 +30,11 @@ func setup() *fiber.App {
 	}
 
 	db.AutoMigrate(&repository.Leave{})
+
+	extension := "dblink"
+	createExtension := fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %s;", extension)
+	db.Exec(createExtension)
+
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewLeaveService(repo)
 	handle := adapter.NewHandlerFiber(service)

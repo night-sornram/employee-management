@@ -24,7 +24,6 @@ export default function RootLayout({
           <Header />
           <SideBar >
             {children}
-            <Toaster/>
           </SideBar>
       </>
   );
