@@ -14,7 +14,7 @@ type mockLeaveRepo struct {
 	UpdateFunc       func(id int, leave Leave) (Leave, error)
 	DeleteFunc       func(id int) error
 	UpdateStatusFunc func(id int, leave Leave) (Leave, error)
-	GetAllMeFunc  func(eid string) ([]Leave, error)
+	GetAllMeFunc     func(eid string) ([]Leave, error)
 }
 
 func (m *mockLeaveRepo) GetAll() ([]Leave, error) {
@@ -66,8 +66,8 @@ func (m *mockLeaveRepo) GetAllMe(eid string) ([]Leave, error) {
 	return []Leave{}, errors.New("not implemented")
 }
 
-func TestGetAll(t *testing.T) {
-	t.Run("Valid-GetAll", func(t *testing.T) {
+func TestGetLeaves(t *testing.T) {
+	t.Run("Valid-GetLeaves", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			GetAllFunc: func() ([]Leave, error) {
 				return []Leave{}, nil
@@ -78,10 +78,22 @@ func TestGetAll(t *testing.T) {
 		_, err := service.GetLeaves()
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetLeaves", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			GetAllFunc: func() ([]Leave, error) {
+				return []Leave{}, errors.New("invalid")
+			},
+		}
+
+		service := NewLeaveService(mockRepo)
+		_, err := service.GetLeaves()
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
-func TestGetByID(t *testing.T) {
-	t.Run("Valid-GetByID", func(t *testing.T) {
+func TestGetLeave(t *testing.T) {
+	t.Run("Valid-GetLeave", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			GetByIDFunc: func(id int) (Leave, error) {
 				return Leave{}, nil
@@ -92,10 +104,21 @@ func TestGetByID(t *testing.T) {
 		_, err := service.GetLeave(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetLeave", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			GetByIDFunc: func(id int) (Leave, error) {
+				return Leave{}, errors.New("invalid")
+			},
+		}
+
+		service := NewLeaveService(mockRepo)
+		_, err := service.GetLeave(1)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
-func TestCreate(t *testing.T) {
-	t.Run("Valid-Create", func(t *testing.T) {
+func TestCreateLeave(t *testing.T) {
+	t.Run("Valid-CreateLeave", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			CreateFunc: func(leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -105,9 +128,20 @@ func TestCreate(t *testing.T) {
 		_, err := service.CreateLeave(Leave{})
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-CreateLeave", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			CreateFunc: func(leave Leave) (Leave, error) {
+				return Leave{}, errors.New("invalid")
+			},
+		}
+		service := NewLeaveService(mockRepo)
+		_, err := service.CreateLeave(Leave{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
-func TestUpdate(t *testing.T) {
-	t.Run("Valid-Update", func(t *testing.T) {
+func TestUpdateLeave(t *testing.T) {
+	t.Run("Valid-UpdateLeave", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -117,10 +151,21 @@ func TestUpdate(t *testing.T) {
 		_, err := service.UpdateLeave(1, Leave{})
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-UpdateLeave", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			UpdateFunc: func(id int, leave Leave) (Leave, error) {
+				return Leave{}, errors.New("invalid")
+			},
+		}
+		service := NewLeaveService(mockRepo)
+		_, err := service.UpdateLeave(1, Leave{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
-func TestDelete(t *testing.T) {
-	t.Run("Valid-Delete", func(t *testing.T) {
+func TestDeleteLeave(t *testing.T) {
+	t.Run("Valid-DeleteLeave", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			DeleteFunc: func(id int) error {
 				return nil
@@ -130,10 +175,21 @@ func TestDelete(t *testing.T) {
 		err := service.DeleteLeave(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-DeleteLeave", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			DeleteFunc: func(id int) error {
+				return errors.New("invalid")
+			},
+		}
+		service := NewLeaveService(mockRepo)
+		err := service.DeleteLeave(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestUpdateStatus(t *testing.T) {
-	t.Run("Valid-UpdateStatus", func(t *testing.T) {
+	t.Run("Valid-UpdateStatus-Approve", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
@@ -153,13 +209,33 @@ func TestUpdateStatus(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("Invalid-ID UpdateStatus", func(t *testing.T) {
+	t.Run("Valid-UpdateStatus-Reject", func(t *testing.T) {
 		mockRepo := &mockLeaveRepo{
 			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
 				return Leave{}, nil
 			},
 			GetByIDFunc: func(id int) (Leave, error) {
-				return Leave{}, errors.New("ID not found")
+				return Leave{}, nil
+			},
+		}
+
+		mockUpdateStatus := LeaveStatus{
+			Status:         "reject",
+			ManagerOpinion: "reject",
+		}
+
+		service := NewLeaveService(mockRepo)
+		_, err := service.UpdateStatus(1, mockUpdateStatus)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Invalid-UpdateStatus-ID-Notfound", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
+				return Leave{}, nil
+			},
+			GetByIDFunc: func(id int) (Leave, error) {
+				return Leave{}, errors.New("invalid")
 			},
 		}
 
@@ -171,5 +247,78 @@ func TestUpdateStatus(t *testing.T) {
 		service := NewLeaveService(mockRepo)
 		_, err := service.UpdateStatus(1, mockUpdateStatus)
 		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
+	//t.Run("Invalid-UpdateStatus-PostFail", func(t *testing.T) {
+	//	mockRepo := &mockLeaveRepo{
+	//		UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
+	//			return Leave{}, nil
+	//		},
+	//		GetByIDFunc: func(id int) (Leave, error) {
+	//			return Leave{}, nil
+	//		},
+	//	}
+	//	mockPostAttendance := func(payload repository.Attendance) error {
+	//		return errors.New("failed to post attendance")
+	//	}
+	//
+	//	mockUpdateStatus := LeaveStatus{
+	//		Status:         "approve",
+	//		ManagerOpinion: "OK, approve",
+	//	}
+	//
+	//	service := NewLeaveService(mockRepo)
+	//	originalPostAttendance := PostAttendance
+	//	PostAttendance = mockPostAttendance
+	//	defer func() {
+	//		PostAttendance = originalPostAttendance
+	//	}()
+	//	_, err := service.UpdateStatus(1, mockUpdateStatus)
+	//	assert.Error(t, err)
+	//	//assert.Equal(t, "invalid", err.Error())
+	//})
+	t.Run("Invalid-UpdateStatus", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			UpdateStatusFunc: func(id int, leave Leave) (Leave, error) {
+				return Leave{}, errors.New("invalid")
+			},
+			GetByIDFunc: func(id int) (Leave, error) {
+				return Leave{}, nil
+			},
+		}
+
+		mockUpdateStatus := LeaveStatus{
+			Status:         "approve",
+			ManagerOpinion: "OK, approve",
+		}
+
+		service := NewLeaveService(mockRepo)
+		_, err := service.UpdateStatus(1, mockUpdateStatus)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
+}
+
+func TestGetMyLeaves(t *testing.T) {
+	t.Run("Valid-GetMyLeaves", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			GetAllMeFunc: func(eid string) ([]Leave, error) {
+				return []Leave{}, nil
+			},
+		}
+		service := NewLeaveService(mockRepo)
+		_, err := service.GetAllMe("E0001")
+		assert.NoError(t, err)
+	})
+	t.Run("Invalid-GetMyLeaves", func(t *testing.T) {
+		mockRepo := &mockLeaveRepo{
+			GetAllMeFunc: func(eid string) ([]Leave, error) {
+				return []Leave{}, errors.New("invalid")
+			},
+		}
+		service := NewLeaveService(mockRepo)
+		_, err := service.GetAllMe("E0001")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }

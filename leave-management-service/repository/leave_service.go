@@ -14,7 +14,7 @@ type LeaveService interface {
 	UpdateLeave(id int, leave Leave) (Leave, error)
 	DeleteLeave(id int) error
 	UpdateStatus(id int, leave LeaveStatus) (Leave, error)
-	GetMyLeaves(eid string) ([]Leave, error)
+	GetAllMe(eid string) ([]Leave, error)
 }
 
 type LeaveServiceDB struct {
@@ -47,7 +47,7 @@ func (u *LeaveServiceDB) DeleteLeave(id int) error {
 	return u.repo.Delete(id)
 }
 
-func (u *LeaveServiceDB) GetMyLeaves(eid string) ([]Leave, error) {
+func (u *LeaveServiceDB) GetAllMe(eid string) ([]Leave, error) {
 	return u.repo.GetAllMe(eid)
 }
 
@@ -60,8 +60,32 @@ type Attendance struct {
 	LeaveID    int       `db:"leave_id" json:"leave_id"`
 }
 
-func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) {	
-	existsLeave, err := u.repo.GetByID(id);
+func PostAttendance(payload Attendance) error {
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", "http://localhost:8081/api/attendance", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	return nil
+}
+
+func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) {
+	existsLeave, err := u.repo.GetByID(id)
 	if err != nil {
 		return Leave{}, err
 	}
@@ -75,25 +99,10 @@ func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) 
 				Date:       d,
 				LeaveID:    existsLeave.ID,
 			}
-			jsonData, err := json.Marshal(payload)
+			err := PostAttendance(payload)
 			if err != nil {
 				return Leave{}, err
 			}
-
-			req, err := http.NewRequest("POST", "http://localhost:8081/attendance", bytes.NewBuffer(jsonData))
-			if err != nil {
-				return Leave{}, err
-			}
-
-			req.Header.Set("Content-Type", "application/json")
-
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				return Leave{}, err
-			}
-			defer resp.Body.Close()
-
 		}
 	}
 
