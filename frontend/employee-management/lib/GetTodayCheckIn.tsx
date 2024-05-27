@@ -1,5 +1,5 @@
 export default async function GetTodayCheckIn(eid : string, token : string) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendance/check-today/${eid}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendances/check-today/${eid}`, {
         method: 'GET',
         headers: {
             authorization: `Bearer ${token}`,

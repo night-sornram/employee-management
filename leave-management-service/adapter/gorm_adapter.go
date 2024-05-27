@@ -53,7 +53,7 @@ func (g *GormAdapter) Delete(id int) error {
 }
 
 func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.Leave, error) {
-	var existingLeave  repository.Leave
+	var existingLeave repository.Leave
 	if err := g.db.Where("id = ?", id).First(&existingLeave).Error; err != nil {
 		return leave, err
 	}

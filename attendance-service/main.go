@@ -52,5 +52,8 @@ func main() {
 	app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
 	app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
-	app.Listen(":8081")
+	err = app.Listen(":8081")
+	if err != nil {
+		return
+	}
 }

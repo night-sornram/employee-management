@@ -12,8 +12,8 @@ export default function SideBar({children}: {children: React.ReactNode}) {
     const { data: session } = useSession()
 
     return (
-        <div className=" h-[93vh] max-w-screen flex flex-col md:flex-row">
-            <div className=" md:w-[25vw] 2xl:w-[15vw] md:h-full border-r flex p-3 md:p-5">
+        <div className=" max-w-screen flex flex-col h-full md:flex-row">
+            <div className=" md:w-[25vw] 2xl:w-[15vw] md:h-auto border-r flex p-3 md:p-5">
                 <div className=" flex flex-col space-y-5 w-full overflow-y-scroll md:overflow-y-hidden">
                     <h1 className=" md:flex hidden text-sm">
                         CHECK-IN CHECK-OUT
