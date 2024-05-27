@@ -35,7 +35,7 @@ export default async function Page() {
         <main className='py-[5%] px-[5%]  h-[93vh]  md:w-[70%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
-                    History of Leave
+                    Leave Management
                 </h1>
             </div>
             <div className="flex flex-row gap-10 md:overflow-y-hidden overflow-y-scroll">
@@ -81,6 +81,9 @@ export default async function Page() {
                                 Employee ID
                             </TableHead>
                             <TableHead>
+                                Employee
+                            </TableHead>
+                            <TableHead>
                                 From
                             </TableHead>
                             <TableHead>
@@ -103,6 +106,9 @@ export default async function Page() {
                             <TableRow  key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
+                                </TableCell>
+                                <TableCell>
+                                    {leave.employee_name} {leave.employee_lastname}
                                 </TableCell>
                                 <TableCell>
                                     {dayjs(leave.date_start).format('DD/MM/YYYY')}
@@ -147,6 +153,9 @@ export default async function Page() {
                                 Employee ID
                             </TableHead>
                             <TableHead>
+                                Employee
+                            </TableHead>
+                            <TableHead>
                                 From
                             </TableHead>
                             <TableHead>
@@ -173,6 +182,9 @@ export default async function Page() {
                             <TableRow key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
+                                </TableCell>
+                                <TableCell>
+                                    {leave.employee_name} {leave.employee_lastname}
                                 </TableCell>
                                 <TableCell>
                                     {dayjs(leave.date_start).format('DD/MM/YYYY')}

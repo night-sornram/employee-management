@@ -1,6 +1,6 @@
 export default async function Checkin(token : string, employee_id : string){
     console.log(employee_id)
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendance/check-in`,{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendances/check-in`,{
         method: "POST",
         mode : "cors",
         headers: {

@@ -81,13 +81,13 @@ func (f *handlerFiber) UpdateLeave(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	err = validate.Struct(leave)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	// validate := validator.New()
+	// err = validate.Struct(leave)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": err.Error(),
+	// 	})
+	// }
 	updateLeave, err := f.service.UpdateLeave(id, leave)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

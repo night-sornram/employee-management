@@ -1,5 +1,5 @@
 export default async function Checkout(token : string, aid : Number){
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendance/check-out`,{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ATTENDANCE_URL}/api/attendances/check-out`,{
         method: "PUT",
         mode : "cors",
         headers: {

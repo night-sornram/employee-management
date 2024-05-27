@@ -23,6 +23,8 @@ export interface Attendance {
 	check_out: string,
 	date: string,
 	leave_id: number | null,
+    employee_name: string,
+    employee_lastname: string
 }
 
 export interface Leave {
@@ -32,6 +34,8 @@ export interface Leave {
 	date_end: string,
 	reason: string,
 	status: string,
+    employee_name: string,
+    employee_lastname: string
 }
 
 export interface Notification {

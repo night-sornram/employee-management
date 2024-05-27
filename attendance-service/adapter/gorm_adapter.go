@@ -20,7 +20,9 @@ func NewGormAdapter(db *gorm.DB) repository.AttendanceRepository {
 
 func (g *GormAdapter) GetAll() ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
-	err := g.db.Find(&attendances).Error
+	query := `select * from attendances a join dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	as employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id;`
+	err := g.db.Raw(query).Scan(&attendances).Error
 	if err != nil {
 		return nil, err
 	}
