@@ -6,7 +6,7 @@ import { AvatarImpl } from "./Shadcnui/Avatar";
   
 export default function Header() {
     return (
-        <div className="  border border-b flex flex-row justify-between px-10 h-[7vh] items-center">
+        <div className=" border border-b flex flex-row justify-between px-10 h-[7vh] items-center">
             <div className=" flex flex-row justify-center items-center space-x-7  ">
                 <h1>
                     LOGO

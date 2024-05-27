@@ -41,12 +41,16 @@ export default function ApprovalSection ({data} : {data: Leave}) {
                 <Label htmlFor="reason">Reason</Label>
                 <Textarea id="reason" disabled defaultValue={data.reason}/>
             </div>
-            <div className="flex flex-row space-x-3 justify-between w-full">
-                <button className="w-1/2 text-center bg-green-500 rounded px-3 py-2 text-white hover:bg-green-600 hover:shadow-md" 
-                onClick={(e) => handleApprove(session.user.token, data.id, "Approved", data.date_start, data.date_end, data.employee_id)}>Approve</button>
-                <button className="w-1/2 text-center bg-red-500 rounded px-3 py-2 text-white hover:bg-red-600 hover:shadow-md" 
-                onClick={(e) => handleApprove(session.user.token, data.id, "Denied", data.date_start, data.date_end, data.employee_id)}>Deny</button>
-            </div>
+            {
+                data.status === "Pending"  &&
+                <div className="flex flex-row space-x-3 justify-between w-full">
+                    <button className="w-1/2 text-center bg-green-500 rounded px-3 py-2 text-white hover:bg-green-600 hover:shadow-md" 
+                    onClick={(e) => handleApprove(session.user.token, data.id, "Approved", data.date_start, data.date_end, data.employee_id)}>Approve</button>
+                    <button className="w-1/2 text-center bg-red-500 rounded px-3 py-2 text-white hover:bg-red-600 hover:shadow-md" 
+                    onClick={(e) => handleApprove(session.user.token, data.id, "Denied", data.date_start, data.date_end, data.employee_id)}>Deny</button>
+                </div>
+            }
+            
         </div>
     );
 }

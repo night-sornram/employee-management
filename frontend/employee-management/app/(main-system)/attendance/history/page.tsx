@@ -164,7 +164,7 @@ export default  function Page() {
                             setCurrentPage(parseInt(e.currentTarget.value))}
                         }
                     />
-                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + Math.ceil(data.length / itemsPerPage)} readOnly/>
+                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(data.length / itemsPerPage) === 0 ? 1 : Math.ceil(data.length / itemsPerPage)) } readOnly/>
 
                     <PaginationItem>
                         <PaginationNext className=" cursor-pointer" onClick={()=>

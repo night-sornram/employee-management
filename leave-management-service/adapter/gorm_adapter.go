@@ -22,9 +22,6 @@ func (g *GormAdapter) GetAll() ([]repository.Leave, error) {
 	if err := g.db.Raw(query).Scan(&leaves).Error; err != nil {
 		return nil, err
 	}
-	// if err := g.db.Find(&leaves).Error; err != nil {
-	// 	return nil, err
-	// }
 	return leaves, nil
 }
 

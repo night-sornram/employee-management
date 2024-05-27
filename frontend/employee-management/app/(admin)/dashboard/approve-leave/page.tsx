@@ -1,38 +1,60 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+"use client"
+
+
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Leave, UserJson } from "@/interface";
 import GetLeaveAdmin from "@/lib/GetLeaveAdmin";
-import GetUserProfile from "@/lib/GetUserProfile";
 import dayjs from "dayjs";
-import { getServerSession } from "next-auth";
 import utc from "dayjs/plugin/utc";
 import { LapTimerIcon , CheckIcon ,Cross1Icon  } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+  } from "@/components/ui/pagination"
+  import { Input } from "@/components/ui/input";
 dayjs.extend(utc);
 
-export default async function Page() {
+export default function Page() {
+    const { data: session } = useSession()
+    const [pending, setPending] = useState<Leave[]>([]);
+    const [currentPagePending, setCurrentPagePending] = useState(1);
+    const itemsPerPage  = 10
+    const indexOfLastItemPending = currentPagePending * itemsPerPage;
+    const indexOfFirstItemPending = indexOfLastItemPending - itemsPerPage;
+    const currentItemsPending = pending.slice(indexOfFirstItemPending, indexOfLastItemPending);
+    const [success, setSuccess] = useState<Leave[]>([]);
+    const [currentPageSuccess, setCurrentPageSuccess] = useState(1);
+    const indexOfLastItemSuccess = currentPageSuccess * itemsPerPage;
+    const indexOfFirstItemSuccess = indexOfLastItemSuccess - itemsPerPage;
+    const currentItemsSuccess = success.slice(indexOfFirstItemSuccess, indexOfLastItemSuccess);
+    useEffect(() => {
+        if (!session) {
+            return () => {
+                window.location.href = "/";
+            };
+        }
+        GetLeaveAdmin(session.user.token).then((res) => {
+            setPending(res.filter((leave : Leave) => leave.status == 'Pending').sort(function(a : any ,b : any){
+                return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
+            }));
+            setSuccess(res.filter((leave : Leave) => leave.status !== 'Pending').sort(function(a : any ,b : any){
+                return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
+            }));
+        });
+    }, []);
 
-    const session = await getServerSession(authOptions);
-    if (!session) return null;
-    const userProfile:UserJson = await GetUserProfile(session?.user.token);
-    const data: Leave[] = await GetLeaveAdmin(session.user.token);
-    let approved = 0, denied = 0, pending = 0;
-    for (let leave of data) {
-        if (leave.status == 'Approved') {
-            approved += 1;
-        }
-        if (leave.status == 'Denied') {
-            denied += 1;
-        }
-        if (leave.status == 'Pending') {
-            pending += 1;
-        }
-    }
 
     return(
-        <main className='py-[5%] px-[5%]  h-[93vh]  md:w-[70%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%] h-auto md:w-[70%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Leave Management
@@ -46,7 +68,7 @@ export default async function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {approved}
+                        {success.filter((leave) => leave.status == 'Approved').length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -56,7 +78,7 @@ export default async function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {denied}
+                        {success.filter((leave) => leave.status == 'Denied').length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -66,7 +88,7 @@ export default async function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {pending}
+                        {pending.length}
                     </CardContent>
                 </Card>
             </div>
@@ -102,7 +124,7 @@ export default async function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            data.filter((leave) => leave.status == 'Pending').map((leave) =>
+                            pending.filter((leave) => leave.status == 'Pending').map((leave) =>
                             <TableRow  key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
@@ -141,6 +163,43 @@ export default async function Page() {
                         }
                     </TableBody>
                 </Table>
+                <Pagination  className=" pt-4 pb-10">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious className=" cursor-pointer" onClick={()=>
+                                    {
+                                        if(currentPagePending > 1){
+                                            setCurrentPagePending(currentPagePending - 1)
+                                        }}}
+                                />
+                        </PaginationItem>
+                        <Input type="number" className=" w-10" value={currentPagePending} onChange={(e)=>
+                            {
+                                e.currentTarget.value === "" ? setCurrentPagePending(1) :
+                                parseInt(e.currentTarget.value) > Math.ceil(pending.length / itemsPerPage) ?
+                                setCurrentPagePending(Math.ceil(pending.length / itemsPerPage))
+                                :
+                                parseInt(e.currentTarget.value) < 1 ?
+                                setCurrentPagePending(1)
+                                :
+                                setCurrentPagePending(parseInt(e.currentTarget.value))}
+                            }
+                        />
+                        <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(pending.length / itemsPerPage) === 0 ? 1 : Math.ceil(pending.length / itemsPerPage)) } readOnly/>
+
+                        <PaginationItem>
+                            <PaginationNext className=" cursor-pointer" onClick={()=>
+                                {
+                                    if(currentPagePending < Math.ceil(pending.length / itemsPerPage)){
+                                        setCurrentPagePending(currentPagePending + 1)
+                                    }}
+                                }
+                                
+                                />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+
             </div>
             <div className="">
                 <h1 className="font-bold text-2xl">
@@ -174,7 +233,7 @@ export default async function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            data.filter((leave) => leave.status !== 'Pending').sort(
+                            success.filter((leave) => leave.status !== 'Pending').sort(
                                 function(a,b){
                                     return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
                                 }
@@ -217,6 +276,42 @@ export default async function Page() {
                         }
                     </TableBody>
                 </Table>
+                <Pagination className=" pt-4">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious className=" cursor-pointer" onClick={()=>
+                                    {
+                                        if(currentPageSuccess > 1){
+                                            setCurrentPageSuccess(currentPageSuccess - 1)
+                                        }}}
+                                />
+                        </PaginationItem>
+                        <Input type="number" className=" w-10" value={currentPageSuccess} onChange={(e)=>
+                            {
+                                e.currentTarget.value === "" ? setCurrentPageSuccess(1) :
+                                parseInt(e.currentTarget.value) > Math.ceil(success.length / itemsPerPage) ?
+                                setCurrentPageSuccess(Math.ceil(success.length / itemsPerPage))
+                                :
+                                parseInt(e.currentTarget.value) < 1 ?
+                                setCurrentPageSuccess(1)
+                                :
+                                setCurrentPageSuccess(parseInt(e.currentTarget.value))}
+                            }
+                        />
+                        <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(success.length / itemsPerPage) === 0 ? 1 : Math.ceil(success.length / itemsPerPage)) } readOnly/>
+
+                        <PaginationItem>
+                            <PaginationNext className=" cursor-pointer" onClick={()=>
+                                {
+                                    if(currentPageSuccess < Math.ceil(success.length / itemsPerPage)){
+                                        setCurrentPageSuccess(currentPageSuccess + 1)
+                                    }}
+                                }
+                                
+                                />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
             </div>
         </main>
     )

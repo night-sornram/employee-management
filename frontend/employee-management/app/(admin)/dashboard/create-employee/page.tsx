@@ -70,7 +70,7 @@ export default function LeaveRequestPage () {
     }
     
     return (
-        <div className="flex flex-col md:space-y-0 space-y-5 px-[5%] md:px-[10%] py-[5%] w-screen md:w-[80%] 2xl:w-[60%] gap-[5%]">
+        <div className="flex flex-col md:space-y-7 space-y-5 px-[5%]  py-[5%] w-screen md:w-[80%] 2xl:w-[60%] gap-[5%]">
             <h1 className="text-2xl font-bold">Create Employee</h1>
             <div className=" w-12/12 flex flex-col space-y-3">
                 <Label htmlFor="id">Employee ID</Label>
