@@ -1,61 +1,34 @@
-"use client"
-
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
-import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Attendance, UserJson } from "@/interface";
-import GetMyAttendances from "@/lib/GetMyAttendances";
+import getAllAttendances from "@/lib/GetAllAttendances";
+import GetUserProfile from "@/lib/GetUserProfile";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from "@/components/ui/pagination"
-import { Input } from "@/components/ui/input";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 dayjs.extend(utc);
 
-export default  function Page() {
+export default async function AllAttendanceHistoryPage () {
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage  = 10
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const { data: session } = useSession()
-
-    const [data, setData] = useState<Attendance[]>([]);
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-    useEffect(() => {
-        if (!session) {
-            return () => {
-                window.location.href = "/";
-            };
-        }
-        GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
-            setData(res.sort(function(a : any ,b : any){
-                return Number(new Date(a.date)) - Number(new Date(b.date));
-            }));
-        });
-    }, []);
-
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return null;
+    }
+    const data:Attendance[] = await getAllAttendances(session.user.token);
     const countLeave = (data: Attendance) => {
         return data.leave_id != -1;
     }
 
-    return(
-        <main className='py-[3%] px-[5%] h-full  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
+    return (
+        <main className='py-[5%] px-[5%] md:px-[10%] h-[93vh] md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
-                    History of Attendance
+                    Employee Attendance
                 </h1>
             </div>
-            <div className="flex flex-row gap-10  md:overflow-y-hidden overflow-y-scroll">
+            <div className="flex flex-row gap-10 md:overflow-y-hidden overflow-y-scroll">
                 <Card className="w-[320px] ">
                     <CardHeader>
                         <CardTitle className="text-lg">
@@ -85,6 +58,9 @@ export default  function Page() {
                                 Date
                             </TableHead>
                             <TableHead>
+                                Employee
+                            </TableHead>
+                            <TableHead>
                                 Check-in Time
                             </TableHead>
                             <TableHead>
@@ -97,12 +73,15 @@ export default  function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.sort(function(a,b){
+                            data.sort(function(a,b){
                                 return Number(new Date(a.date)) - Number(new Date(b.date));
                             }).map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
+                                </TableCell>
+                                <TableCell>
+                                    {att.employee_name} {att.employee_lastname}
                                 </TableCell>
                                 <TableCell>
                                     {att.leave_id !== -1 ? "LEAVE" : 
@@ -142,42 +121,6 @@ export default  function Page() {
                     </TableBody>
                 </Table>
             </div>
-            <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious className=" cursor-pointer" onClick={()=>
-                                {
-                                    if(currentPage > 1){
-                                        setCurrentPage(currentPage - 1)
-                                    }}}
-                            />
-                    </PaginationItem>
-                    <Input type="number" className=" w-10" value={currentPage} onChange={(e)=>
-                        {
-                            e.currentTarget.value === "" ? setCurrentPage(1) :
-                            parseInt(e.currentTarget.value) > Math.ceil(data.length / itemsPerPage) ?
-                            setCurrentPage(Math.ceil(data.length / itemsPerPage))
-                            :
-                            parseInt(e.currentTarget.value) < 1 ?
-                            setCurrentPage(1)
-                            :
-                            setCurrentPage(parseInt(e.currentTarget.value))}
-                        }
-                    />
-                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + Math.ceil(data.length / itemsPerPage)} readOnly/>
-
-                    <PaginationItem>
-                        <PaginationNext className=" cursor-pointer" onClick={()=>
-                            {
-                                if(currentPage < Math.ceil(data.length / itemsPerPage)){
-                                    setCurrentPage(currentPage + 1)
-                                }}
-                            }
-                            
-                            />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
         </main>
-    )
+    );
 }

@@ -3,6 +3,12 @@ import { Inter  } from "next/font/google"
 import Header from "@/components/Header";
 import SideBar from "@/components/SideBar";
 import { Toaster } from "@/components/ui/toaster";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { UserJson } from "@/interface";
+import GetUserProfile from "@/lib/GetUserProfile";
+import { redirect } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 
 
@@ -19,13 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-
   return (
     <>
       <Header />
       <SideBar >
         {children}
-        <Toaster/>
       </SideBar>
     </>
   );

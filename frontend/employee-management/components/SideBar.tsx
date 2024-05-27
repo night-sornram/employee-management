@@ -89,6 +89,12 @@ export default function SideBar({children}: {children: React.ReactNode}) {
                                                 Approve Leave
                                             </h1> 
                                         </Button>
+                                        <Button className={` ${ params === "/dashboard/all-attendance-history" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/all-attendance-history")}} variant="ghost">
+                                            <CounterClockwiseClockIcon  className="mr-2 h-5 w-5" />
+                                            <h1 >
+                                                Attendance History
+                                            </h1> 
+                                        </Button>
                                     </div>
                                 </div>
                                 

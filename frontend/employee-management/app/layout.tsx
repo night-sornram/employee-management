@@ -7,6 +7,7 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import ReduxProvider from "@/providers/ReduxProvider";
 import FontProvider from "@/providers/FontProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default async function RootLayout({
               <ReduxProvider>
                 <FontProvider>
                   {children}
+                  <Toaster/>
                 </FontProvider>
               </ReduxProvider>
             </NextAuthProvider>

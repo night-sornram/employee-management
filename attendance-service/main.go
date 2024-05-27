@@ -35,6 +35,10 @@ func main() {
 		log.Fatalf("Failed to auto-migrate: %v", err)
 	}
 
+	extension := "dblink"
+	createExtension := fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %s;", extension)
+	db.Exec(createExtension)
+
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewAttendanceService(repo)
 	handle := adapter.NewhandlerFiber(service)
