@@ -108,7 +108,7 @@ func (g *GormAdapter) CheckToday(eid string) (repository.Attendance, error) {
 	var attendance repository.Attendance
 	err := g.db.Where("employee_id = ? AND date = ?", eid, time.Now().Format(time.DateOnly)).First(&attendance).Error
 	if err != nil {
-		return attendance, nil
+		return attendance, err
 	}
 	return attendance, nil
 }
