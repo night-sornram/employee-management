@@ -48,8 +48,7 @@ export default function LeaveRequestPage () {
         const userProfile:UserJson = await GetUserProfile(session?.user.token);
         let startFormatted = dayjs(start).format('YYYY-MM-DDT[00:00:00Z]');
         let endFormatted = dayjs(end).format('YYYY-MM-DDT[00:00:00Z]');
-        let reasonFormatted = category + ": " + reason;
-        await CreateLeaveRequestAction(session.user.token, userProfile.employee_id, startFormatted, endFormatted, reasonFormatted);
+        await CreateLeaveRequestAction(session.user.token, userProfile.employee_id, startFormatted, endFormatted, reason, category);
         await CreateNotification(session.user.token, "Leave Request", "You have new leave request", false, userProfile.employee_id);
         toast({
             title: "Request Submitted",
@@ -62,7 +61,7 @@ export default function LeaveRequestPage () {
     }
 
     return (
-        <div className="flex flex-col md:space-y-0 space-y-5 px-[10%] py-[5%] md:w-[80%] 2xl:w-[60%] gap-[5%]">
+        <div className="flex flex-col space-y-5 px-[10%] py-[5%] md:w-[80%] 2xl:w-[60%] gap-[5%]">
             <h1 className="text-2xl font-bold">Leave Request</h1>
             <div className="flex flex-col space-y-3 justify-between w-full">
                 <Label htmlFor="reason">Leave time</Label>

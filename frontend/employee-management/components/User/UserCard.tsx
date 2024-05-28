@@ -7,8 +7,8 @@ export default function UserCard ({userData} : {userData: UserJson}) {
 
             </div>
             <div className="w-[50%] flex flex-col pl-3">
-                <h1 className="text-2xl">{userData.title}. {userData.name} {userData.lastname}</h1>
-                <h1 className="text-xl">{userData.title}. {userData.name} {userData.lastname}</h1>
+                <h1 className="text-2xl">{userData.title_en}. {userData.first_name_en} {userData.last_name_en}</h1>
+                <h1 className="text-xl">{userData.title_en}. {userData.first_name_en} {userData.last_name_en}</h1>
             </div>
             <div className="w-[30%] flex flex-col">
                 <h1 className="text-slate-600">Gender: {userData.gender}</h1>

@@ -4,7 +4,6 @@ export default async function GetLeaveAdmin ( token: string) {
         mode: 'cors',
         headers: {
             authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
         },
         next: {
             tags: ['leaves']

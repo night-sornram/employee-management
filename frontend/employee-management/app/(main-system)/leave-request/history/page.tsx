@@ -1,5 +1,17 @@
 "use client"
 
+import * as React from "react"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { format } from "date-fns"
+ 
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Leave, UserJson } from "@/interface";
@@ -18,18 +30,45 @@ import {
     PaginationNext,
     PaginationPrevious,
   } from "@/components/ui/pagination"
-  import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+  import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
 dayjs.extend(utc);
 
 export default function Page() {
     const { data: session } = useSession()
+    const [date, setDate] = useState<Date>()
     const [data, setData] = useState<Leave[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const [sort , setSort] = useState(true)
+    const [selectedOption, setSelectedOption] = useState('all')
+    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
+    const sortItem = (item : Leave[]) => {
+        if(sort){
+            return item.sort(function(a,b){
+                return new Date(a.date_start).getTime() - new Date(b.date_start).getTime();
+            });
+        }
+        else{
+            return item.sort(function(a,b){
+                
+                return new Date(b.date_start).getTime() - new Date(a.date_start).getTime();
+            });
+        }
+    }
 
     useEffect(() => {
         if (!session) {
@@ -37,12 +76,40 @@ export default function Page() {
                 window.location.href = "/";
             };
         }
-        GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
-            setData(res.sort(function(a : any ,b : any){
-                return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
-            }));
-        });
-    }, []);
+        if(date === undefined){
+        
+            if(selectedOption === "month"){
+                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res.filter((att : Leave) => {
+                        return dayjs(att.date_start).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
+                    })));
+                });
+            }
+            else if (selectedOption === "year"){
+                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res.filter(
+                        (att : Leave) => {
+                            return dayjs(att.date_start).local().format('YYYY') === dayjs(date).local().format('YYYY')
+                        }
+                    )));
+                });
+            }
+            else {
+                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res));
+                });
+            }
+        }
+        else{
+            GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
+                setData(res.filter((att : Leave) => {
+                    return dayjs(att.date_start).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
+                    || dayjs(att.date_end).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY') 
+                    || (new Date(att.date_end).getTime() > new Date(date).getTime() && new Date(att.date_start).getTime() < new Date(date).getTime())
+                    }));
+            });
+        }
+    }, [selectedOption , date , sort]);
     return(
         <main className='py-[3%] px-[5%] h-full  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
@@ -82,6 +149,67 @@ export default function Page() {
                     </CardContent>
                 </Card>
             </div>
+            <div className=" w-full h-10 flex flex-row space-x-3">
+                <Popover >
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-7/12 justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                        )}
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                <Select  value={selectedOption}
+                onValueChange={(value) => {
+                    setSelectedOption(value)
+                }}>
+                    <SelectTrigger className="w-2/12">
+                        <SelectValue placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                        <SelectItem value="month">Month</SelectItem>
+                        <SelectItem value="year">Year</SelectItem>
+                        <SelectItem value="all">All</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+                <Button 
+                onClick={()=>{
+                    setSort(!sort)
+                }}
+                className=" w-2/12 flex justify-center items-center">
+                    {
+                        sort ?
+                        <TextAlignBottomIcon className="h-5 w-5"/>
+                        :
+                        <TextAlignTopIcon className="h-5 w-5"/>
+                    }
+                </Button>
+                <Button className=" w-1/12 flex justify-center items-center"
+                onClick={
+                    ()=>{
+                        setDate(undefined)
+                        setSelectedOption("all")
+                        setSort(true)
+                    }
+                }>
+                    Reset
+                </Button>
+            </div>
             <div className="">
                 <Table>
                     <TableHeader>
@@ -96,7 +224,13 @@ export default function Page() {
                                 Duration (days)
                             </TableHead>
                             <TableHead>
+                                Category
+                            </TableHead>
+                            <TableHead>
                                 Status
+                            </TableHead>
+                            <TableHead>
+                                Details
                             </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -113,6 +247,9 @@ export default function Page() {
                                 <TableCell>
                                     {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
                                 </TableCell>
+                                <TableCell>
+                                    {leave.category}
+                                </TableCell>
                                 {
                                     leave.status == "Approved" ? 
                                     <TableCell className=" flex flex-row">
@@ -126,11 +263,17 @@ export default function Page() {
                                         <LapTimerIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell>
                                 }
+                                <TableCell>                                    
+                                    <Link href={`/leave-request/history/${leave.id}`} className="hover:underline text-sky-600">
+                                        Details
+                                    </Link>                                   
+                                </TableCell>
                             </TableRow>)
                         }
                     </TableBody>
                 </Table>
             </div>
+            
             <Pagination>
                 <PaginationContent>
                     <PaginationItem>

@@ -43,6 +43,9 @@ export default function Page() {
             };
         }
         GetLeaveAdmin(session.user.token).then((res) => {
+            if (!res) {
+                return null;
+            }
             setPending(res.filter((leave : Leave) => leave.status == 'Pending').sort(function(a : any ,b : any){
                 return Number(new Date(a.date_start)) - Number(new Date(b.date_start));
             }));
@@ -54,7 +57,7 @@ export default function Page() {
 
 
     return(
-        <main className='py-[5%] px-[5%] h-auto md:w-[70%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%] h-auto md:w-[80%] 2xl:w-[70%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Leave Management
@@ -115,6 +118,9 @@ export default function Page() {
                                 Duration (days)
                             </TableHead>
                             <TableHead>
+                                Category
+                            </TableHead>
+                            <TableHead>
                                 Status
                             </TableHead>
                             <TableHead>
@@ -140,6 +146,9 @@ export default function Page() {
                                 </TableCell>
                                 <TableCell>
                                     {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
+                                </TableCell>
+                                <TableCell>
+                                    {leave.category}
                                 </TableCell>
                                 {
                                     leave.status == "Approved" ? 
@@ -224,6 +233,9 @@ export default function Page() {
                                 Duration (days)
                             </TableHead>
                             <TableHead>
+                                Category
+                            </TableHead>
+                            <TableHead>
                                 Status
                             </TableHead>
                             <TableHead>
@@ -253,6 +265,9 @@ export default function Page() {
                                 </TableCell>
                                 <TableCell>
                                     {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
+                                </TableCell>
+                                <TableCell>
+                                    {leave.category}
                                 </TableCell>
                                 {
                                     leave.status == "Approved" ? 
