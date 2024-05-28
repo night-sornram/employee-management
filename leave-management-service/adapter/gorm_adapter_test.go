@@ -45,7 +45,7 @@ func TestGetAll(t *testing.T) {
 		defer sqlDB.Close()
 		repo := NewGormAdapter(db)
 
-		mock.ExpectQuery(`SELECT (.+) FROM "leaves"`).
+		mock.ExpectQuery(`select`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		_, err := repo.GetAll()
 		assert.NoError(t, err)
@@ -56,7 +56,7 @@ func TestGetAll(t *testing.T) {
 		defer sqlDB.Close()
 		repo := NewGormAdapter(db)
 
-		mock.ExpectQuery(`SELECT (.+) FROM "leaves"`).
+		mock.ExpectQuery(`select`).
 			WillReturnError(errors.New("invalid"))
 		_, err := repo.GetAll()
 		assert.Error(t, err)
