@@ -77,12 +77,6 @@ export default function AllAttendanceHistoryPage () {
                 window.location.href = "/";
             };
         }
-        getAllAttendances(session.user.token).then((res) => {
-            setData(res.sort(function(a : any ,b : any){
-                return Number(new Date(a.date)) - Number(new Date(b.date));
-            })
-        );
-        });
         if(date === undefined){
         
             if(selectedOption === "month"){

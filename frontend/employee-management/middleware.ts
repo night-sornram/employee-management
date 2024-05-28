@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req) {
     if (
-     ( (req.nextUrl.pathname === "/dashboard/approve-leave" || req.nextUrl.pathname === "/dashboard/create-employee" || req.nextUrl.pathname === "/dashboard/all-attendance-history" ) &&
+     ( (req.nextUrl.pathname === "/dashboard/approve-leave" 
+     || req.nextUrl.pathname === "/dashboard/create-employee" 
+     || req.nextUrl.pathname === "/dashboard/all-attendance-history" 
+     || req.nextUrl.pathname === "/dashboard/employee" 
+    ) &&
       req.nextauth.token?.role !== "admin")
     ) {
       return NextResponse.redirect(new URL('/', req.url))

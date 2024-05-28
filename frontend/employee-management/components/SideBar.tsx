@@ -1,7 +1,7 @@
 'use client'
  
 import { usePathname  , useRouter } from 'next/navigation'
-import { EnterIcon , ExitIcon , CounterClockwiseClockIcon , CalendarIcon , CheckIcon , PersonIcon  } from "@radix-ui/react-icons"
+import { EnterIcon , ExitIcon , CounterClockwiseClockIcon , CalendarIcon , CheckIcon , PersonIcon , PlusIcon  } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import { useSession } from 'next-auth/react'
 
@@ -79,8 +79,14 @@ export default function SideBar({children}: {children: React.ReactNode}) {
                                         ADMIN DASHBOARD
                                     </h1>
                                     <div className=' flex flex-row md:flex-col md:space-y-3'>
+                                        <Button className={` ${ params === "/dashboard/employee" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/employee")}} variant="ghost">
+                                            <PersonIcon  className="mr-2 h-5 w-5" />
+                                            <h1 >
+                                                Employee
+                                            </h1> 
+                                        </Button>
                                         <Button className={` ${ params === "/dashboard/create-employee" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : ""} `} onClick={()=>{router.push("/dashboard/create-employee")}} variant="ghost">
-                                            <PersonIcon className="mr-2 h-5 w-5" />
+                                            <PlusIcon className="mr-2 h-5 w-5" />
                                             <h1 >
                                                 Create Employee
                                             </h1> 
