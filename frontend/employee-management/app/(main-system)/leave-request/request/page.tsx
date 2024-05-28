@@ -61,7 +61,7 @@ export default function LeaveRequestPage () {
     }
 
     return (
-        <div className="flex flex-col md:space-y-0 space-y-5 px-[10%] py-[5%] md:w-[80%] 2xl:w-[60%] gap-[5%]">
+        <div className="flex flex-col space-y-5 px-[10%] py-[5%] md:w-[80%] 2xl:w-[60%] gap-[5%]">
             <h1 className="text-2xl font-bold">Leave Request</h1>
             <div className="flex flex-col space-y-3 justify-between w-full">
                 <Label htmlFor="reason">Leave time</Label>

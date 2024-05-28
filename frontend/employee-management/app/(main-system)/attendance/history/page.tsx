@@ -1,5 +1,17 @@
 "use client"
 
+import * as React from "react"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { format } from "date-fns"
+ 
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Attendance, UserJson } from "@/interface";
@@ -19,18 +31,44 @@ import {
   } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+  import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
 dayjs.extend(utc);
 
 export default  function Page() {
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [date, setDate] = useState<Date>()
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const { data: session } = useSession()
-
+    const [selectedOption, setSelectedOption] = useState('all')
     const [data, setData] = useState<Attendance[]>([]);
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const [sort , setSort] = useState(true)
+    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+    const sortItem = (item : Attendance[]) => {
+        if(sort){
+            return item.sort(function(a,b){
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            });
+        }
+        else{
+            return item.sort(function(a,b){
+                
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            });
+        }
+    }
 
     useEffect(() => {
         if (!session) {
@@ -38,12 +76,38 @@ export default  function Page() {
                 window.location.href = "/";
             };
         }
-        GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
-            setData(res.sort(function(a : any ,b : any){
-                return Number(new Date(a.date)) - Number(new Date(b.date));
-            }));
-        });
-    }, []);
+        if(date === undefined){
+        
+            if(selectedOption === "month"){
+                GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res.filter((att : Attendance) => {
+                        return dayjs(att.date).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
+                    })));
+                });
+            }
+            else if (selectedOption === "year"){
+                GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res.filter(
+                        (att : Attendance) => {
+                            return dayjs(att.date).local().format('YYYY') === dayjs(date).local().format('YYYY')
+                        }
+                    )));
+                });
+            }
+            else {
+                GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
+                    setData(sortItem(res));
+                });
+            }
+        }
+        else{
+            GetMyAttendances(session.user.employee_id, session.user.token).then((res) => {
+                setData(res.filter((att : Attendance) => {
+                    return dayjs(att.date).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
+                    }));
+            });
+        }
+    }, [selectedOption , date , sort]);
 
     const countLeave = (data: Attendance) => {
         return data.leave_id != -1;
@@ -78,6 +142,67 @@ export default  function Page() {
                     </CardContent>
                 </Card>
             </div>
+            <div className=" w-full h-10 flex flex-row space-x-3">
+                <Popover >
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-7/12 justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                        )}
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                <Select  value={selectedOption}
+                onValueChange={(value) => {
+                    setSelectedOption(value)
+                }}>
+                    <SelectTrigger className="w-2/12">
+                        <SelectValue placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                        <SelectItem value="month">Month</SelectItem>
+                        <SelectItem value="year">Year</SelectItem>
+                        <SelectItem value="all">All</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+                <Button 
+                onClick={()=>{
+                    setSort(!sort)
+                }}
+                className=" w-2/12 flex justify-center items-center">
+                    {
+                        sort ?
+                        <TextAlignBottomIcon className="h-5 w-5"/>
+                        :
+                        <TextAlignTopIcon className="h-5 w-5"/>
+                    }
+                </Button>
+                <Button className=" w-1/12 flex justify-center items-center"
+                onClick={
+                    ()=>{
+                        setDate(undefined)
+                        setSelectedOption("all")
+                        setSort(true)
+                    }
+                }>
+                    Reset
+                </Button>
+            </div>
             <div className="">
                 <Table>
                     <TableHeader>
@@ -101,9 +226,7 @@ export default  function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.sort(function(a,b){
-                                return Number(new Date(a.date)) - Number(new Date(b.date));
-                            }).map((att) => 
+                            currentItems.map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
