@@ -93,6 +93,18 @@ func TestGetAll(t *testing.T) {
 		_, err := service.GetAttendances()
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetAll", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			GetAllFunc: func() ([]Attendance, error) {
+				return []Attendance{}, errors.New("invalid")
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.GetAttendances()
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestGetByID(t *testing.T) {
@@ -107,6 +119,18 @@ func TestGetByID(t *testing.T) {
 		_, err := service.GetAttendance(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetByID", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			GetByIDFunc: func(id int) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.GetAttendance(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestCreate(t *testing.T) {
@@ -120,6 +144,17 @@ func TestCreate(t *testing.T) {
 		_, err := service.CreateAttendance(Attendance{})
 		assert.NoError(t, err)
 	})
+	t.Run("Valid-Create", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			CreateFunc: func(attendance Attendance) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+		service := NewAttendanceService(mockRepo)
+		_, err := service.CreateAttendance(Attendance{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 func TestUpdate(t *testing.T) {
 	t.Run("Valid-Update", func(t *testing.T) {
@@ -131,6 +166,17 @@ func TestUpdate(t *testing.T) {
 		service := NewAttendanceService(mockRepo)
 		_, err := service.UpdateAttendance(1, Attendance{})
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-Update", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			UpdateFunc: func(id int, attendance Attendance) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+		service := NewAttendanceService(mockRepo)
+		_, err := service.UpdateAttendance(1, Attendance{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }
 
@@ -145,6 +191,17 @@ func TestDelete(t *testing.T) {
 		err := service.DeleteAttendance(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-Delete", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			DeleteFunc: func(id int) error {
+				return errors.New("invalid")
+			},
+		}
+		service := NewAttendanceService(mockRepo)
+		err := service.DeleteAttendance(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestCheckIn(t *testing.T) {
@@ -158,6 +215,17 @@ func TestCheckIn(t *testing.T) {
 		_, err := service.CheckIn("1")
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-CheckIn", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			CheckInFunc: func(eid string) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+		service := NewAttendanceService(mockRepo)
+		_, err := service.CheckIn("1")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestCheckOut(t *testing.T) {
@@ -170,6 +238,17 @@ func TestCheckOut(t *testing.T) {
 		service := NewAttendanceService(mockRepo)
 		_, err := service.CheckOut(1)
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-CheckOut", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			CheckOutFunc: func(id int) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+		service := NewAttendanceService(mockRepo)
+		_, err := service.CheckOut(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }
 
@@ -185,6 +264,18 @@ func TestGetMyAttendances(t *testing.T) {
 		_, err := service.GetMyAttendances("1")
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetMyAttendances", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			GetAllMeFunc: func(eid string) ([]Attendance, error) {
+				return []Attendance{}, errors.New("invalid")
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.GetMyAttendances("1")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestCheckToday(t *testing.T) {
@@ -198,5 +289,17 @@ func TestCheckToday(t *testing.T) {
 		service := NewAttendanceService(mockRepo)
 		_, err := service.CheckToday("1")
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-CheckToday", func(t *testing.T) {
+		mockRepo := &mockAttendanceRepo{
+			CheckTodayFunc: func(eid string) (Attendance, error) {
+				return Attendance{}, errors.New("invalid")
+			},
+		}
+
+		service := NewAttendanceService(mockRepo)
+		_, err := service.CheckToday("1")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }

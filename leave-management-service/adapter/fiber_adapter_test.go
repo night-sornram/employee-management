@@ -148,7 +148,10 @@ func TestCreateLeaveHandler(t *testing.T) {
 			"date_start": "2024-05-14T08:00:00Z",
 			"date_end": "2024-05-16T08:00:00Z",
 			"reason": "employee_reason",
-			"status": "pending"
+			"category": "sick_leave",
+			"manager_opinion": "",
+			"status": "pending",
+			"manager": "E10000"
 		}`
 
 		mockService.On("CreateLeave", mock.AnythingOfType("repository.Leave")).Return(repository.Leave{}, nil)
@@ -187,6 +190,9 @@ func TestCreateLeaveHandler(t *testing.T) {
 			"date_start": "2024-05-14T08:00:00Z",
 			"date_end": "2024-05-16T08:00:00Z",
 			"reason": "employee_reason",
+			"category": "sick_leave",
+			"manager_opinion": "",
+			"manager": "E10000"
 		}`
 
 		req := httptest.NewRequest("POST", "/leaves", bytes.NewBufferString(bodyLeave))
@@ -207,7 +213,10 @@ func TestCreateLeaveHandler(t *testing.T) {
 			"date_start": "2024-05-14T08:00:00Z",
 			"date_end": "2024-05-16T08:00:00Z",
 			"reason": "employee_reason",
-			"status": "pending"
+			"category": "sick_leave",
+			"manager_opinion": "",
+			"status": "pending",
+			"manager": "E10000"
 		}`
 
 		//mock error
