@@ -10,17 +10,16 @@ import { useSession } from "next-auth/react";
 import { revalidateTag } from "next/cache";
 import { useRouter } from "next/navigation";
 import handleApprove from "@/lib/HandleApproval";
-import { useState } from "react";
 import { Button } from "../ui/button";
 
-export default function ApprovalSection ({data} : {data: Leave}) {
+export default function LeaveDetail ({data} : {data: Leave}) {
 
     const {data: session} = useSession();
     const router = useRouter();
     if(!session) {
         return null;
     }
-    const [opinion, setOpinion] = useState('');
+
 
     return (
         <div className="space-y-3">
@@ -48,30 +47,15 @@ export default function ApprovalSection ({data} : {data: Leave}) {
                 <Textarea id="reason" disabled defaultValue={data.reason}/>
             </div>
             {
-                data.status === "Pending" ?
+                data.status != "Pending" ? 
                 <div className="w-full flex flex-col space-y-3">
                     <Label htmlFor="opinion">Manager's Opinion</Label>
-                    <Textarea id="opinion" onChange={(e) => setOpinion(e.target.value)}/>
-                </div> : 
-                <div className="w-full flex flex-col space-y-3">
-                <Label htmlFor="opinion">Manager's Opinion</Label>
-                <Textarea id="opinion" disabled defaultValue={data.manager_opinion ? data.manager_opinion : "-"}/>
+                    <Textarea id="opinion" disabled defaultValue={data.manager_opinion ? data.manager_opinion : "-"}/>
+                </div> : null
+            }
+            <div className="flex flex-row w-full">
+                <Button className="w-full justify-center" onClick={() => router.push('/leave-request/history')}>Back</Button>
             </div>
-            }
-            
-            {
-                data.status === "Pending"  ?
-                <div className="flex flex-row space-x-3 justify-between w-full">
-                    <button className="w-1/2 text-center bg-green-500 rounded px-3 py-2 text-white hover:bg-green-600 hover:shadow-md" 
-                    onClick={(e) => handleApprove(session.user.token, data.id, "Approved", data.date_start, data.date_end, data.employee_id, opinion)}>Approve</button>
-                    <button className="w-1/2 text-center bg-red-500 rounded px-3 py-2 text-white hover:bg-red-600 hover:shadow-md" 
-                    onClick={(e) => handleApprove(session.user.token, data.id, "Denied", data.date_start, data.date_end, data.employee_id, opinion)}>Deny</button>
-                </div> : 
-                <div className="flex flex-row w-full">
-                <Button className="w-full justify-center" onClick={() => router.push('/dashboard/approve-leave')}>Back</Button>
-                </div>
-            }
-            
         </div>
     );
 }

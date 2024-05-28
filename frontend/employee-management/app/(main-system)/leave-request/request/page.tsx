@@ -48,8 +48,7 @@ export default function LeaveRequestPage () {
         const userProfile:UserJson = await GetUserProfile(session?.user.token);
         let startFormatted = dayjs(start).format('YYYY-MM-DDT[00:00:00Z]');
         let endFormatted = dayjs(end).format('YYYY-MM-DDT[00:00:00Z]');
-        let reasonFormatted = category + ": " + reason;
-        await CreateLeaveRequestAction(session.user.token, userProfile.employee_id, startFormatted, endFormatted, reasonFormatted);
+        await CreateLeaveRequestAction(session.user.token, userProfile.employee_id, startFormatted, endFormatted, reason, category);
         await CreateNotification(session.user.token, "Leave Request", "You have new leave request", false, userProfile.employee_id);
         toast({
             title: "Request Submitted",

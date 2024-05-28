@@ -1,4 +1,4 @@
-export default async function CreateLeaveRequest (token: string, eid: string, start: string, end: string, reasons: string) {
+export default async function CreateLeaveRequest (token: string, eid: string, start: string, end: string, reason: string, category: string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves`, {
         method: 'POST',
         mode: 'cors',
@@ -11,7 +11,8 @@ export default async function CreateLeaveRequest (token: string, eid: string, st
             employee_id : eid,
             date_start: start,
             date_end: end,
-            reason: reasons,
+            reason: reason,
+            category: category,
             status: "Pending"
         })
     });

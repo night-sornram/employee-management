@@ -2,7 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 
-export async function CreateLeaveRequestAction (token: string, eid: string, start: string, end: string, reasons: string) {
+export async function CreateLeaveRequestAction (token: string, eid: string, start: string, end: string, reason: string, category: string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves`, {
         method: 'POST',
         mode: 'cors',
@@ -14,7 +14,8 @@ export async function CreateLeaveRequestAction (token: string, eid: string, star
             employee_id : eid,
             date_start: start,
             date_end: end,
-            reason: reasons,
+            reason: reason,
+            category: category,
             status: "Pending"
         }),
         next: {

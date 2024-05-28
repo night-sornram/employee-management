@@ -19,6 +19,7 @@ import {
     PaginationPrevious,
   } from "@/components/ui/pagination"
   import { Input } from "@/components/ui/input";
+import Link from "next/link";
 dayjs.extend(utc);
 
 export default function Page() {
@@ -96,7 +97,13 @@ export default function Page() {
                                 Duration (days)
                             </TableHead>
                             <TableHead>
+                                Category
+                            </TableHead>
+                            <TableHead>
                                 Status
+                            </TableHead>
+                            <TableHead>
+                                Details
                             </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -113,6 +120,9 @@ export default function Page() {
                                 <TableCell>
                                     {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
                                 </TableCell>
+                                <TableCell>
+                                    {leave.category}
+                                </TableCell>
                                 {
                                     leave.status == "Approved" ? 
                                     <TableCell className=" flex flex-row">
@@ -126,6 +136,11 @@ export default function Page() {
                                         <LapTimerIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell>
                                 }
+                                <TableCell>                                    
+                                    <Link href={`/leave-request/history/${leave.id}`} className="hover:underline text-sky-600">
+                                        Details
+                                    </Link>                                   
+                                </TableCell>
                             </TableRow>)
                         }
                     </TableBody>

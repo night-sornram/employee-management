@@ -1,4 +1,4 @@
-export default async function UpdateLeave (token: string, lid: number, status: string) {
+export default async function UpdateLeave (token: string, lid: number, status: string, opinion: string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves/${lid}`, {
         method: 'PUT',
         mode: 'cors',
@@ -7,7 +7,8 @@ export default async function UpdateLeave (token: string, lid: number, status: s
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            status: status
+            status: status,
+            manager_opinion: opinion
         })
     });
     if (!response.ok) {

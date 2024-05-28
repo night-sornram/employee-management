@@ -18,6 +18,7 @@ import {
     PaginationPrevious,
   } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 dayjs.extend(utc);
 
 export default  function Page() {
@@ -93,6 +94,9 @@ export default  function Page() {
                             <TableHead>
                                 Duration (Hour)
                             </TableHead>
+                            <TableHead>
+                                Leave
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -126,7 +130,7 @@ export default  function Page() {
                                 </TableCell>
                                 <TableCell>
                                     {
-                                        att.leave_id !== -1? "LEAVE" 
+                                        att.leave_id !== -1?  "LEAVE"
                                         : 
                                         (
                                             dayjs(att.check_out).local().toString() === "Mon, 01 Jan 0001 00:00:00 GMT" ?
@@ -135,6 +139,15 @@ export default  function Page() {
                                                 (Math.round(dayjs(att.check_out).diff(dayjs(att.check_in), 'hour', true) * 100) / 100).toFixed(2) +  " Hrs" 
                                             )
                                         )
+                                    } 
+                                </TableCell>
+                                <TableCell>
+                                    {
+                                        att.leave_id !== -1? 
+                                        <Link href={`/leave-request/history/${att.leave_id}`} className="hover:underline text-sky-600">
+                                            Details
+                                        </Link>
+                                        : "-"
                                     } 
                                 </TableCell>
                             </TableRow>)

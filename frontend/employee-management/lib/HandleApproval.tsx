@@ -7,8 +7,8 @@ import dayjs from "dayjs";
 import CreateAttendance from "./CreateAttendance";
 import CreateNotification from "./CreateNotification";
 
-const handleApprove = async (token: string, lid: number, status: string, start: string, end: string, eid: string) => {
-    await UpdateLeave(token, lid, status);
+const handleApprove = async (token: string, lid: number, status: string, start: string, end: string, eid: string, opinion: string) => {
+    await UpdateLeave(token, lid, status, opinion);
 
     if (status == "Approved") {
         let startDate = dayjs(start);

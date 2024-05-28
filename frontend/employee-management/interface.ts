@@ -33,9 +33,11 @@ export interface Leave {
 	date_start: string,
 	date_end: string,
 	reason: string,
+    category: string,
 	status: string,
     employee_name: string,
-    employee_lastname: string
+    employee_lastname: string,
+    manager_opinion: string
 }
 
 export interface Notification {
