@@ -219,13 +219,38 @@ func TestUpdateStatus(t *testing.T) {
 		repo := NewGormAdapter(db)
 		defer sqlDB.Close()
 		mock.ExpectQuery(`SELECT`).
-			WillReturnError(errors.New("invalid"))
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		mock.ExpectBegin()
 		mock.ExpectExec(`UPDATE`).
 			WillReturnError(errors.New("invalid"))
 		mock.ExpectRollback()
 
 		_, err := repo.UpdateStatus(1, repository.Leave{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
+}
+
+func TestGetAllMe(t *testing.T) {
+	t.Run("Valid-GetAllMe", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		_, err := repo.GetAllMe("E12777")
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("Invalid-GetAllMe", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+		_, err := repo.GetAllMe("E12777")
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})

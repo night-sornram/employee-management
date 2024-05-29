@@ -53,7 +53,7 @@ func (f *handlerFiber) CreateAttendance(c *fiber.Ctx) error {
 	validate := validator.New()
 	err := validate.Struct(attendance)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -83,7 +83,7 @@ func (f *handlerFiber) UpdateAttendance(c *fiber.Ctx) error {
 	validate := validator.New()
 	err = validate.Struct(attendance)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -168,10 +168,14 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 			"message": "Not found",
 		})
 	}
-	attendance, _ := f.service.CheckToday(eid)
+	attendance, err := f.service.CheckToday(eid)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	if attendance.ID == 0 {
-		return c.JSON(nil)
+		return c.Status(fiber.StatusOK).JSON(nil)
 	}
 	return c.Status(fiber.StatusOK).JSON(attendance)
-
 }
