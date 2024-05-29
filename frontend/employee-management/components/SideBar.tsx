@@ -79,7 +79,7 @@ export default function SideBar({children}: {children: React.ReactNode}) {
                                         ADMIN DASHBOARD
                                     </h1>
                                     <div className=' flex flex-row md:flex-col md:space-y-3'>
-                                        <Button className={` ${ params === "/dashboard/employee" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/employee")}} variant="ghost">
+                                        <Button className={` ${ params.includes("/dashboard/employee") ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/employee")}} variant="ghost">
                                             <PersonIcon  className="mr-2 h-5 w-5" />
                                             <h1 >
                                                 Employee
@@ -91,7 +91,7 @@ export default function SideBar({children}: {children: React.ReactNode}) {
                                                 Create Employee
                                             </h1> 
                                         </Button>
-                                        <Button className={` ${ params === "/dashboard/approve-leave" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/approve-leave")}} variant="ghost">
+                                        <Button className={` ${ params.includes("/dashboard/approve-leave") ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/approve-leave")}} variant="ghost">
                                             <CheckIcon  className="mr-2 h-5 w-5" />
                                             <h1 >
                                                 Approve Leave

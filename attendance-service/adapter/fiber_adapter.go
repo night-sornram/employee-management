@@ -168,12 +168,7 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 			"message": "Not found",
 		})
 	}
-	attendance, err := f.service.CheckToday(eid)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	attendance, _ := f.service.CheckToday(eid)
 	if attendance.ID == 0 {
 		return c.Status(fiber.StatusOK).JSON(nil)
 	}

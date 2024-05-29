@@ -2,7 +2,7 @@ package repository
 
 type EmployeeService interface {
 	GetEmployees() ([]Employee, error)
-	GetEmployee(id int) (Employee, error)
+	GetEmployee(eid string) (Employee, error)
 	CreateEmployee(Employee Employee) (Employee, error)
 	UpdateEmployee(id string, Employee Employee) (Employee, error)
 	DeleteEmployee(id int) error
@@ -26,8 +26,8 @@ func (u *EmployeeServiceDB) GetEmployees() ([]Employee, error) {
 	return u.repo.GetAll()
 }
 
-func (u *EmployeeServiceDB) GetEmployee(id int) (Employee, error) {
-	return u.repo.GetByID(id)
+func (u *EmployeeServiceDB) GetEmployee(eid string) (Employee, error) {
+	return u.repo.GetByID(eid)
 }
 
 func (u *EmployeeServiceDB) CreateEmployee(Employee Employee) (Employee, error) {

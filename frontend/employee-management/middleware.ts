@@ -8,6 +8,7 @@ export default withAuth(
      || req.nextUrl.pathname === "/dashboard/create-employee" 
      || req.nextUrl.pathname === "/dashboard/all-attendance-history" 
      || req.nextUrl.pathname === "/dashboard/employee" 
+     || req.nextUrl.pathname.includes("/dashboard/employee/")
     ) &&
       req.nextauth.token?.role !== "admin")
     ) {

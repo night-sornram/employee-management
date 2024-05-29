@@ -9,7 +9,7 @@ import (
 
 type mockEmployeeRepo struct {
 	GetAllFunc         func() ([]Employee, error)
-	GetByIDFunc        func(id int) (Employee, error)
+	GetByIDFunc        func(eid string) (Employee, error)
 	CreateFunc         func(employee Employee) (Employee, error)
 	UpdateFunc         func(id string, Employee Employee) (Employee, error)
 	DeleteFunc         func(id int) error
@@ -25,9 +25,9 @@ func (m *mockEmployeeRepo) GetAll() ([]Employee, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (m *mockEmployeeRepo) GetByID(id int) (Employee, error) {
+func (m *mockEmployeeRepo) GetByID(eid string) (Employee, error) {
 	if m.GetByIDFunc != nil {
-		return m.GetByIDFunc(id)
+		return m.GetByIDFunc(eid)
 	}
 	return Employee{}, errors.New("not implemented")
 }
@@ -91,13 +91,13 @@ func TestGetAll(t *testing.T) {
 func TestGetByID(t *testing.T) {
 	t.Run("Valid-GetByID", func(t *testing.T) {
 		mockRepo := &mockEmployeeRepo{
-			GetByIDFunc: func(id int) (Employee, error) {
+			GetByIDFunc: func(eid string) (Employee, error) {
 				return Employee{}, nil
 			},
 		}
 
 		service := NewEmployeeService(mockRepo)
-		_, err := service.GetEmployee(1)
+		_, err := service.GetEmployee("E0001")
 		assert.NoError(t, err)
 	})
 }
