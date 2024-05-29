@@ -46,12 +46,12 @@ dayjs.extend(utc);
 
 export default function Page() {
     const { data: session } = useSession()
-    const [date, setDate] = useState<Date>()
     const [data, setData] = useState<Leave[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
     const [selectedOption, setSelectedOption] = useState('all')
     let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
@@ -109,7 +109,7 @@ export default function Page() {
                     }));
             });
         }
-    }, [selectedOption , date , sort]);
+    }, []);
     return(
         <main className='py-[3%] px-[5%] h-full  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>

@@ -1,5 +1,27 @@
 "use client"
 
+import * as React from "react"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { format } from "date-fns"
+ 
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Attendance, UserJson } from "@/interface";
@@ -29,23 +51,67 @@ export default function AllAttendanceHistoryPage () {
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const [selectedOption, setSelectedOption] = useState('all')
+    const [date, setDate] = useState<Date>()
+    const [sort , setSort] = useState(true)
+    const [name, setName] = useState<string>("")
+    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+    const sortItem = (item : Attendance[]) => {
+        if(sort){
+            return item.sort(function(a,b){
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            });
+        }
+        else{
+            return item.sort(function(a,b){
+                
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            });
+        }
+    }
+
     useEffect(() => {
         if (!session) {
             return () => {
                 window.location.href = "/";
             };
         }
-        getAllAttendances(session.user.token).then((res) => {
-            setData(res.sort(function(a : any ,b : any){
-                return Number(new Date(a.date)) - Number(new Date(b.date));
-            })
-        );
-        });
-    }, []);
+        if(date === undefined){
+        
+            if(selectedOption === "month"){
+                getAllAttendances( session.user.token).then((res) => {
+                    setData(sortItem(res.filter((att : Attendance) => {
+                        return dayjs(att.date).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
+                    })));
+                });
+            }
+            else if (selectedOption === "year"){
+                getAllAttendances( session.user.token).then((res) => {
+                    setData(sortItem(res.filter(
+                        (att : Attendance) => {
+                            return dayjs(att.date).local().format('YYYY') === dayjs(date).local().format('YYYY')
+                        }
+                    )));
+                });
+            }
+            else {
+                getAllAttendances( session.user.token).then((res) => {
+                    setData(sortItem(res));
+                });
+            }
+        }
+        else{
+            getAllAttendances( session.user.token).then((res) => {
+                setData(res.filter((att : Attendance) => {
+                    return dayjs(att.date).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
+                    }));
+            });
+        }
+    }, [selectedOption , sort, date ]);
     
     return (
-        <main className='py-[3%] px-[5%]  h-[93vh] md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[3%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Employee Attendance
@@ -73,6 +139,71 @@ export default function AllAttendanceHistoryPage () {
                     </CardContent>
                 </Card>
             </div>
+            <div className=" flex flex-col space-y-3">
+                <Input value={name} onChange={(e)=>{setName(e.currentTarget.value)}} type="text" placeholder="name"/>
+                <div className=" w-full h-10 flex flex-row space-x-3">
+                    <Popover >
+                        <PopoverTrigger asChild>
+                            <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-7/12 justify-start text-left font-normal",
+                                !date && "text-muted-foreground"
+                            )}
+                            >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    <Select  value={selectedOption}
+                    onValueChange={(value) => {
+                        setSelectedOption(value)
+                    }}>
+                        <SelectTrigger className="w-2/12">
+                            <SelectValue placeholder="Select a fruit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                            <SelectItem value="month">Month</SelectItem>
+                            <SelectItem value="year">Year</SelectItem>
+                            <SelectItem value="all">All</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Button 
+                    onClick={()=>{
+                        setSort(!sort)
+                    }}
+                    className=" w-2/12 flex justify-center items-center">
+                        {
+                            sort ?
+                            <TextAlignBottomIcon className="h-5 w-5"/>
+                            :
+                            <TextAlignTopIcon className="h-5 w-5"/>
+                        }
+                    </Button>
+                    <Button className=" w-1/12 flex justify-center items-center"
+                    onClick={
+                        ()=>{
+                            setDate(undefined)
+                            setSelectedOption("all")
+                            setSort(true)
+                            setName("")
+                        }
+                    }>
+                        Reset
+                    </Button>
+                </div>
+            </div>
             <div className="">
                 <Table>
                     <TableHeader>
@@ -96,9 +227,11 @@ export default function AllAttendanceHistoryPage () {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.sort(function(a,b){
-                                return Number(new Date(a.date)) - Number(new Date(b.date));
-                            }).map((att) => 
+                            currentItems.filter(
+                                (att) => {
+                                    return( att.employee_name + " " + att.employee_lastname).toLowerCase().includes(name.toLowerCase())
+                                }
+                            ).map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}

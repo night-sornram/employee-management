@@ -46,13 +46,13 @@ dayjs.extend(utc);
 export default  function Page() {
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [date, setDate] = useState<Date>()
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const { data: session } = useSession()
     const [selectedOption, setSelectedOption] = useState('all')
     const [data, setData] = useState<Attendance[]>([]);
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
     let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 

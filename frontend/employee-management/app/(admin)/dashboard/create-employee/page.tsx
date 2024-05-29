@@ -14,6 +14,7 @@ import { useState } from "react";
 import CreateEmployee from "@/lib/CreateEmployee";
 import { set } from "date-fns";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import {  useToast } from "@/components/ui/use-toast";
 
 export default function LeaveRequestPage () {
     const { data: session } = useSession()
@@ -31,6 +32,7 @@ export default function LeaveRequestPage () {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
+    const { toast } = useToast()
 
     const onSubmit = async () => {
         if (id === '' || title_eng === '' || name_eng === '' || surname_eng === '' || title_th === '' || name_th === '' || surname_th === '' || dateOfBirth === '' || gender === '' || department === '' || phone === '' || email === '' || password === '') {
@@ -57,11 +59,25 @@ export default function LeaveRequestPage () {
                 try{
                     setLoading(true)
                     await CreateEmployee(session.user.token, data)
-                    alert('Employee created successfully')
+                    toast(
+                        {
+                            title: "Create Employee Success",
+                            description: "Employee has been created successfully",
+                        }
+                    
+                    )
                     setLoading(false)
                     window.location.reload()
                 }
                 catch (error) {
+                    setLoading(false)
+                    toast(
+                        {
+                            title: "Create Employee Failed",
+                            variant: "destructive",
+                            description: "Please try again",
+                        }
+                    )
                     console.log(error)
                 }
             }
