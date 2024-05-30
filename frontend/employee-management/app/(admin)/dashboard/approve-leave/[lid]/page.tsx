@@ -16,7 +16,6 @@ export default async function LeaveIDPage ({params} : {params: {lid: number}}) {
 
     return (
         <main className="py-[5%] px-[5%]  h-[93vh]  md:w-[70%] 2xl:w-[60%] flex flex-col gap-10">
-            <h1 className="text-2xl font-bold">Manager Approval</h1>
             <ApprovalSection data={data}/>  
         </main>
     );
