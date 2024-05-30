@@ -21,8 +21,8 @@ func (m *MockEmployeeService) GetEmployees() ([]repository.Employee, error) {
 	return args.Get(0).([]repository.Employee), args.Error(1)
 }
 
-func (m *MockEmployeeService) GetEmployee(id int) (repository.Employee, error) {
-	args := m.Called(id)
+func (m *MockEmployeeService) GetEmployee(eid string) (repository.Employee, error) {
+	args := m.Called(eid)
 	return args.Get(0).(repository.Employee), args.Error(1)
 }
 

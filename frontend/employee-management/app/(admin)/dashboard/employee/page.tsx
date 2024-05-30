@@ -50,11 +50,9 @@ export default function AllAttendanceHistoryPage () {
     const { data: session } = useSession()
     const [data, setData] = useState<UserJson[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [role, setRole] = useState<string>("all")
     const itemsPerPage  = 10
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const [sort , setSort] = useState(true)
     const [name, setName] = useState<string>("")
     let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
     const [staticData , setStaticData] = useState<UserJson[]>([])
@@ -66,29 +64,15 @@ export default function AllAttendanceHistoryPage () {
         }
         GetEmployee(session.user.token).then((data) => {
             setStaticData(data);
+            setData(data.filter(
+                (user : UserJson) => user.role === "user"
+            ));
         }
         ).catch((error) => {
             console.log(error);
         });
-        if ( role === "all") {
-            GetEmployee(session.user.token).then((data) => {
-                setData(data);
-            }
-            ).catch((error) => {
-                console.log(error);
-            });
-        }
-        else {
-            GetEmployee(session.user.token).then((data) => {
-                setData(data.filter(
-                    (user : UserJson) => user.role === role
-                ));
-            }
-            ).catch((error) => {
-                console.log(error);
-            });
-        }
-    }, [ role ]);
+        
+    }, [  ]);
     
     return (
         <main className='py-[3%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
@@ -101,7 +85,7 @@ export default function AllAttendanceHistoryPage () {
                 <Card className="w-[320px] ">
                     <CardHeader>
                         <CardTitle className="text-lg">
-                            Normal Employee
+                            Employee
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -111,36 +95,10 @@ export default function AllAttendanceHistoryPage () {
 
                     </CardContent>
                 </Card>
-                <Card className="w-[320px]">
-                    <CardHeader>
-                        <CardTitle className="text-lg">
-                            Admin Employee
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {staticData.filter(
-                            (user) => user.role === "admin"
-                        ).length}
-                    </CardContent>
-                </Card>
+                
             </div>
             <div className=" flex flex-row space-x-3">
                 <Input value={name} onChange={(e)=>{setName(e.currentTarget.value)}} type="text" placeholder="name"/>
-                <Select  value={role}
-                onValueChange={(value) => {
-                    setRole(value)
-                }}>
-                    <SelectTrigger className="w-2/12">
-                        <SelectValue placeholder="select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                        <SelectItem value="user">User</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="all">All</SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
             </div>
             <div className="">
                 <Table>
@@ -160,9 +118,6 @@ export default function AllAttendanceHistoryPage () {
                             </TableHead>
                             <TableHead>
                                 Phone
-                            </TableHead>
-                            <TableHead>
-                                Role
                             </TableHead>
                             <TableHead>
                                 Detail
@@ -196,11 +151,8 @@ export default function AllAttendanceHistoryPage () {
                                 <TableCell>
                                     {user.phone}
                                 </TableCell>
-                                <TableCell>
-                                    {user.role}
-                                </TableCell>
                                 <TableCell>                                    
-                                    <Link href={"/dashboard/employee"} className="hover:underline text-sky-600">
+                                    <Link href={`/dashboard/employee/${user.employee_id}`} className="hover:underline text-sky-600">
                                         Details
                                     </Link>                                   
                                 </TableCell>

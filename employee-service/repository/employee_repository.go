@@ -2,7 +2,7 @@ package repository
 
 type EmployeeRepository interface {
 	GetAll() ([]Employee, error)
-	GetByID(id int) (Employee, error)
+	GetByID(eid string) (Employee, error)
 	Create(Employee Employee) (Employee, error)
 	Update(id string, Employee Employee) (Employee, error)
 	Delete(id int) error

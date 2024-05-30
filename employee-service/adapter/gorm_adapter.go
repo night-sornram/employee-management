@@ -24,10 +24,11 @@ func (g *GormAdapter) GetAll() ([]repository.Employee, error) {
 	return Employees, nil
 }
 
-func (g *GormAdapter) GetByID(id int) (repository.Employee, error) {
+func (g *GormAdapter) GetByID(eid string) (repository.Employee, error) {
 	var Employee repository.Employee
-	if err := g.db.First(&Employee, id).Error; err != nil {
+	if err := g.db.Model(&Employee).Where("employee_id = ?", eid).First(&Employee).Error; err != nil {
 		return Employee, err
+
 	}
 	return Employee, nil
 }

@@ -32,12 +32,7 @@ func (h *handleFiber) GetEmployees(c *fiber.Ctx) error {
 }
 
 func (h *handleFiber) GetEmployee(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	id := c.Params("id")
 	Employee, err := h.service.GetEmployee(id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

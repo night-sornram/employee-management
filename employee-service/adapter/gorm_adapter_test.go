@@ -63,9 +63,8 @@ func TestGetByID(t *testing.T) {
 		repo := NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
-			WithArgs(1, 1).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		_, err := repo.GetByID(1)
+		_, err := repo.GetByID("1")
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -77,7 +76,7 @@ func TestGetByID(t *testing.T) {
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
-		_, err := repo.GetByID(1)
+		_, err := repo.GetByID("1")
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 		assert.NoError(t, mock.ExpectationsWereMet())
