@@ -24,7 +24,7 @@ func NewHandleFiber(service repository.EmployeeService) *handleFiber {
 func (h *handleFiber) GetEmployees(c *fiber.Ctx) error {
 	Employees, err := h.service.GetEmployees()
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -35,7 +35,7 @@ func (h *handleFiber) GetEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
 	Employee, err := h.service.GetEmployee(id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -46,7 +46,7 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 	var Employee repository.Employee
 
 	if err := c.BodyParser(&Employee); err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -54,7 +54,7 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 	Employee.Password = string(password)
 	newEmployee, err := h.service.CreateEmployee(Employee)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -70,13 +70,13 @@ func (h *handleFiber) UpdateEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var Employee repository.Employee
 	if err := c.BodyParser(&Employee); err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 	_, err := h.service.UpdateEmployee(id, Employee)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -88,13 +88,13 @@ func (h *handleFiber) UpdateEmployee(c *fiber.Ctx) error {
 func (h *handleFiber) DeleteEmployee(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 	err = h.service.DeleteEmployee(id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
@@ -105,11 +105,13 @@ func (h *handleFiber) Login(c *fiber.Ctx) error {
 	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
-		return err
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
 	}
 	Employee, err := h.service.Login(data["id"], data["password"])
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "could not login",
 		})
 	}
@@ -167,16 +169,14 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 	tokenString := c.Get("Authorization")
 	secretKey := os.Getenv("SECRET")
 	if tokenString == "" {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
 
 	tokenArr := strings.Split(tokenString, " ")
 	if len(tokenArr) != 2 || tokenArr[0] != "Bearer" {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
@@ -184,8 +184,7 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
@@ -197,8 +196,7 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 	Employee, err = h.service.GetMe((*claims)["iss"].(string))
 
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
@@ -209,13 +207,13 @@ func (h *handleFiber) GetMe(c *fiber.Ctx) error {
 func (h *handleFiber) ChangePassword(c *fiber.Ctx) error {
 	var data map[string]string
 	if err := c.BodyParser(&data); err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 	_, err := h.service.ChangePassword(data["id"], data["password"], data["new_password"])
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}

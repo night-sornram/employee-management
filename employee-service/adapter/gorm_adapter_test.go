@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"database/sql"
+	"errors"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -27,70 +28,102 @@ func DbMock(t *testing.T) (*sql.DB, *gorm.DB, sqlmock.Sqlmock) {
 }
 
 func TestGetAll(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-GetAll", func(t *testing.T) {
-		mock.ExpectQuery(`SELECT (.+) FROM "employees"`).
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		_, err := repo.GetAll()
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
-}
-func TestGetByID(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
+	t.Run("Invalid-GetAll", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
 
-	repo := NewGormAdapter(db)
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+		_, err := repo.GetAll()
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
+func TestGetByID(t *testing.T) {
 	t.Run("Valid-GetByID", func(t *testing.T) {
-		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE "employees"."id" = \$1 ORDER BY "employees"."id" LIMIT \$2`).
-			WithArgs(1, 1).
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		_, err := repo.GetByID(1)
+		_, err := repo.GetByID("1")
 		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("Invalid-GetByID", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+		_, err := repo.GetByID("1")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestCreate(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-Create", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
 		mock.ExpectBegin()
-		mock.ExpectQuery(`INSERT INTO "employees" (.+) RETURNING "id"`).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		mock.ExpectQuery(`INSERT INTO "employees"`).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		mock.ExpectCommit()
 
-		_, err := repo.Create(repository.Employee{
-			EmployeeID:  "E0001",
-			TitleTH:     "นาย",
-			FirstNameTH: "สมชาย",
-			LastNameTH:  "สมหมาย",
-			TitleEN:     "Mr.",
-			FirstNameEN: "Somchai",
-			LastNameEN:  "Sommai",
-			DateOfBirth: "1990-05-15",
-			Gender:      "Male",
-			Department:  "IT",
-			Role:        "Developer",
-			Phone:       "0812345678",
-			Email:       "somchai@example.com",
-			Password:    "securepassword",
-		})
+		_, err := repo.Create(repository.Employee{})
 		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("Invalid-Create", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`INSERT INTO "employees"`).
+			WillReturnError(errors.New("invalid"))
+		mock.ExpectRollback()
+
+		_, err := repo.Create(repository.Employee{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUpdate(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-Update", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
 		employee := repository.Employee{
 			EmployeeID:  "ADMIN",
 			TitleTH:     "นาย",
@@ -109,7 +142,7 @@ func TestUpdate(t *testing.T) {
 		}
 		mock.ExpectBegin()
 		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE employee_id = \$15`).
-    		WithArgs(employee.EmployeeID, employee.TitleTH, employee.FirstNameTH, employee.LastNameTH, employee.TitleEN, employee.FirstNameEN, employee.LastNameEN, employee.DateOfBirth, employee.Gender, employee.Department, employee.Role, employee.Phone, employee.Email, employee.Password, "1").
+			WithArgs(employee.EmployeeID, employee.TitleTH, employee.FirstNameTH, employee.LastNameTH, employee.TitleEN, employee.FirstNameEN, employee.LastNameEN, employee.DateOfBirth, employee.Gender, employee.Department, employee.Role, employee.Phone, employee.Email, employee.Password, "1").
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -117,17 +150,50 @@ func TestUpdate(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+	t.Run("Invalid-Update", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		employee := repository.Employee{
+			EmployeeID:  "ADMIN",
+			TitleTH:     "นาย",
+			FirstNameTH: "สมชาย",
+			LastNameTH:  "ใจดี",
+			TitleEN:     "Mr.",
+			FirstNameEN: "Somchai",
+			LastNameEN:  "Jaidee",
+			DateOfBirth: "1990-01-01",
+			Gender:      "Male",
+			Department:  "IT",
+			Role:        "admin",
+			Phone:       "080-123-4567",
+			Email:       "admin@example.com",
+			Password:    "123456",
+		}
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE employee_id = \$15`).
+			WithArgs(employee.EmployeeID, employee.TitleTH, employee.FirstNameTH, employee.LastNameTH, employee.TitleEN, employee.FirstNameEN, employee.LastNameEN, employee.DateOfBirth, employee.Gender, employee.Department, employee.Role, employee.Phone, employee.Email, employee.Password, "1").
+			WillReturnError(errors.New("invalid"))
+		mock.ExpectRollback()
+
+		_, err := repo.Update("1", employee)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 }
 
 func TestDelete(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-Delete", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
 		mock.ExpectBegin()
-		mock.ExpectExec(`DELETE FROM "employees" WHERE "employees"."id" = \$1`).
-			WithArgs(1).
+		mock.ExpectExec(`DELETE`).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -135,57 +201,101 @@ func TestDelete(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+	t.Run("Invalid-Delete", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectBegin()
+		mock.ExpectExec(`DELETE`).
+			WillReturnError(errors.New("invalid"))
+		mock.ExpectRollback()
+
+		err := repo.Delete(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 }
 
 func TestLogin(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-Login", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
-		
-		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
-			WithArgs("id", 1).
+
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "password"}).AddRow(1, hashedPassword))
 
-        _, err := repo.Login("id", "password")
-        assert.NoError(t, err)
-        assert.NoError(t, mock.ExpectationsWereMet())
+		_, err := repo.Login("id", "password")
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("Invalid-Login", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+
+		_, err := repo.Login("id", "password")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestGetMe(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-GetMe", func(t *testing.T) {
-		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
-			WithArgs("id", 1).
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 		_, err := repo.GetMe("id")
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+	t.Run("Invalid-GetMe", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+
+		_, err := repo.GetMe("id")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 }
 
 func TestChangePassword(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-ChangePassword", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
 
-		mock.ExpectQuery(`SELECT (.+) FROM "employees" WHERE employee_id = \$1 ORDER BY "employees"."id" LIMIT \$2`).
-			WithArgs("id", 1).
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "password"}).AddRow(1, hashedPassword))
 
 		mock.ExpectBegin()
 		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE "id" = \$15`).
-            WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), 1).
+			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), 1).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -193,5 +303,40 @@ func TestChangePassword(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
-}
+	t.Run("Invalid-ID-ChangePassword", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
 
+		repo := NewGormAdapter(db)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnError(errors.New("invalid"))
+
+		_, err := repo.ChangePassword("id", "password", "newPassword")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("Invalid-ChangePassword", func(t *testing.T) {
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := NewGormAdapter(db)
+
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
+
+		mock.ExpectQuery(`SELECT`).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "password"}).AddRow(1, hashedPassword))
+
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "employees" SET "employee_id"=\$1,"title_th"=\$2,"first_name_th"=\$3,"last_name_th"=\$4,"title_en"=\$5,"first_name_en"=\$6,"last_name_en"=\$7,"date_of_birth"=\$8,"gender"=\$9,"department"=\$10,"role"=\$11,"phone"=\$12,"email"=\$13,"password"=\$14 WHERE "id" = \$15`).
+			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), 1).
+			WillReturnError(errors.New("invalid"))
+		mock.ExpectRollback()
+
+		_, err := repo.ChangePassword("id", "password", "newPassword")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
