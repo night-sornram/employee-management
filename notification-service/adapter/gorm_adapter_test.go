@@ -233,7 +233,7 @@ func TestRead(t *testing.T) {
 		mock.ExpectExec(`UPDATE "notifications" SET "read"=\$1 WHERE id = \$2`).
 			WithArgs(true, 1).
 			WillReturnError(errors.New("invalid"))
-		mock.ExpectCommit()
+		mock.ExpectRollback()
 
 		err := repo.Read(1)
 		assert.Error(t, err)

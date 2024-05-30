@@ -63,6 +63,7 @@ func TestGetAll(t *testing.T) {
 		assert.Equal(t, "invalid", err.Error())
 	})
 }
+
 func TestGetByID(t *testing.T) {
 	t.Run("Valid-GetByID", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
