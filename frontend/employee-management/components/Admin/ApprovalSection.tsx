@@ -23,7 +23,16 @@ export default function ApprovalSection ({data} : {data: Leave}) {
     const [opinion, setOpinion] = useState('');
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-5">
+            <Button 
+            onClick={() => {
+                router.push("/dashboard/approve-leave")
+            }
+            }
+            className=" w-20 flex justify-center items-center">
+                Back
+            </Button>
+            <h1 className="text-2xl font-bold">Manager Approval</h1>
             <div className="w-full flex flex-col space-y-3">
                     <Label htmlFor="status">Status</Label>
                     <Input id="status" disabled type="text" defaultValue={data.status}/>
@@ -67,9 +76,7 @@ export default function ApprovalSection ({data} : {data: Leave}) {
                     <button className="w-1/2 text-center bg-red-500 rounded px-3 py-2 text-white hover:bg-red-600 hover:shadow-md" 
                     onClick={(e) => handleApprove(session.user.token, data.id, "Denied", data.date_start, data.date_end, data.employee_id, opinion)}>Deny</button>
                 </div> : 
-                <div className="flex flex-row w-full">
-                <Button className="w-full justify-center" onClick={() => router.push('/dashboard/approve-leave')}>Back</Button>
-                </div>
+                ""
             }
             
         </div>
