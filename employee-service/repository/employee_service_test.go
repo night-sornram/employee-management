@@ -86,6 +86,18 @@ func TestGetAll(t *testing.T) {
 		_, err := service.GetEmployees()
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetAll", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			GetAllFunc: func() ([]Employee, error) {
+				return []Employee{}, errors.New("invalid")
+			},
+		}
+
+		service := NewEmployeeService(mockRepo)
+		_, err := service.GetEmployees()
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestGetByID(t *testing.T) {
@@ -100,6 +112,18 @@ func TestGetByID(t *testing.T) {
 		_, err := service.GetEmployee(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetByID", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			GetByIDFunc: func(id int) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+
+		service := NewEmployeeService(mockRepo)
+		_, err := service.GetEmployee(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestCreate(t *testing.T) {
@@ -113,6 +137,17 @@ func TestCreate(t *testing.T) {
 		_, err := service.CreateEmployee(Employee{})
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-Create", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			CreateFunc: func(employee Employee) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+		service := NewEmployeeService(mockRepo)
+		_, err := service.CreateEmployee(Employee{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 func TestUpdate(t *testing.T) {
 	t.Run("Valid-Update", func(t *testing.T) {
@@ -124,6 +159,17 @@ func TestUpdate(t *testing.T) {
 		service := NewEmployeeService(mockRepo)
 		_, err := service.UpdateEmployee("E0001", Employee{})
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-Update", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			UpdateFunc: func(id string, employee Employee) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+		service := NewEmployeeService(mockRepo)
+		_, err := service.UpdateEmployee("E0001", Employee{})
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }
 
@@ -138,6 +184,17 @@ func TestDelete(t *testing.T) {
 		err := service.DeleteEmployee(1)
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-Delete", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			DeleteFunc: func(id int) error {
+				return errors.New("invalid")
+			},
+		}
+		service := NewEmployeeService(mockRepo)
+		err := service.DeleteEmployee(1)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestLogin(t *testing.T) {
@@ -150,6 +207,17 @@ func TestLogin(t *testing.T) {
 		service := NewEmployeeService(mockRepo)
 		_, err := service.Login("1", "password")
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-Login", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			LoginFunc: func(id string, password string) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+		service := NewEmployeeService(mockRepo)
+		_, err := service.Login("1", "password")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }
 
@@ -174,6 +242,18 @@ func TestGetMe(t *testing.T) {
 		_, err := service.GetMe("1")
 		assert.NoError(t, err)
 	})
+	t.Run("Invalid-GetMe", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			GetMeFunc: func(id string) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+
+		service := NewEmployeeService(mockRepo)
+		_, err := service.GetMe("1")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
+	})
 }
 
 func TestChangePassword(t *testing.T) {
@@ -187,5 +267,17 @@ func TestChangePassword(t *testing.T) {
 		service := NewEmployeeService(mockRepo)
 		_, err := service.ChangePassword("1", "password", "newPassword")
 		assert.NoError(t, err)
+	})
+	t.Run("Invalid-ChangePassword", func(t *testing.T) {
+		mockRepo := &mockEmployeeRepo{
+			ChangePasswordFunc: func(id string, password string, new_password string) (Employee, error) {
+				return Employee{}, errors.New("invalid")
+			},
+		}
+
+		service := NewEmployeeService(mockRepo)
+		_, err := service.ChangePassword("1", "password", "newPassword")
+		assert.Error(t, err)
+		assert.Equal(t, "invalid", err.Error())
 	})
 }
