@@ -1,9 +1,9 @@
 package adapter
 
 import (
-	"github.com/night-sornram/employee-management/notification-service/repository"
-
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/night-sornram/employee-management/notification-service/repository"
 )
 
 type HandlerFiber struct {
@@ -23,7 +23,7 @@ func (f *HandlerFiber) GetNotifications(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(notifications)
+	return c.Status(fiber.StatusOK).JSON(notifications)
 }
 
 func (f *HandlerFiber) GetNotification(c *fiber.Ctx) error {
@@ -39,7 +39,7 @@ func (f *HandlerFiber) GetNotification(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(notification)
+	return c.Status(fiber.StatusOK).JSON(notification)
 }
 
 func (f *HandlerFiber) CreateNotification(c *fiber.Ctx) error {
@@ -49,13 +49,22 @@ func (f *HandlerFiber) CreateNotification(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	err := validate.Struct(notification)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
 	newNotification, err := f.service.CreateNotification(notification)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(newNotification)
+	return c.Status(fiber.StatusCreated).JSON(newNotification)
 }
 
 func (f *HandlerFiber) UpdateNotification(c *fiber.Ctx) error {
@@ -68,6 +77,14 @@ func (f *HandlerFiber) UpdateNotification(c *fiber.Ctx) error {
 
 	var notification repository.Notification
 	if err := c.BodyParser(&notification); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	validate := validator.New()
+	err = validate.Struct(notification)
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
@@ -98,7 +115,7 @@ func (f *HandlerFiber) DeleteNotification(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Notification deleted successfully",
 	})
 }
