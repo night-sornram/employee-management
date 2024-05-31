@@ -2,9 +2,9 @@ package adapter
 
 import (
 	"database/sql"
-	"employee/repository"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/night-sornram/employee-management/notification-service/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
