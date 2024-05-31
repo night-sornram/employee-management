@@ -9,7 +9,7 @@
     "lint": "next lint",
     "all": "concurrently \"npm run front\" \"npm run back\"",
     "front": "npm run dev",
-    "back": "concurrently \"cd ../../employee-service && go run .\" \"cd ../../attendance-service && go run .\" \"cd ../../leave-management-service && go run .\" \"cd ../../notification-service && go run .\""
+    "back": "concurrently \"cd ../../backend/employee-service && go run .\" \"cd ../../backend/attendance-service && go run .\" \"cd ../../backend/leave-management-service && go run .\" \"cd ../../backend/notification-service && go run .\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

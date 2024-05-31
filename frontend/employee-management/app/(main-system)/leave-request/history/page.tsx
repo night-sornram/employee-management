@@ -109,7 +109,7 @@ export default function Page() {
                     }));
             });
         }
-    }, []);
+    }, [date , selectedOption , sort]);
     return(
         <main className='py-[3%] px-[5%] h-full  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
