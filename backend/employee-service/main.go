@@ -16,7 +16,7 @@ import (
 func main() {
 	app := fiber.New()
 	const (
-		host     = "localhost"
+		host     = "db"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
@@ -43,6 +43,7 @@ func main() {
 	app.Post("/login", handle.Login)
 	app.Post("/logout", handle.Logout)
 	app.Get("/me", handle.GetMe)
+
 	app.Use("/api", middleware.Protected())
 	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
 	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
@@ -51,7 +52,7 @@ func main() {
 	app.Delete("/api/employees/:id", middleware.Authorize("admin"), handle.DeleteEmployee)
 	app.Post("/api/changePassword", handle.ChangePassword)
 
-	err = app.Listen(":8080")
+	err = app.Listen("0.0.0.0:8080")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

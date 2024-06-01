@@ -16,7 +16,7 @@ import (
 func main() {
 	app := fiber.New()
 	const (
-		host     = "localhost"
+		host     = "db"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
@@ -55,7 +55,7 @@ func main() {
 	app.Delete("/api/leaves/:id", handle.DeleteLeave)
 	app.Put("/api/leaves/approval/:id", handle.UpdateStatus)
 
-	err = app.Listen(":8082")
+	err = app.Listen("0.0.0.0:8082")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
 	"golang.org/x/crypto/bcrypt"
 )

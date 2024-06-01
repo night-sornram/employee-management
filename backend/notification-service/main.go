@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/notification-service/adapter"
@@ -9,13 +11,12 @@ import (
 	"github.com/night-sornram/employee-management/notification-service/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 func main() {
 	app := fiber.New()
 	const (
-		host     = "localhost"
+		host     = "db"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
@@ -49,7 +50,7 @@ func main() {
 	app.Put("/api/notifications/read/:id", handle.ReadNotification)
 	app.Put("/api/notifications/:id", handle.UpdateNotification)
 	app.Delete("/api/notifications/:id", handle.DeleteNotification)
-	err = app.Listen(":8083")
+	err = app.Listen("0.0.0.0:8083")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

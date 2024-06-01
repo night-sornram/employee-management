@@ -1,0 +1,4 @@
+CREATE DATABASE employee;
+CREATE DATABASE attendance;
+CREATE DATABASE notification;
+CREATE DATABASE leave;

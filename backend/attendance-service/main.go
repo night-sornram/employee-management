@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/attendance-service/adapter"
@@ -9,20 +11,19 @@ import (
 	"github.com/night-sornram/employee-management/attendance-service/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 func main() {
 	app := fiber.New()
 	const (
-		host     = "localhost"
+		host     = "db"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
-		dbname   = "postgres"
+		dbname   = "attendance"
 	)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
@@ -55,7 +56,7 @@ func main() {
 	app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 	app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
-	err = app.Listen(":8081")
+	err = app.Listen("0.0.0.0:8081")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
