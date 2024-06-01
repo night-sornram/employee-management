@@ -1,6 +1,8 @@
 package adapter
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"os"
 	"strings"
 	"time"
@@ -8,7 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type handleFiber struct {
@@ -50,8 +51,10 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	password, _ := bcrypt.GenerateFromPassword([]byte(Employee.Password), 14)
-	Employee.Password = string(password)
+	//password, _ := bcrypt.GenerateFromPassword([]byte(Employee.Password), 14)
+	//Employee.Password = string(password)
+	password := sha256.Sum256([]byte(Employee.Password))
+	Employee.Password = base64.StdEncoding.EncodeToString(password[:])
 	newEmployee, err := h.service.CreateEmployee(Employee)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

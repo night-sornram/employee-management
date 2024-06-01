@@ -1,9 +1,13 @@
 package adapter
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"log"
 )
 
 type GormAdapter struct {
@@ -60,8 +64,16 @@ func (g *GormAdapter) Login(id string, password string) (repository.Employee, er
 	if err := g.db.First(&Employee, "employee_id = ?", id).Error; err != nil {
 		return repository.Employee{}, err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
-		return repository.Employee{}, err
+	//if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
+	//	return repository.Employee{}, err
+	//}
+
+	hash := sha256.Sum256([]byte(password))
+	hashPassword := base64.StdEncoding.EncodeToString(hash[:])
+	log.Print(hash)
+	log.Print(Employee.Password)
+	if Employee.Password != hashPassword {
+		return repository.Employee{}, errors.New("incorrect password")
 	}
 	return Employee, nil
 }

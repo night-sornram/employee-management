@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - local_pgdata:/var/lib/postgresql/data
-      - ./init.sql:/data/application/init.sql
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - my-network
   pgadmin:
