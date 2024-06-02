@@ -9,6 +9,9 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
+require github.com/night-sornram/employee-management/common_utils v0.0.0
+replace github.com/night-sornram/employee-management/common_utils => ../common-utils
+
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect

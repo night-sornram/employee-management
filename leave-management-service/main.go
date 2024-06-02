@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/adapter"
-	"github.com/night-sornram/employee-management/middleware"
+	"github.com/night-sornram/employee-management/common_utils"
+	"github.com/night-sornram/employee-management/common_utils/middleware"
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,16 +14,8 @@ import (
 
 func setup() *fiber.App {
 	app := fiber.New()
-	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "postgres"
-		password = "password"
-		dbname   = "leave"
-		tz       = "Asia/Bangkok"
-	)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=%s", host, port, user, password, dbname, tz)
+	dsn := common_utils.ConnectDB("8082")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -41,7 +33,7 @@ func setup() *fiber.App {
 
 	app.Use(cors.New())
 
-	app.Use("/api", middleware.Protected())
+	app.Use("/api/leaves", middleware.Protected())
 
 	app.Get("/api/leaves", handle.GetLeaves)
 	app.Get("/api/leaves/me/:eid", handle.GetAllMe)

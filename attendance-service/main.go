@@ -1,29 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/adapter"
-	"github.com/night-sornram/employee-management/middleware"
+	"github.com/night-sornram/employee-management/common_utils"
+	"github.com/night-sornram/employee-management/common_utils/middleware"
 	"github.com/night-sornram/employee-management/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
 func main() {
 	app := fiber.New()
-	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "postgres"
-		password = "password"
-		dbname   = "postgres"
-	)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	dsn := common_utils.ConnectDB("8081")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -35,16 +27,12 @@ func main() {
 		log.Fatalf("Failed to auto-migrate: %v", err)
 	}
 
-	extension := "dblink"
-	createExtension := fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %s;", extension)
-	db.Exec(createExtension)
-
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewAttendanceService(repo)
-	handle := adapter.NewhandlerFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 
 	app.Use(cors.New())
-	app.Use("/api", middleware.Protected())
+	app.Use("/api/attendances", middleware.Protected())
 
 	app.Get("/api/attendances", handle.GetAttendances)
 	app.Get("/api/attendances/:id", handle.GetAttendance)

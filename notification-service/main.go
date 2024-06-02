@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
-
 	"employee/adapter"
-	"employee/middleware"
 	"employee/repository"
+	"github.com/night-sornram/employee-management/common_utils"
+	"github.com/night-sornram/employee-management/common_utils/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -15,16 +14,8 @@ import (
 
 func main() {
 	app := fiber.New()
-	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "postgres"
-		password = "password"
-		dbname   = "notification"
-		tz       = "Asia/Bangkok"
-	)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=%s", host, port, user, password, dbname, tz)
+	dsn := common_utils.ConnectDB("8083")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -37,7 +28,7 @@ func main() {
 
 	app.Use(cors.New())
 
-	app.Use("/api", middleware.Protected())
+	app.Use("/api/notifications", middleware.Protected())
 
 	app.Get("/api/notifications", handle.GetNotifications)
 	app.Get("/api/notifications/employee/:employeeID", handle.GetNotificationByEmployeeID)

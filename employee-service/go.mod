@@ -11,6 +11,9 @@ require (
 	gorm.io/gorm v1.25.10
 )
 
+require github.com/night-sornram/employee-management/common_utils v0.0.0
+replace github.com/night-sornram/employee-management/common_utils => ../common-utils
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

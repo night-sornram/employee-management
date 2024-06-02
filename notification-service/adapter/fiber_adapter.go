@@ -2,7 +2,7 @@ package adapter
 
 import (
 	"employee/repository"
-	"github.com/go-playground/validator/v10"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -50,13 +50,13 @@ func (f *handlerFiber) CreateNotification(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	err := validate.Struct(notification)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	// validate := validator.New()
+	// err := validate.Struct(notification)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": err.Error(),
+	// 	})
+	// }
 
 	newNotification, err := f.service.CreateNotification(notification)
 	if err != nil {
@@ -82,13 +82,13 @@ func (f *handlerFiber) UpdateNotification(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	err = validate.Struct(notification)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+	// validate := validator.New()
+	// err = validate.Struct(notification)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": err.Error(),
+	// 	})
+	// }
 
 	notification, err = f.service.UpdateNotification(id, notification)
 	if err != nil {
