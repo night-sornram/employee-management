@@ -1,0 +1,26 @@
+meta {
+  name: Check-In
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{URL}}:8081/api/attendances/check-in
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  {
+      "employee_id": "E12345",
+      "check_in": "2024-05-14T08:00:00Z"
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}:8080/login
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "id": "ADMIN",
+    "password": "123456"
+  }
+}
+
+script:post-response {
+  let data = res.getBody();
+  bru.setEnvVar("TOKEN",data.token);
+}

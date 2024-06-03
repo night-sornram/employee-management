@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Intern ITMX",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

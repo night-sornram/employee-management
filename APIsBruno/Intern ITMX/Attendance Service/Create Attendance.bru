@@ -1,0 +1,29 @@
+meta {
+  name: Create Attendance
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{URL}}:8081/api/attendances
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  {
+      "employee_id": "E12345",
+      "check_in": "2024-05-14T08:00:00Z",
+      "check_out": "2024-05-14T17:00:00Z",
+      "date": "2024-05-14T00:00:00Z",
+      "leave_id": 0
+  }
+}

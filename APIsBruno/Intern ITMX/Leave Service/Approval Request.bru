@@ -1,0 +1,22 @@
+meta {
+  name: Approval Request
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{URL}}:8082/leaves/approval/3
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "status": "approve",
+      "manager_opinion": "Approve"
+  }
+}

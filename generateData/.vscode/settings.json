@@ -59,6 +59,8 @@
   "files.associations": {
     "*.ejs": "html",
     ".env*": "dotenv",
-    "string_view": "cpp"
+    "iomanip": "cpp",
+    "iostream": "cpp",
+    "algorithm": "cpp"
   }
 }
