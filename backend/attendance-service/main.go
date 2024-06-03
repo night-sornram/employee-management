@@ -3,11 +3,10 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-
 	"github.com/night-sornram/employee-management/attendance-service/adapter"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
-	"github.com/night-sornram/employee-management/common-utils"
-	"github.com/night-sornram/employee-management/common-utils/middleware"
+	"github.com/webbalaka/common-utils"
+	"github.com/webbalaka/common-utils/middleware"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
