@@ -12,10 +12,14 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - local_pgdata:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - my-network
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin4_container
     restart: always
+    
     ports:
       - "5050:80"
     environment:
@@ -23,7 +27,91 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - my-network
+  attendance.dockerfile :
+    build: 
+      context: ./backend/attendance-service
+      dockerfile: attendance.dockerfile
+    container_name: attendance
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+      - common.dockerfile
+    volumes:
+      - attendance-data:/app/attendance-service
+    networks:
+      - my-network
+  employee.dockerfile :
+    build: 
+      context: ./backend/employee-service
+      dockerfile: employee.dockerfile
+    container_name: employee
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - common.dockerfile
+    volumes:
+      - employee-data:/app/employee-service
+    networks:
+      - my-network
+  leave.dockerfile :
+    build: 
+      context: ./backend/leave-management-service
+      dockerfile: leave.dockerfile
+    container_name: leave
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - common.dockerfile
+    volumes:
+      - leave-data:/app/leave-management-service
+    networks:
+      - my-network
+  notification.dockerfile :
+    build: 
+      context: ./backend/notification-service
+      dockerfile: notification.dockerfile
+    container_name: notification
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db
+      - common.dockerfile
+    volumes:
+      - notification-data:/app/notification-service
+    networks:
+      - my-network
+  common.dockerfile:
+    build:
+      context: ./backend/common-utils
+      dockerfile: common.dockerfile
+    container_name: common-utils
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - common-data:/app/common-utils
+    networks:
+      - my-network
 
 volumes:
   local_pgdata:
   pgadmin-data:
+  attendance-data:
+  employee-data:
+  leave-data:
+  notification-data:
+  common-data:
+
+networks:
+  my-network:
+    driver: bridge
+    

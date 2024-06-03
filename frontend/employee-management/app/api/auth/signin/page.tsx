@@ -29,7 +29,7 @@ const LoginPage = () => {
           id: id, 
           password: pass,
           redirect: false,
-          callbackUrl: "/attendance/checkin",
+          callbackUrl: "/",
     });
     router.push('/attendance/checkin');
   };
