@@ -10,7 +10,7 @@ type handlerFiber struct {
 	service repository.AttendanceService
 }
 
-func NewhandlerFiber(service repository.AttendanceService) handlerFiber {
+func NewHandlerFiber(service repository.AttendanceService) handlerFiber {
 	return handlerFiber{
 		service: service,
 	}
@@ -191,4 +191,18 @@ func (f *handlerFiber) GetLate(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) DownloadCSV(c *fiber.Ctx) error {
+	query := c.Query("query")
+	//if query == "" {
+	//	return c.Status(fiber.StatusBadRequest).SendString("Query is missing")
+	//}
+	data, err := f.service.DownloadCSV(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Nope")
+	}
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=data.csv")
+	c.Set(fiber.HeaderContentType, "text/csv")
+	return c.Send(data)
 }

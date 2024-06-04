@@ -11,6 +11,7 @@ type AttendanceService interface {
 	GetMyAttendances(eid string) ([]Attendance, error)
 	CheckToday(eid string) (Attendance, error)
 	GetLate(dateRange string) ([]Attendance, error)
+	DownloadCSV(query string) ([]byte, error)
 }
 
 type AttendanceServiceDB struct {
@@ -70,4 +71,8 @@ func (a *AttendanceServiceDB) GetLate(dateRange string) ([]Attendance, error) {
 		return a.repo.GetAllLate()
 	}
 	return []Attendance{}, nil
+}
+
+func (a *AttendanceServiceDB) DownloadCSV(query string) ([]byte, error) {
+	return a.repo.GetCSV(query)
 }

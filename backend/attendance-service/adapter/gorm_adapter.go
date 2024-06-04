@@ -1,6 +1,9 @@
 package adapter
 
 import (
+	"encoding/csv"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/night-sornram/employee-management/attendance-service/repository"
@@ -155,4 +158,46 @@ func (g *GormAdapter) GetAllLate() ([]repository.Attendance, error) {
 		return nil, err
 	}
 	return attendances, nil
+}
+
+func (g *GormAdapter) GetCSV(query string) ([]byte, error) {
+	var results []repository.Attendance
+	if err := g.db.Raw(`SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	if len(results) == 0 {
+		return nil, fmt.Errorf("no data found")
+	}
+	var b strings.Builder
+	w := csv.NewWriter(&b)
+
+	header := []string{"ID", "EmployeeID", "CheckIn", "CheckOut", "Date", "LeaveID", "EmployeeName", "EmployeeLastname"}
+	if err := w.Write(header); err != nil {
+		return nil, err
+	}
+
+	// Write rows
+	for _, att := range results {
+		record := []string{
+			fmt.Sprintf("%d", att.ID),
+			att.EmployeeID,
+			att.CheckIn.Format(time.DateTime),
+			att.CheckOut.Format(time.DateTime),
+			att.Date,
+			fmt.Sprintf("%d", att.LeaveID),
+			att.EmployeeName,
+			att.EmployeeLastname,
+		}
+		if err := w.Write(record); err != nil {
+			return nil, err
+		}
+	}
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		return nil, err
+	}
+
+	return []byte(b.String()), nil
 }

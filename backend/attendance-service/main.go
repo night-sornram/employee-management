@@ -16,7 +16,7 @@ import (
 func main() {
 	app := fiber.New()
 	const (
-		host     = "db"
+		host     = "localhost"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
@@ -41,13 +41,14 @@ func main() {
 
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewAttendanceService(repo)
-	handle := adapter.NewhandlerFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 
 	app.Use(cors.New())
 	app.Use("/api", middleware.Protected())
 
 	app.Get("/api/attendances", handle.GetAttendances)
 	app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
+	app.Get("/api/attendances/download", handle.DownloadCSV)
 	app.Get("/api/attendances/:id", handle.GetAttendance)
 	app.Post("/api/attendances", handle.CreateAttendance)
 	app.Post("/api/attendances/check-in", handle.CheckIn)

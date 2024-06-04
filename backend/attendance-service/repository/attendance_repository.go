@@ -14,4 +14,5 @@ type AttendanceRepository interface {
 	GetMonthLate() ([]Attendance, error)
 	GetYearLate() ([]Attendance, error)
 	GetAllLate() ([]Attendance, error)
+	GetCSV(query string) ([]byte, error)
 }
