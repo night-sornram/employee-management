@@ -53,6 +53,9 @@ export default function Page() {
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
 
+    const approved: string[] = ["approved", "Approved", "approve", "Approve"];
+    const denied: string[] = ["denied", "Denied", "deny", "Deny"];
+
     const sortItem = (item : Leave[]) => {
 
         if ( item === null) return [];
@@ -244,11 +247,11 @@ export default function Page() {
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    leave.status == "Approved" ? 
+                                    approved.includes(leave.status) ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    leave.status == "Denied" ?
+                                    denied.includes(leave.status) ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :

@@ -40,7 +40,8 @@ import {
     PaginationPrevious,
   } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
-  
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export default function AllAttendanceHistoryPage () {
@@ -112,7 +113,7 @@ export default function AllAttendanceHistoryPage () {
     }, [selectedOption , date , sort, currentPage , name]);
     
     return (
-        <main className='py-[3%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Employee Attendance
@@ -231,7 +232,9 @@ export default function AllAttendanceHistoryPage () {
                             data.map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
-                                    {dayjs(att.date).local().format('DD/MM/YYYY')}
+                                    {
+                                        dayjs(att.date, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')   
+                                    }
                                 </TableCell>
                                 <TableCell>
                                     {att.employee_name} {att.employee_lastname}

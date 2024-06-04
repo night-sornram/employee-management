@@ -16,7 +16,6 @@ type Attendance struct {
 }
 
 type CheckIn struct {
-	ID         int       `db:"id" json:"id" gor:"primaryKey"`
 	EmployeeID string    `db:"employee_id" json:"employee_id" validate:"required"`
 	CheckIn    time.Time `db:"check_in" json:"check_in"`
 }
@@ -34,4 +33,8 @@ type DataJson struct {
 	Total    int          `json:"total"`
 	Page     int          `json:"page"`
 	LastPage int          `json:"last_page"`
+}
+type GetMonth struct {
+	Month int `db:"month" json:"month" validate:"required"`
+	Year  int `db:"year" json:"year" validate:"required"`
 }

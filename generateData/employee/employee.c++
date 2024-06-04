@@ -5,7 +5,6 @@
 using namespace std;
 
 int main() {
-    // Employee details
     string empId, thaiTitle, thaiFirstName, thaiLastName;
     string engTitle, engFirstName, engLastName;
     string dob, gender, department, position;

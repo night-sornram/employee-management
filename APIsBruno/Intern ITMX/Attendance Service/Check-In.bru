@@ -1,0 +1,26 @@
+meta {
+  name: Check-In
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{URL}}:8081/api/attendances/check-in
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  {
+      "eid": "EMP0001",
+      "check_in": "2024-06-02T11:00:00Z"
+  }
+}

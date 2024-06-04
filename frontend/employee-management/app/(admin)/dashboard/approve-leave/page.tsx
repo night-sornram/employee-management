@@ -158,7 +158,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == 'Approved').length}
+                        {success.filter((leave) => leave.status == "approved").length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -168,7 +168,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == 'Denied').length}
+                        {success.filter((leave) => leave.status == "denied").length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -303,11 +303,11 @@ export default function Page() {
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    leave.status == "Approved" ? 
+                                    leave.status == "approved" ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    leave.status == "Denied" ?
+                                    leave.status == "denied" ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :
@@ -490,11 +490,11 @@ export default function Page() {
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    leave.status == "Approved" ? 
+                                    leave.status == 'approved' ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    leave.status == "Denied" ?
+                                    leave.status == "denied" ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :

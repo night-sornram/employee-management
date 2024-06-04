@@ -1,0 +1,15 @@
+meta {
+  name: Get Leave
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{URL}}:8082/api/leaves
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}

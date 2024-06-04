@@ -75,7 +75,7 @@ export default function AllAttendanceHistoryPage () {
     }, [  ]);
     
     return (
-        <main className='py-[3%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Employee

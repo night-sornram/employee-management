@@ -1,0 +1,15 @@
+meta {
+  name: GetALL
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{URL}}:8081/api/attendances
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}

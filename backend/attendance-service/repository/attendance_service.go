@@ -10,6 +10,11 @@ type AttendanceService interface {
 	CheckOut(id int) (Attendance, error)
 	GetMyAttendances(query Query, eid string) (DataJson, error)
 	CheckToday(eid string) (Attendance, error)
+	DownloadCSV(query string) ([]byte, error)
+	GetDayLate() ([]Attendance, error)
+	GetMonthLate(date GetMonth) ([]Attendance, error)
+	GetYearLate(year int) ([]Attendance, error)
+	GetAllLate() ([]Attendance, error)
 }
 
 type AttendanceServiceDB struct {
@@ -56,4 +61,24 @@ func (a *AttendanceServiceDB) GetMyAttendances(query Query, eid string) (DataJso
 
 func (a *AttendanceServiceDB) CheckToday(eid string) (Attendance, error) {
 	return a.repo.CheckToday(eid)
+}
+
+func (a *AttendanceServiceDB) GetDayLate() ([]Attendance, error) {
+	return a.repo.GetDayLate()
+}
+
+func (a *AttendanceServiceDB) GetMonthLate(date GetMonth) ([]Attendance, error) {
+	return a.repo.GetMonthLate(date.Month, date.Year)
+}
+
+func (a *AttendanceServiceDB) GetYearLate(year int) ([]Attendance, error) {
+	return a.repo.GetYearLate(year)
+}
+
+func (a *AttendanceServiceDB) GetAllLate() ([]Attendance, error) {
+	return a.repo.GetAllLate()
+}
+
+func (a *AttendanceServiceDB) DownloadCSV(query string) ([]byte, error) {
+	return a.repo.GetCSV(query)
 }

@@ -1,0 +1,15 @@
+meta {
+  name: GetYearLate
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{URL}}:8081/api/attendances/late/year/2024
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}

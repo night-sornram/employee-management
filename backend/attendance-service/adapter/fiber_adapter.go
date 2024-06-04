@@ -11,7 +11,7 @@ type handlerFiber struct {
 	service repository.AttendanceService
 }
 
-func NewhandlerFiber(service repository.AttendanceService) handlerFiber {
+func NewHandlerFiber(service repository.AttendanceService) handlerFiber {
 	return handlerFiber{
 		service: service,
 	}
@@ -218,4 +218,81 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(nil)
 	}
 	return c.Status(fiber.StatusOK).JSON(attendance)
+}
+
+func (f *handlerFiber) GetDayLate(c *fiber.Ctx) error {
+	attendances, err := f.service.GetDayLate()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) GetMonthLate(c *fiber.Ctx) error {
+	var date repository.GetMonth
+	if err := c.BodyParser(&date); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	validate := validator.New()
+	err := validate.Struct(date)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	attendances, err := f.service.GetMonthLate(date)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) GetYearLate(c *fiber.Ctx) error {
+	year, err := c.ParamsInt("year")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	attendances, err := f.service.GetYearLate(year)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) GetAllLate(c *fiber.Ctx) error {
+	attendances, err := f.service.GetAllLate()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) DownloadCSV(c *fiber.Ctx) error {
+	query := c.Query("query")
+	//if query == "" {
+	//	return c.Status(fiber.StatusBadRequest).SendString("Query is missing")
+	//}
+	data, err := f.service.DownloadCSV(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Nope")
+	}
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=data.csv")
+	c.Set(fiber.HeaderContentType, "text/csv")
+	return c.Send(data)
 }

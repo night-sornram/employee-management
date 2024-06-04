@@ -1,0 +1,30 @@
+meta {
+  name: Create Emp
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{URL}}:8080/api/employees
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "employee_id": "ADMIN",
+      "title_th": "นาย",
+      "first_name_th": "สมชาย",
+      "last_name_th": "ใจดี",
+      "title_en": "Mr.",
+      "first_name_en": "Somchai",
+      "last_name_en": "Jaidee",
+      "date_of_birth": "1990-01-01",
+      "gender": "Male",
+      "department": "IT",
+      "role": "admin",
+      "phone": "080-123-4567",
+      "email": "admin@example.com",
+      "password": "123456"
+  }
+}

@@ -10,4 +10,9 @@ type AttendanceRepository interface {
 	CheckOut(id int) (Attendance, error)
 	GetAllMe(query Query, eid string) (DataJson, error)
 	CheckToday(eid string) (Attendance, error)
+	GetDayLate() ([]Attendance, error)
+	GetMonthLate(month int, year int) ([]Attendance, error)
+	GetYearLate(year int) ([]Attendance, error)
+	GetAllLate() ([]Attendance, error)
+	GetCSV(query string) ([]byte, error)
 }

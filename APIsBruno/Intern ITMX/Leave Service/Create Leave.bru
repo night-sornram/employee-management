@@ -1,0 +1,25 @@
+meta {
+  name: Create Leave
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{URL}}:8082/leaves
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "employee_id": "E12779",
+      "date_start": "2024-05-14T08:00:00Z",
+      "date_end": "2024-05-16T08:00:00Z",
+      "reason": "I am suffering from a severe flu with high fever, body aches, chills, and persistent coughing, and need to take 3-5 days of sick leave to recover fully and avoid spreading the illness.",
+      "status": "pending"
+  }
+}

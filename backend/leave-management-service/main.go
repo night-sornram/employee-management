@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/leave-management-service/adapter"
 	"github.com/night-sornram/employee-management/leave-management-service/middleware"
@@ -16,7 +17,7 @@ import (
 func main() {
 	app := fiber.New()
 	const (
-		host     = "db"
+		host     = "localhost"
 		port     = 5432
 		user     = "postgres"
 		password = "password"

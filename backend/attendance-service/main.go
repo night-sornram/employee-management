@@ -16,7 +16,7 @@ import (
 func main() {
 	app := fiber.New()
 	const (
-		host     = "db"
+		host     = "localhost"
 		port     = 5432
 		user     = "postgres"
 		password = "password"
@@ -41,13 +41,14 @@ func main() {
 
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewAttendanceService(repo)
-	handle := adapter.NewhandlerFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 
 	app.Use(cors.New())
 	app.Use("/api", middleware.Protected())
 
 	app.Get("/api/attendances", handle.GetAttendances)
 	app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
+	app.Get("/api/attendances/download", handle.DownloadCSV)
 	app.Get("/api/attendances/:id", handle.GetAttendance)
 	app.Post("/api/attendances", handle.CreateAttendance)
 	app.Post("/api/attendances/check-in", handle.CheckIn)
@@ -55,6 +56,10 @@ func main() {
 	app.Put("/api/attendances/:id", handle.UpdateAttendance)
 	app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 	app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
+	app.Get("/api/attendances/late/day", handle.GetDayLate)
+	app.Get("/api/attendances/late/month", handle.GetMonthLate)
+	app.Get("/api/attendances/late/year/:year", handle.GetYearLate)
+	app.Get("/api/attendances/late/all", handle.GetAllLate)
 
 	err = app.Listen("0.0.0.0:8081")
 	if err != nil {
