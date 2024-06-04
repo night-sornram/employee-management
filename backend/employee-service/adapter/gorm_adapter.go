@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"github.com/night-sornram/employee-management/employee-service/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"

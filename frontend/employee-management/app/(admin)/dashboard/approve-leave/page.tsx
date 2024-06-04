@@ -66,6 +66,9 @@ export default function Page() {
     const [name1, setName1] = useState('')
     const [name2, setName2] = useState('')
 
+    const approved: string[] = ["approved", "Approved", "approve", "Approve"];
+    const denied: string[] = ["denied", "Denied", "deny", "Deny"];
+
     const sortItem = (item : Leave[] , sort :boolean) => {
         if(sort){
             return item.sort(function(a,b){
@@ -174,7 +177,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == 'Approved').length}
+                        {success.filter((leave) => leave.status == "approve").length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -184,7 +187,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == 'Denied').length}
+                        {success.filter((leave) => leave.status == "denied").length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -304,7 +307,7 @@ export default function Page() {
                                 }
                             ).filter(
                                 (leave) => {
-                                    return leave.status === 'Pending'
+                                    return leave.status === 'Pending' || leave.status === "pending";
                                 }
                             ).map((leave) =>
                             <TableRow  key={leave.id}>
@@ -327,11 +330,11 @@ export default function Page() {
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    leave.status == "Approved" ? 
+                                    leave.status == "approve" ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    leave.status == "Denied" ?
+                                    denied.includes(leave.status) ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :
@@ -515,11 +518,11 @@ export default function Page() {
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    leave.status == "Approved" ? 
+                                    leave.status == 'approve' ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    leave.status == "Denied" ?
+                                    denied.includes(leave.status) ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :

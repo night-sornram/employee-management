@@ -1,4 +1,4 @@
-module github.com/night-sornram/employee-management/leave-management-service
+module github.com/night-sornram/employee-management/employee-service
 
 go 1.22.3
 
