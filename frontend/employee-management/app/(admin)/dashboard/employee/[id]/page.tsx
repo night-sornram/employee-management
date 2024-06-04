@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import GetOneEmployee from "@/lib/GetOneEmployee";
-import { Attendance, UserJson } from "@/interface";
+import { Attendance, DataJson, UserJson } from "@/interface";
 import { useRouter } from "next/navigation";
 import GetMyAttendances from "@/lib/GetMyAttendances";
 import dayjs from "dayjs";
@@ -63,17 +63,15 @@ export default function Page({params} : {params: {id: string}}) {
     const [employee, setEmployee] = useState<UserJson>()
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage  = 10
-    const indexOfLastItem = currentPage * itemsPerPage;
     const { data: session } = useSession()
     const [selectedOption, setSelectedOption] = useState('all')
+    const [json, setJson] = useState<DataJson>()
     const [data, setData] = useState<Attendance[]>([]);
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
-    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
     const sortItem = (item : Attendance[]) => {
+        if ( item === null) return [];
         if(sort){
             return item.sort(function(a,b){
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -98,39 +96,35 @@ export default function Page({params} : {params: {id: string}}) {
             }).catch((error) => {
                 console.log(error);
             });
-            if(date === undefined){
-        
-                if(selectedOption === "month"){
-                    GetMyAttendances(params.id, session.user.token).then((res) => {
-                        setData(sortItem(res.filter((att : Attendance) => {
-                            return dayjs(att.date).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
-                        })));
-                    });
-                }
-                else if (selectedOption === "year"){
-                    GetMyAttendances(params.id, session.user.token).then((res) => {
-                        setData(sortItem(res.filter(
-                            (att : Attendance) => {
-                                return dayjs(att.date).local().format('YYYY') === dayjs(date).local().format('YYYY')
-                            }
-                        )));
-                    });
-                }
-                else {
-                    GetMyAttendances(params.id, session.user.token).then((res) => {
-                        setData(sortItem(res));
-                    });
-                }
+            
+            let query : string = `?page=${currentPage}`
+
+            if(date){
+                let year = date.toLocaleString("default", { year: "numeric" });
+                let month = date.toLocaleString("default", { month: "2-digit" });
+                let day = date.toLocaleString("default", { day: "2-digit" });
+    
+                let formattedDate = year + "-" + month + "-" + day;
+                query += `&date=${formattedDate}`
+            }
+            
+            if (selectedOption === "all"){
+                query += `&option=All`
+            }
+            else if (selectedOption === "year"){
+                query += `&option=Year`
             }
             else{
-                GetMyAttendances(params.id, session.user.token).then((res) => {
-                    setData(res.filter((att : Attendance) => {
-                        return dayjs(att.date).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
-                        }));
-                });
+                query += `&option=Month`
             }
-        }, [selectedOption , date , sort]
-    )
+
+            GetMyAttendances(params.id, session.user.token, query).then((res) => {
+                setData(sortItem(res.data));
+                setJson(res);
+            });
+
+            
+    }, [selectedOption , date , sort, currentPage])
 
     return (
         <div className="flex flex-col md:space-y-7 space-y-5 px-[5%]  py-[5%] w-screen md:w-[80%] 2xl:w-[60%] gap-[5%]">
@@ -342,7 +336,7 @@ export default function Page({params} : {params: {id: string}}) {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.map((att) => 
+                            data.map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {dayjs(att.date).local().format('DD/MM/YYYY')}
@@ -399,29 +393,36 @@ export default function Page({params} : {params: {id: string}}) {
                     <PaginationItem>
                         <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(currentPage > 1){
+                                    if(json && json.page > 1){
                                         setCurrentPage(currentPage - 1)
                                     }}}
                             />
                     </PaginationItem>
                     <Input type="number" className=" w-10" value={currentPage} onChange={(e)=>
                         {
-                            e.currentTarget.value === "" ? setCurrentPage(1) :
-                            parseInt(e.currentTarget.value) > Math.ceil(data.length / itemsPerPage) ?
-                            setCurrentPage(Math.ceil(data.length / itemsPerPage))
-                            :
-                            parseInt(e.currentTarget.value) < 1 ?
-                            setCurrentPage(1)
-                            :
-                            setCurrentPage(parseInt(e.currentTarget.value))}
+                            if (json){
+                                if (e.currentTarget.value === ""){
+                                    setCurrentPage(1)
+                                }
+                                else if(parseInt(e.currentTarget.value) > json.last_page){
+                                    setCurrentPage(json.last_page)
+                                }
+                                else if(parseInt(e.currentTarget.value) < 1){
+                                    setCurrentPage(1)
+                                }
+                                else{
+                                    setCurrentPage(parseInt(e.currentTarget.value))
+                                }
+                            }
                         }
+                    }
                     />
-                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(data.length / itemsPerPage) === 0 ? 1 : Math.ceil(data.length / itemsPerPage)) } readOnly/>
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json?.last_page}` } readOnly/>
 
                     <PaginationItem>
                         <PaginationNext className=" cursor-pointer" onClick={()=>
                             {
-                                if(currentPage < Math.ceil(data.length / itemsPerPage)){
+                                if(json && json.page < json.last_page && json.last_page > 1){
                                     setCurrentPage(currentPage + 1)
                                 }}
                             }

@@ -6,9 +6,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/night-sornram/employee-management/leave-management-service/adapter"
-	"github.com/night-sornram/employee-management/leave-management-service/middleware"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"github.com/night-sornram/employee-management/employee-service/adapter"
+	"github.com/night-sornram/employee-management/employee-service/middleware"
+	"github.com/night-sornram/employee-management/employee-service/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

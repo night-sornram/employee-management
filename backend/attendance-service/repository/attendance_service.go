@@ -1,14 +1,14 @@
 package repository
 
 type AttendanceService interface {
-	GetAttendances() ([]Attendance, error)
+	GetAttendances(query Query) (DataJson, error)
 	GetAttendance(id int) (Attendance, error)
 	CreateAttendance(attendance Attendance) (Attendance, error)
 	UpdateAttendance(id int, attendance Attendance) (Attendance, error)
 	DeleteAttendance(id int) error
 	CheckIn(eid string) (Attendance, error)
 	CheckOut(id int) (Attendance, error)
-	GetMyAttendances(eid string) ([]Attendance, error)
+	GetMyAttendances(query Query, eid string) (DataJson, error)
 	CheckToday(eid string) (Attendance, error)
 }
 
@@ -22,8 +22,8 @@ func NewAttendanceService(repo AttendanceRepository) AttendanceService {
 	}
 }
 
-func (a *AttendanceServiceDB) GetAttendances() ([]Attendance, error) {
-	return a.repo.GetAll()
+func (a *AttendanceServiceDB) GetAttendances(query Query) (DataJson, error) {
+	return a.repo.GetAll(query)
 }
 
 func (a *AttendanceServiceDB) GetAttendance(id int) (Attendance, error) {
@@ -50,8 +50,8 @@ func (a *AttendanceServiceDB) CheckOut(id int) (Attendance, error) {
 	return a.repo.CheckOut(id)
 }
 
-func (a *AttendanceServiceDB) GetMyAttendances(eid string) ([]Attendance, error) {
-	return a.repo.GetAllMe(eid)
+func (a *AttendanceServiceDB) GetMyAttendances(query Query, eid string) (DataJson, error) {
+	return a.repo.GetAllMe(query, eid)
 }
 
 func (a *AttendanceServiceDB) CheckToday(eid string) (Attendance, error) {

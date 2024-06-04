@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"github.com/night-sornram/employee-management/employee-service/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

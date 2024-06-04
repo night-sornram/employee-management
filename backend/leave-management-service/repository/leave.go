@@ -22,3 +22,19 @@ type LeaveStatus struct {
 	ManagerOpinion string `db:"manager_opinion" json:"manager_opinion"`
 	Status         string `db:"status" json:"status" validate:"required"`
 }
+
+type Query struct {
+	Date    string `json:"date"`
+	Page    int    `json:"page"`
+	PerPage int    `json:"per_page"`
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	Option  string `json:"option"`
+}
+
+type DataJson struct {
+	Data     []Leave `json:"data"`
+	Total    int     `json:"total"`
+	Page     int     `json:"page"`
+	LastPage int     `json:"last_page"`
+}

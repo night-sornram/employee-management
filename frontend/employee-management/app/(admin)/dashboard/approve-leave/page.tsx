@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover"
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Leave, UserJson } from "@/interface";
+import { DataJson, Leave, UserJson } from "@/interface";
 import GetLeaveAdmin from "@/lib/GetLeaveAdmin";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -42,31 +42,28 @@ import {
     SelectValue,
   } from "@/components/ui/select"
   import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
+import getAllAttendances from "@/lib/GetAllAttendances"
 dayjs.extend(utc);
 
 export default function Page() {
     const { data: session } = useSession()
     const [pending, setPending] = useState<Leave[]>([]);
     const [currentPagePending, setCurrentPagePending] = useState(1);
-    const itemsPerPage  = 10
-    const indexOfLastItemPending = currentPagePending * itemsPerPage;
-    const indexOfFirstItemPending = indexOfLastItemPending - itemsPerPage;
     const [date1, setDate1] = useState<Date>()
     const [sort1 , setSort1] = useState(true)
     const [selectedOption1, setSelectedOption1] = useState('all')
-    let currentItemsPending = pending.slice(indexOfFirstItemPending, indexOfLastItemPending);
     const [success, setSuccess] = useState<Leave[]>([]);
     const [currentPageSuccess, setCurrentPageSuccess] = useState(1);
-    const indexOfLastItemSuccess = currentPageSuccess * itemsPerPage;
-    const indexOfFirstItemSuccess = indexOfLastItemSuccess - itemsPerPage;
     const [date2, setDate2] = useState<Date>()
     const [sort2 , setSort2] = useState(true)
     const [selectedOption2, setSelectedOption2] = useState('all')
-    const currentItemsSuccess = success.slice(indexOfFirstItemSuccess, indexOfLastItemSuccess);
     const [name1, setName1] = useState('')
     const [name2, setName2] = useState('')
+    const [json1, setJson1] = useState<DataJson>()
+    const [json2, setJson2] = useState<DataJson>()
 
     const sortItem = (item : Leave[] , sort :boolean) => {
+        if ( item === null) return [];
         if(sort){
             return item.sort(function(a,b){
                 return new Date(a.date_start).getTime() - new Date(b.date_start).getTime();
@@ -86,79 +83,66 @@ export default function Page() {
                 window.location.href = "/";
             };
         }
-        if(date1 === undefined){
+        let query1 : string = `?page=${currentPagePending}&status=Pending`
         
-            if(selectedOption1 === "month"){
-                GetLeaveAdmin(session.user.token).then((res) => {
-                    setPending(sortItem(res.filter((att : Leave) => {
-                        return dayjs(att.date_start).local().format('MM/YYYY') === dayjs(date1).local().format('MM/YYYY')
-                    }), sort1));
-                });
-            }
-            else if (selectedOption1 === "year"){
-                GetLeaveAdmin( session.user.token).then((res) => {
-                    setPending(sortItem(res.filter(
-                        (att : Leave) => {
-                            return dayjs(att.date_start).local().format('YYYY') === dayjs(date1).local().format('YYYY')
-                        }
-                    ), sort1));
-                });
-            }
-            else {
-                GetLeaveAdmin( session.user.token).then((res) => {
-                    setPending(sortItem(res , sort1));
-                });
-            }
+        if(date1){
+            let year = date1.toLocaleString("default", { year: "numeric" });
+            let month = date1.toLocaleString("default", { month: "2-digit" });
+            let day = date1.toLocaleString("default", { day: "2-digit" });
+
+            let formattedDate = year + "-" + month + "-" + day;
+            query1 += `&date=${formattedDate}`
+        }
+        if (name1){
+            query1 += `&name=${name1}`
+        }
+        if (selectedOption1 === "all"){
+            query1 += `&option=All`
+        }
+        else if (selectedOption1 === "year"){
+            query1 += `&option=Year`
         }
         else{
-            GetLeaveAdmin(session.user.token).then((res) => {
-                setPending(sortItem(
-                    res.filter((att : Leave) => {
-                        return dayjs(att.date_start).local().format('DD/MM/YYYY') === dayjs(date1).local().format('DD/MM/YYYY')
-                        || dayjs(att.date_end).local().format('DD/MM/YYYY') === dayjs(date1).local().format('DD/MM/YYYY') 
-                        || (new Date(att.date_end).getTime() > new Date(date1).getTime() && new Date(att.date_start).getTime() < new Date(date1).getTime())
-                        }), sort1
-                ));
-            });
+            query1 += `&option=Month`
         }
-        if(date2 === undefined){
+        GetLeaveAdmin( session.user.token , query1).then((res) => {
+            setPending(
+                sortItem(res.data , sort1)
+            );
+            setJson1(res)
+        })
+
+        let query2 : string = `?page=${currentPageSuccess}&status=Success`
         
-            if(selectedOption2 === "month"){
-                GetLeaveAdmin(session.user.token).then((res) => {
-                    setSuccess(sortItem(res.filter((att : Leave) => {
-                        return dayjs(att.date_start).local().format('MM/YYYY') === dayjs(date2).local().format('MM/YYYY')
-                    }), sort2));
-                });
-            }
-            else if (selectedOption2 === "year"){
-                GetLeaveAdmin( session.user.token).then((res) => {
-                    setSuccess(sortItem(res.filter(
-                        (att : Leave) => {
-                            return dayjs(att.date_start).local().format('YYYY') === dayjs(date2).local().format('YYYY')
-                        }
-                    ), sort2));
-                });
-            }
-            else {
-                GetLeaveAdmin( session.user.token).then((res) => {
-                    setSuccess(sortItem(res , sort2));
-                });
-            }
+        if(date2){
+            let year = date2.toLocaleString("default", { year: "numeric" });
+            let month = date2.toLocaleString("default", { month: "2-digit" });
+            let day = date2.toLocaleString("default", { day: "2-digit" });
+
+            let formattedDate = year + "-" + month + "-" + day;
+            query2 += `&date=${formattedDate}`
+        }
+
+        if (name2){
+            query2 += `&name=${name2}`
+        }
+        if (selectedOption2 === "all"){
+            query2 += `&option=All`
+        }
+        else if (selectedOption2 === "year"){
+            query2 += `&option=Year`
         }
         else{
-            GetLeaveAdmin(session.user.token).then((res) => {
-                setSuccess(sortItem(
-                    res.filter((att : Leave) => {
-                        return dayjs(att.date_start).local().format('DD/MM/YYYY') === dayjs(date2).local().format('DD/MM/YYYY')
-                        || dayjs(att.date_end).local().format('DD/MM/YYYY') === dayjs(date2).local().format('DD/MM/YYYY') 
-                        || (new Date(att.date_end).getTime() > new Date(date2).getTime() && new Date(att.date_start).getTime() < new Date(date2).getTime())
-                        }), sort2));
-            });
+            query2 += `&option=Month`
         }
-        console.log(success)
-    }, [selectedOption1 , date1 , sort1 ,  selectedOption2 , date2 , sort2 ]);
-
-
+        
+        GetLeaveAdmin( session.user.token , query2).then((res) => {
+            setSuccess(
+                sortItem(res.data , sort2)
+            );
+            setJson2(res)
+        })
+    }, [selectedOption1 , date1 , sort1, currentPageSuccess,selectedOption2 , date2 , sort2, currentPagePending , name1 , name2]);
     return(
         <main className='py-[5%] px-[5%] h-auto md:w-[80%] 2xl:w-[70%] flex flex-col gap-10'>
             <div>
@@ -298,15 +282,7 @@ export default function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItemsPending.filter(
-                                (leave) => {
-                                    return (leave.employee_name + " " + leave.employee_lastname).toLowerCase().includes(name1.toLowerCase())
-                                }
-                            ).filter(
-                                (leave) => {
-                                    return leave.status === 'Pending'
-                                }
-                            ).map((leave) =>
+                            pending.map((leave) =>
                             <TableRow  key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
@@ -348,41 +324,48 @@ export default function Page() {
                         }
                     </TableBody>
                 </Table>
-                <Pagination  className=" pt-4 pb-10">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious className=" cursor-pointer" onClick={()=>
-                                    {
-                                        if(currentPagePending > 1){
-                                            setCurrentPagePending(currentPagePending - 1)
-                                        }}}
-                                />
-                        </PaginationItem>
-                        <Input type="number" className=" w-10" value={currentPagePending} onChange={(e)=>
-                            {
-                                e.currentTarget.value === "" ? setCurrentPagePending(1) :
-                                parseInt(e.currentTarget.value) > Math.ceil(pending.length / itemsPerPage) ?
-                                setCurrentPagePending(Math.ceil(pending.length / itemsPerPage))
-                                :
-                                parseInt(e.currentTarget.value) < 1 ?
-                                setCurrentPagePending(1)
-                                :
-                                setCurrentPagePending(parseInt(e.currentTarget.value))}
-                            }
-                        />
-                        <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(pending.length / itemsPerPage) === 0 ? 1 : Math.ceil(pending.length / itemsPerPage)) } readOnly/>
-
-                        <PaginationItem>
-                            <PaginationNext className=" cursor-pointer" onClick={()=>
+                <Pagination className=" pt-4 pb-10">
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(currentPagePending < Math.ceil(pending.length / itemsPerPage)){
-                                        setCurrentPagePending(currentPagePending + 1)
-                                    }}
+                                    if(json1 && json1.page > 1){
+                                        setCurrentPagePending(currentPagePending - 1)
+                                    }}}
+                            />
+                    </PaginationItem>
+                    <Input type="number" className=" w-10" value={currentPagePending} onChange={(e)=>
+                        {
+                            if (json1){
+                                if (e.currentTarget.value === ""){
+                                    setCurrentPagePending(1)
                                 }
-                                
-                                />
-                        </PaginationItem>
-                    </PaginationContent>
+                                else if(parseInt(e.currentTarget.value) > json1.last_page){
+                                    setCurrentPagePending(json1.last_page)
+                                }
+                                else if(parseInt(e.currentTarget.value) < 1){
+                                    setCurrentPagePending(1)
+                                }
+                                else{
+                                    setCurrentPagePending(parseInt(e.currentTarget.value))
+                                }
+                            }
+                        }
+                    }
+                    />
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json1?.last_page}` } readOnly/>
+
+                    <PaginationItem>
+                        <PaginationNext className=" cursor-pointer" onClick={()=>
+                            {
+                                if(json1 && json1.page < json1.last_page && json1.last_page > 1){
+                                    setCurrentPagePending(currentPagePending + 1)
+                                }}
+                            }
+                            
+                            />
+                    </PaginationItem>
+                </PaginationContent>
                 </Pagination>
 
             </div>
@@ -486,15 +469,7 @@ export default function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItemsSuccess.filter(
-                                (leave) => {
-                                    return (leave.employee_name + " " + leave.employee_lastname).toLowerCase().includes(name2.toLowerCase())
-                                }
-                            ).filter(
-                                (leave) => {
-                                    return leave.status !== 'Pending'
-                                }
-                            ).map((leave) =>
+                            success.map((leave) =>
                             <TableRow key={leave.id}>
                                 <TableCell>
                                     {leave.employee_id}
@@ -537,40 +512,47 @@ export default function Page() {
                     </TableBody>
                 </Table>
                 <Pagination className=" pt-4">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious className=" cursor-pointer" onClick={()=>
-                                    {
-                                        if(currentPageSuccess > 1){
-                                            setCurrentPageSuccess(currentPageSuccess - 1)
-                                        }}}
-                                />
-                        </PaginationItem>
-                        <Input type="number" className=" w-10" value={currentPageSuccess} onChange={(e)=>
-                            {
-                                e.currentTarget.value === "" ? setCurrentPageSuccess(1) :
-                                parseInt(e.currentTarget.value) > Math.ceil(success.length / itemsPerPage) ?
-                                setCurrentPageSuccess(Math.ceil(success.length / itemsPerPage))
-                                :
-                                parseInt(e.currentTarget.value) < 1 ?
-                                setCurrentPageSuccess(1)
-                                :
-                                setCurrentPageSuccess(parseInt(e.currentTarget.value))}
-                            }
-                        />
-                        <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(success.length / itemsPerPage) === 0 ? 1 : Math.ceil(success.length / itemsPerPage)) } readOnly/>
-
-                        <PaginationItem>
-                            <PaginationNext className=" cursor-pointer" onClick={()=>
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(currentPageSuccess < Math.ceil(success.length / itemsPerPage)){
-                                        setCurrentPageSuccess(currentPageSuccess + 1)
-                                    }}
+                                    if(json2 && json2.page > 1){
+                                        setCurrentPageSuccess(currentPageSuccess - 1)
+                                    }}}
+                            />
+                    </PaginationItem>
+                    <Input type="number" className=" w-10" value={currentPageSuccess} onChange={(e)=>
+                        {
+                            if (json2){
+                                if (e.currentTarget.value === ""){
+                                    setCurrentPageSuccess(1)
                                 }
-                                
-                                />
-                        </PaginationItem>
-                    </PaginationContent>
+                                else if(parseInt(e.currentTarget.value) > json2.last_page){
+                                    setCurrentPageSuccess(json2.last_page)
+                                }
+                                else if(parseInt(e.currentTarget.value) < 1){
+                                    setCurrentPageSuccess(1)
+                                }
+                                else{
+                                    setCurrentPageSuccess(parseInt(e.currentTarget.value))
+                                }
+                            }
+                        }
+                    }
+                    />
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json2?.last_page}` } readOnly/>
+
+                    <PaginationItem>
+                        <PaginationNext className=" cursor-pointer" onClick={()=>
+                            {
+                                if(json2 && json2.page < json2.last_page && json2.last_page > 1){
+                                    setCurrentPageSuccess(currentPageSuccess + 1)
+                                }}
+                            }
+                            
+                            />
+                    </PaginationItem>
+                </PaginationContent>
                 </Pagination>
             </div>
         </main>

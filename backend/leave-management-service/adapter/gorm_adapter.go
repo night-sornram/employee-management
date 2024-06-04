@@ -1,8 +1,11 @@
 package adapter
 
 import (
+	"fmt"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
 	"gorm.io/gorm"
+	"math"
+	"time"
 )
 
 type GormAdapter struct {
@@ -15,14 +18,124 @@ func NewGormAdapter(db *gorm.DB) repository.LeaveRepository {
 	}
 }
 
-func (g *GormAdapter) GetAll() ([]repository.Leave, error) {
+func (g *GormAdapter) GetAll(query repository.Query) (repository.DataJson, error) {
 	var leaves []repository.Leave
-	query := `select * from leaves l join dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	as employees(employee_id text, employee_name text, employee_lastname text) on l.employee_id = employees.employee_id;`
-	if err := g.db.Raw(query).Scan(&leaves).Error; err != nil {
-		return nil, err
+	sql := `SELECT * FROM leaves a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`
+
+	if query.Option == "All" || query.Option == "" {
+		sql = fmt.Sprintf("%s WHERE 1=1", sql)
+	} else if query.Option == "Month" {
+		sql = fmt.Sprintf("%s WHERE (substring(CAST(a.date_start AS TEXT),1,7) = '%s' OR  substring(CAST(a.date_end AS TEXT),1,7) = '%s' ) ", sql, time.Now().Format("2006-01-02")[0:7], time.Now().Format("2006-01-02")[0:7])
+	} else {
+		sql = fmt.Sprintf("%s WHERE (substring(CAST(a.date_start AS TEXT),1,4) = '%s' OR  substring(CAST(a.date_start AS TEXT),1,4) = '%s' ) ", sql, time.Now().Format("2006-01-02")[0:4], time.Now().Format("2006-01-02")[0:4])
 	}
-	return leaves, nil
+
+	if query.Status != "" {
+		if query.Status == "Pending" {
+			sql = fmt.Sprintf("%s AND (a.category = 'Pending') ", sql)
+		} else {
+			sql = fmt.Sprintf("%s AND (a.category = 'Approved' OR a.category = 'Denied' ) ", sql)
+		}
+	}
+
+	if query.Date == "" {
+		if query.Name == "" {
+			err := g.db.Raw(sql).Scan(&leaves).Error
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+			total := len(leaves)
+
+			sql = fmt.Sprintf("%s   LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+			err = g.db.Raw(sql).Scan(&leaves).Error
+
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+
+			dataJson := repository.DataJson{
+				Data:     leaves,
+				Total:    total,
+				Page:     query.Page,
+				LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+			}
+			return dataJson, nil
+		} else {
+
+			sql = fmt.Sprintf("%s AND (employees.employee_name LIKE '%%%s%%' OR employees.employee_lastname LIKE '%%%s%%')", sql, query.Name, query.Name)
+			err := g.db.Raw(sql).Scan(&leaves).Error
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+			total := len(leaves)
+
+			sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+			err = g.db.Raw(sql).Scan(&leaves).Error
+
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+
+			dataJson := repository.DataJson{
+				Data:     leaves,
+				Total:    total,
+				Page:     query.Page,
+				LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+			}
+			return dataJson, nil
+		}
+	} else {
+		if query.Name == "" {
+			sql = fmt.Sprintf("%s AND (substring(CAST(a.date_start AS TEXT),1,10) = '%s' OR substring(CAST(a.date_end AS TEXT),1,10) = '%s') ", sql, query.Date, query.Date)
+			err := g.db.Raw(sql).Scan(&leaves).Error
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+			total := len(leaves)
+
+			sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+			err = g.db.Raw(sql).Scan(&leaves).Error
+
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+
+			dataJson := repository.DataJson{
+				Data:     leaves,
+				Total:    total,
+				Page:     query.Page,
+				LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+			}
+			return dataJson, nil
+		} else {
+			sql = fmt.Sprintf("%s AND (substring(CAST(a.date_start AS TEXT),1,10) = '%s' OR substring(CAST(a.date_end AS TEXT),1,10) = '%s') AND (employees.employee_name LIKE '%%%s%%' OR employees.employee_lastname LIKE '%%%s%%')", sql, query.Date, query.Date, query.Name, query.Name)
+			err := g.db.Raw(sql).Scan(&leaves).Error
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+			total := len(leaves)
+
+			sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+			err = g.db.Raw(sql).Scan(&leaves).Error
+
+			if err != nil {
+				return repository.DataJson{}, err
+			}
+
+			dataJson := repository.DataJson{
+				Data:     leaves,
+				Total:    total,
+				Page:     query.Page,
+				LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+			}
+			return dataJson, nil
+		}
+	}
 }
 
 func (g *GormAdapter) GetByID(id int) (repository.Leave, error) {
@@ -69,11 +182,64 @@ func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.L
 	return existingLeave, nil
 }
 
-func (g *GormAdapter) GetAllMe(eid string) ([]repository.Leave, error) {
-	var Leaves []repository.Leave
-	err := g.db.Where("employee_id = ?", eid).Find(&Leaves).Order("id DESC").Error
-	if err != nil {
-		return nil, err
+func (g *GormAdapter) GetAllMe(query repository.Query, eid string) (repository.DataJson, error) {
+	var leaves []repository.Leave
+	sql := `SELECT * FROM leaves a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`
+
+	if query.Option == "All" || query.Option == "" {
+		sql = fmt.Sprintf("%s WHERE 1=1", sql)
+	} else if query.Option == "Month" {
+		sql = fmt.Sprintf("%s WHERE (substring(CAST(a.date_start AS TEXT),1,7) = '%s' OR  substring(CAST(a.date_end AS TEXT),1,7) = '%s' ) ", sql, time.Now().Format("2006-01-02")[0:7], time.Now().Format("2006-01-02")[0:7])
+	} else {
+		sql = fmt.Sprintf("%s WHERE (substring(CAST(a.date_start AS TEXT),1,4) = '%s' OR  substring(CAST(a.date_start AS TEXT),1,4) = '%s' ) ", sql, time.Now().Format("2006-01-02")[0:4], time.Now().Format("2006-01-02")[0:4])
 	}
-	return Leaves, nil
+
+	if query.Date == "" {
+		err := g.db.Raw(sql).Scan(&leaves).Error
+		if err != nil {
+			return repository.DataJson{}, err
+		}
+		total := len(leaves)
+
+		sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+		err = g.db.Raw(sql).Scan(&leaves).Error
+
+		if err != nil {
+			return repository.DataJson{}, err
+		}
+
+		dataJson := repository.DataJson{
+			Data:     leaves,
+			Total:    total,
+			Page:     query.Page,
+			LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+		}
+		return dataJson, nil
+	} else {
+		sql = fmt.Sprintf("%s AND (substring(CAST(a.date_start AS TEXT),1,10) = '%s' OR substring(CAST(a.date_end AS TEXT),1,10) = '%s' )", sql, query.Date, query.Date)
+		err := g.db.Raw(sql).Scan(&leaves).Error
+		if err != nil {
+			return repository.DataJson{}, err
+		}
+		total := len(leaves)
+
+		sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, query.PerPage, (query.Page-1)*query.PerPage)
+
+		err = g.db.Raw(sql).Scan(&leaves).Error
+
+		if err != nil {
+			return repository.DataJson{}, err
+		}
+
+		dataJson := repository.DataJson{
+			Data:     leaves,
+			Total:    total,
+			Page:     query.Page,
+			LastPage: int(math.Ceil(float64(total) / float64(query.PerPage))),
+		}
+		return dataJson, nil
+	}
+
 }

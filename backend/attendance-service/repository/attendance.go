@@ -20,3 +20,18 @@ type CheckIn struct {
 	EmployeeID string    `db:"employee_id" json:"employee_id" validate:"required"`
 	CheckIn    time.Time `db:"check_in" json:"check_in"`
 }
+
+type Query struct {
+	Date    string `json:"date"`
+	Page    int    `json:"page"`
+	PerPage int    `json:"per_page"`
+	Name    string `json:"name"`
+	Option  string `json:"option"`
+}
+
+type DataJson struct {
+	Data     []Attendance `json:"data"`
+	Total    int          `json:"total"`
+	Page     int          `json:"page"`
+	LastPage int          `json:"last_page"`
+}

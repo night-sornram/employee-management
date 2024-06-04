@@ -56,3 +56,11 @@ export interface StateProp {
 export interface FontProp{
     font : string
 }
+
+export interface DataJson{
+    data : [],
+    total : number,
+    page : number,
+    last_page : number
+
+}

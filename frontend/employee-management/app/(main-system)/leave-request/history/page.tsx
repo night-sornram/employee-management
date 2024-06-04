@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover"
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Leave, UserJson } from "@/interface";
+import { DataJson, Leave, UserJson } from "@/interface";
 import GetMyLeaves from "@/lib/GetMyLeaves";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -45,18 +45,18 @@ import {
 dayjs.extend(utc);
 
 export default function Page() {
-    const { data: session } = useSession()
-    const [data, setData] = useState<Leave[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage  = 10
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const { data: session } = useSession()
+    const [selectedOption, setSelectedOption] = useState('all')
+    const [json, setJson] = useState<DataJson>()
+    const [data, setData] = useState<Leave[]>([]);
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
-    const [selectedOption, setSelectedOption] = useState('all')
-    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
     const sortItem = (item : Leave[]) => {
+
+        if ( item === null) return [];
+
         if(sort){
             return item.sort(function(a,b){
                 return new Date(a.date_start).getTime() - new Date(b.date_start).getTime();
@@ -76,40 +76,33 @@ export default function Page() {
                 window.location.href = "/";
             };
         }
-        if(date === undefined){
+        let query : string = `?page=${currentPage}`
         
-            if(selectedOption === "month"){
-                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
-                    setData(sortItem(res.filter((att : Leave) => {
-                        return dayjs(att.date_start).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
-                    })));
-                });
-            }
-            else if (selectedOption === "year"){
-                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
-                    setData(sortItem(res.filter(
-                        (att : Leave) => {
-                            return dayjs(att.date_start).local().format('YYYY') === dayjs(date).local().format('YYYY')
-                        }
-                    )));
-                });
-            }
-            else {
-                GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
-                    setData(sortItem(res));
-                });
-            }
+        if(date){
+            let year = date.toLocaleString("default", { year: "numeric" });
+            let month = date.toLocaleString("default", { month: "2-digit" });
+            let day = date.toLocaleString("default", { day: "2-digit" });
+
+            let formattedDate = year + "-" + month + "-" + day;
+            query += `&date=${formattedDate}`
+        }
+        if (selectedOption === "all"){
+            query += `&option=All`
+        }
+        else if (selectedOption === "year"){
+            query += `&option=Year`
         }
         else{
-            GetMyLeaves(session.user.employee_id, session.user.token).then((res) => {
-                setData(res.filter((att : Leave) => {
-                    return dayjs(att.date_start).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
-                    || dayjs(att.date_end).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY') 
-                    || (new Date(att.date_end).getTime() > new Date(date).getTime() && new Date(att.date_start).getTime() < new Date(date).getTime())
-                    }));
-            });
+            query += `&option=Month`
         }
-    }, [date , selectedOption , sort]);
+        
+        GetMyLeaves( session.user.employee_id , session.user.token , query).then((res) => {
+            setData(
+                sortItem(res.data)
+            );
+            setJson(res)
+        })
+    }, [selectedOption , date , sort, currentPage]);
     return(
         <main className='py-[3%] px-[5%] h-full  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
@@ -236,7 +229,7 @@ export default function Page() {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.map((leave) => 
+                            data.map((leave) => 
                             <TableRow key={leave.id}>
                                 <TableCell>
                                     {dayjs(leave.date_start).format('DD/MM/YYYY')}
@@ -273,35 +266,41 @@ export default function Page() {
                     </TableBody>
                 </Table>
             </div>
-            
             <Pagination>
                 <PaginationContent>
                     <PaginationItem>
                         <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(currentPage > 1){
+                                    if(json && json.page > 1){
                                         setCurrentPage(currentPage - 1)
                                     }}}
                             />
                     </PaginationItem>
                     <Input type="number" className=" w-10" value={currentPage} onChange={(e)=>
                         {
-                            e.currentTarget.value === "" ? setCurrentPage(1) :
-                            parseInt(e.currentTarget.value) > Math.ceil(data.length / itemsPerPage) ?
-                            setCurrentPage(Math.ceil(data.length / itemsPerPage))
-                            :
-                            parseInt(e.currentTarget.value) < 1 ?
-                            setCurrentPage(1)
-                            :
-                            setCurrentPage(parseInt(e.currentTarget.value))}
+                            if (json){
+                                if (e.currentTarget.value === ""){
+                                    setCurrentPage(1)
+                                }
+                                else if(parseInt(e.currentTarget.value) > json.last_page){
+                                    setCurrentPage(json.last_page)
+                                }
+                                else if(parseInt(e.currentTarget.value) < 1){
+                                    setCurrentPage(1)
+                                }
+                                else{
+                                    setCurrentPage(parseInt(e.currentTarget.value))
+                                }
+                            }
                         }
+                    }
                     />
-                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(data.length / itemsPerPage) === 0 ? 1 : Math.ceil(data.length / itemsPerPage)) } readOnly/>
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json?.last_page}` } readOnly/>
 
                     <PaginationItem>
                         <PaginationNext className=" cursor-pointer" onClick={()=>
                             {
-                                if(currentPage < Math.ceil(data.length / itemsPerPage)){
+                                if(json && json.page < json.last_page && json.last_page > 1){
                                     setCurrentPage(currentPage + 1)
                                 }}
                             }
