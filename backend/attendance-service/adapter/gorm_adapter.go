@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"strings"
+
 	"time"
 
 	"github.com/night-sornram/employee-management/attendance-service/repository"
@@ -119,7 +120,8 @@ func (g *GormAdapter) CheckToday(eid string) (repository.Attendance, error) {
 func (g *GormAdapter) GetDayLate() ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
 	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(DAY FROM check_in)= EXTRACT(DAY FROM CURRENT_DATE);`
+				AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id 
+         		WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(DAY FROM check_in)= EXTRACT(DAY FROM CURRENT_DATE);`
 	err := g.db.Raw(query).Scan(&attendances).Error
 	if err != nil {
 		return nil, err
@@ -127,10 +129,11 @@ func (g *GormAdapter) GetDayLate() ([]repository.Attendance, error) {
 	return attendances, nil
 }
 
-func (g *GormAdapter) GetMonthLate() ([]repository.Attendance, error) {
+func (g *GormAdapter) GetMonthLate(month int, year int) ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
-	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(MONTH FROM check_in)= EXTRACT(MONTH FROM CURRENT_DATE);`
+	query := fmt.Sprintf(`SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+				AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id 
+				WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(MONTH FROM check_in)= %d AND EXTRACT(YEAR FROM check_in)= %d;`, month, year)
 	err := g.db.Raw(query).Scan(&attendances).Error
 	if err != nil {
 		return nil, err
@@ -138,10 +141,11 @@ func (g *GormAdapter) GetMonthLate() ([]repository.Attendance, error) {
 	return attendances, nil
 }
 
-func (g *GormAdapter) GetYearLate() ([]repository.Attendance, error) {
+func (g *GormAdapter) GetYearLate(year int) ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
-	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(YEAR FROM check_in)= EXTRACT(YEAR FROM CURRENT_DATE);`
+	query := fmt.Sprintf(`SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+				AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id 
+         		WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(YEAR FROM check_in)= %d;`, year)
 	err := g.db.Raw(query).Scan(&attendances).Error
 	if err != nil {
 		return nil, err

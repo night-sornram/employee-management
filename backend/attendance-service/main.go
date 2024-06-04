@@ -56,7 +56,10 @@ func main() {
 	app.Put("/api/attendances/:id", handle.UpdateAttendance)
 	app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 	app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
-	app.Get("/api/attendances/late/:range", handle.GetLate)
+	app.Get("/api/attendances/late/day", handle.GetDayLate)
+	app.Get("/api/attendances/late/month", handle.GetMonthLate)
+	app.Get("/api/attendances/late/year/:year", handle.GetYearLate)
+	app.Get("/api/attendances/late/all", handle.GetAllLate)
 
 	err = app.Listen("0.0.0.0:8081")
 	if err != nil {
