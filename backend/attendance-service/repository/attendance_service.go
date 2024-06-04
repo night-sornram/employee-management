@@ -10,6 +10,7 @@ type AttendanceService interface {
 	CheckOut(id int) (Attendance, error)
 	GetMyAttendances(eid string) ([]Attendance, error)
 	CheckToday(eid string) (Attendance, error)
+	GetLate(dateRange string) ([]Attendance, error)
 }
 
 type AttendanceServiceDB struct {
@@ -56,4 +57,17 @@ func (a *AttendanceServiceDB) GetMyAttendances(eid string) ([]Attendance, error)
 
 func (a *AttendanceServiceDB) CheckToday(eid string) (Attendance, error) {
 	return a.repo.CheckToday(eid)
+}
+
+func (a *AttendanceServiceDB) GetLate(dateRange string) ([]Attendance, error) {
+	if dateRange == "day" {
+		return a.repo.GetDayLate()
+	} else if dateRange == "month" {
+		return a.repo.GetMonthLate()
+	} else if dateRange == "year" {
+		return a.repo.GetYearLate()
+	} else if dateRange == "all" {
+		return a.repo.GetAllLate()
+	}
+	return []Attendance{}, nil
 }

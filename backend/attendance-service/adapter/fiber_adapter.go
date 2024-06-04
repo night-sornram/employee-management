@@ -175,3 +175,20 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(attendance)
 }
+
+func (f *handlerFiber) GetLate(c *fiber.Ctx) error {
+	dateRange := c.Params("range")
+	if dateRange == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+	attendances, err := f.service.GetLate(dateRange)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}

@@ -20,8 +20,8 @@ func NewGormAdapter(db *gorm.DB) repository.AttendanceRepository {
 
 func (g *GormAdapter) GetAll() ([]repository.Attendance, error) {
 	var attendances []repository.Attendance
-	query := `select * from attendances a join dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	as employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id;`
+	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`
 	err := g.db.Raw(query).Scan(&attendances).Error
 	if err != nil {
 		return nil, err
@@ -111,4 +111,48 @@ func (g *GormAdapter) CheckToday(eid string) (repository.Attendance, error) {
 		return attendance, err
 	}
 	return attendance, nil
+}
+
+func (g *GormAdapter) GetDayLate() ([]repository.Attendance, error) {
+	var attendances []repository.Attendance
+	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(DAY FROM check_in)= EXTRACT(DAY FROM CURRENT_DATE);`
+	err := g.db.Raw(query).Scan(&attendances).Error
+	if err != nil {
+		return nil, err
+	}
+	return attendances, nil
+}
+
+func (g *GormAdapter) GetMonthLate() ([]repository.Attendance, error) {
+	var attendances []repository.Attendance
+	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(MONTH FROM check_in)= EXTRACT(MONTH FROM CURRENT_DATE);`
+	err := g.db.Raw(query).Scan(&attendances).Error
+	if err != nil {
+		return nil, err
+	}
+	return attendances, nil
+}
+
+func (g *GormAdapter) GetYearLate() ([]repository.Attendance, error) {
+	var attendances []repository.Attendance
+	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00' AND EXTRACT(YEAR FROM check_in)= EXTRACT(YEAR FROM CURRENT_DATE);`
+	err := g.db.Raw(query).Scan(&attendances).Error
+	if err != nil {
+		return nil, err
+	}
+	return attendances, nil
+}
+
+func (g *GormAdapter) GetAllLate() ([]repository.Attendance, error) {
+	var attendances []repository.Attendance
+	query := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id WHERE check_in > '0001-01-01 10:00:00';`
+	err := g.db.Raw(query).Scan(&attendances).Error
+	if err != nil {
+		return nil, err
+	}
+	return attendances, nil
 }

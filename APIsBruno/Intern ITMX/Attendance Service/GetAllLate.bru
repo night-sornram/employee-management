@@ -1,11 +1,11 @@
 meta {
-  name: Get Leave
+  name: GetAllLate
   type: http
-  seq: 1
+  seq: 6
 }
 
 get {
-  url: {{URL}}:8082/api/leaves
+  url: {{URL}}:8081/api/attendances/late/all
   body: none
   auth: bearer
 }

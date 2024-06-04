@@ -10,4 +10,8 @@ type AttendanceRepository interface {
 	CheckOut(id int) (Attendance, error)
 	GetAllMe(eid string) ([]Attendance, error)
 	CheckToday(eid string) (Attendance, error)
+	GetDayLate() ([]Attendance, error)
+	GetMonthLate() ([]Attendance, error)
+	GetYearLate() ([]Attendance, error)
+	GetAllLate() ([]Attendance, error)
 }
