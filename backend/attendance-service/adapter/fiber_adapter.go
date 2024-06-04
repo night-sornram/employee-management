@@ -176,15 +176,61 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(attendance)
 }
 
-func (f *handlerFiber) GetLate(c *fiber.Ctx) error {
-	dateRange := c.Params("range")
-	if dateRange == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Not found",
+func (f *handlerFiber) GetDayLate(c *fiber.Ctx) error {
+	attendances, err := f.service.GetDayLate()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
 		})
 	}
-	attendances, err := f.service.GetLate(dateRange)
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
 
+func (f *handlerFiber) GetMonthLate(c *fiber.Ctx) error {
+	var date repository.GetMonth
+	if err := c.BodyParser(&date); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	validate := validator.New()
+	err := validate.Struct(date)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	attendances, err := f.service.GetMonthLate(date)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) GetYearLate(c *fiber.Ctx) error {
+	year, err := c.ParamsInt("year")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	attendances, err := f.service.GetYearLate(year)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) GetAllLate(c *fiber.Ctx) error {
+	attendances, err := f.service.GetAllLate()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

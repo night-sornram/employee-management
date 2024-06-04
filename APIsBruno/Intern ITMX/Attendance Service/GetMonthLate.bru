@@ -1,15 +1,22 @@
 meta {
   name: GetMonthLate
   type: http
-  seq: 4
+  seq: 5
 }
 
 get {
   url: {{URL}}:8081/api/attendances/late/month
-  body: none
+  body: json
   auth: bearer
 }
 
 auth:bearer {
   token: {{TOKEN}}
+}
+
+body:json {
+  {
+    "month": 6,
+    "year": 2024
+  }
 }

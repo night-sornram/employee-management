@@ -11,7 +11,7 @@ type AttendanceRepository interface {
 	GetAllMe(eid string) ([]Attendance, error)
 	CheckToday(eid string) (Attendance, error)
 	GetDayLate() ([]Attendance, error)
-	GetMonthLate() ([]Attendance, error)
-	GetYearLate() ([]Attendance, error)
+	GetMonthLate(month int, year int) ([]Attendance, error)
+	GetYearLate(year int) ([]Attendance, error)
 	GetAllLate() ([]Attendance, error)
 }
