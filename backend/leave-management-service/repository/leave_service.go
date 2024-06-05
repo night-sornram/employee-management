@@ -15,6 +15,7 @@ type LeaveService interface {
 	DeleteLeave(id int) error
 	UpdateStatus(id int, leave LeaveStatus) (Leave, error)
 	GetAllMe(query Query, eid string) (DataJson, error)
+	DownloadCSV(query string) ([]byte, error)
 }
 
 type LeaveServiceDB struct {
@@ -49,6 +50,10 @@ func (u *LeaveServiceDB) DeleteLeave(id int) error {
 
 func (u *LeaveServiceDB) GetAllMe(query Query, eid string) (DataJson, error) {
 	return u.repo.GetAllMe(query, eid)
+}
+
+func (u *LeaveServiceDB) DownloadCSV(query string) ([]byte, error) {
+	return u.repo.GetCSV(query)
 }
 
 type Attendance struct {

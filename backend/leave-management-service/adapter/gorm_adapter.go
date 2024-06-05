@@ -1,10 +1,12 @@
 package adapter
 
 import (
+	"encoding/csv"
 	"fmt"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
 	"gorm.io/gorm"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -242,4 +244,49 @@ func (g *GormAdapter) GetAllMe(query repository.Query, eid string) (repository.D
 		return dataJson, nil
 	}
 
+}
+
+func (g *GormAdapter) GetCSV(query string) ([]byte, error) {
+	var results []repository.Leave
+	if err := g.db.Raw(`SELECT * FROM leaves a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	if len(results) == 0 {
+		return nil, fmt.Errorf("no data found")
+	}
+	var b strings.Builder
+	w := csv.NewWriter(&b)
+
+	header := []string{"ID", "EmployeeID", "DateStart", "DateEnd", "Reason", "Category", "ManagerOpinion", "Status", "Manager", "EmployeeName", "EmployeeLastname"}
+	if err := w.Write(header); err != nil {
+		return nil, err
+	}
+
+	// Write rows
+	for _, leave := range results {
+		record := []string{
+			fmt.Sprintf("%d", leave.ID),
+			leave.EmployeeID,
+			leave.DateStart.Format(time.DateTime),
+			leave.DateEnd.Format(time.DateTime),
+			leave.Reason,
+			leave.Category,
+			leave.ManagerOpinion,
+			leave.Status,
+			leave.ManagerOpinion,
+			leave.EmployeeName,
+			leave.EmployeeLastname,
+		}
+		if err := w.Write(record); err != nil {
+			return nil, err
+		}
+	}
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		return nil, err
+	}
+
+	return []byte(b.String()), nil
 }

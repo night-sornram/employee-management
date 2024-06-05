@@ -49,6 +49,7 @@ func main() {
 	app.Use("/api", middleware.Protected())
 
 	app.Get("/api/leaves", handle.GetLeaves)
+	app.Get("/api/leaves/download", middleware.Authorize("admin"), handle.DownloadCSV)
 	app.Get("/api/leaves/me/:eid", handle.GetAllMe)
 	app.Get("/api/leaves/:id", handle.GetLeave)
 	app.Post("/api/leaves", handle.CreateLeave)

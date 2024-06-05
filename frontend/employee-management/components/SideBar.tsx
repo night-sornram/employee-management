@@ -104,12 +104,6 @@ export default function SideBar({children}: {children: React.ReactNode}) {
                                                 Attendance History
                                             </h1> 
                                         </Button>
-                                        <Button className={` ${ params === "/dashboard/download" ? " dark:bg-blue-300/10 hover:bg-blue-100 hover:text-blue-500 text-blue-500 bg-blue-100  " : " hover:"} `} onClick={()=>{router.push("/dashboard/download")}} variant="ghost">
-                                            <Download className="mr-2 h-5 w-5" />
-                                            <h1 >
-                                                Download Data
-                                            </h1> 
-                                        </Button>
                                     </div>
                                 </div>
                                 

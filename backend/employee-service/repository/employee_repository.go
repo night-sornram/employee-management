@@ -9,4 +9,5 @@ type EmployeeRepository interface {
 	Login(id string, password string) (Employee, error)
 	GetMe(id string) (Employee, error)
 	ChangePassword(id string, password string, new_password string) (Employee, error)
+	GetCSV(query string) ([]byte, error)
 }

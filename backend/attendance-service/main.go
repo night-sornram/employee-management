@@ -48,7 +48,7 @@ func main() {
 
 	app.Get("/api/attendances", handle.GetAttendances)
 	app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
-	app.Get("/api/attendances/download", handle.DownloadCSV)
+	app.Get("/api/attendances/download", middleware.Authorize("admin"), handle.DownloadCSV)
 	app.Get("/api/attendances/:id", handle.GetAttendance)
 	app.Post("/api/attendances", handle.CreateAttendance)
 	app.Post("/api/attendances/check-in", handle.CheckIn)

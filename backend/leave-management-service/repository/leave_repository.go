@@ -8,4 +8,5 @@ type LeaveRepository interface {
 	Delete(id int) error
 	UpdateStatus(id int, leave Leave) (Leave, error)
 	GetAllMe(query Query, eid string) (DataJson, error)
+	GetCSV(query string) ([]byte, error)
 }

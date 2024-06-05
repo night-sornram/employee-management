@@ -1,6 +1,14 @@
 package adapter
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/csv"
+	"errors"
+	"fmt"
+	"log"
+	"strings"
+
 	"github.com/night-sornram/employee-management/employee-service/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -56,13 +64,23 @@ func (g *GormAdapter) Delete(id int) error {
 
 func (g *GormAdapter) Login(id string, password string) (repository.Employee, error) {
 	var Employee repository.Employee
-
 	if err := g.db.First(&Employee, "employee_id = ?", id).Error; err != nil {
 		return repository.Employee{}, err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
-		return repository.Employee{}, err
+	// -- bcrypt --
+	//if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
+	//	return repository.Employee{}, err
+	//}
+
+	// -- sha256 --
+	hash := sha256.Sum256([]byte(password))
+	hashPassword := base64.StdEncoding.EncodeToString(hash[:])
+	log.Print(hash)
+	log.Print(Employee.Password)
+	if Employee.Password != hashPassword {
+		return repository.Employee{}, errors.New("incorrect password")
 	}
+
 	return Employee, nil
 }
 
@@ -91,4 +109,52 @@ func (g *GormAdapter) ChangePassword(id string, password string, new_password st
 		return repository.Employee{}, err
 	}
 	return Employee, nil
+}
+
+func (g *GormAdapter) GetCSV(query string) ([]byte, error) {
+	var results []repository.Employee
+	if err := g.db.Raw(`SELECT * FROM employees;`).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	if len(results) == 0 {
+		return nil, fmt.Errorf("no data found")
+	}
+	var b strings.Builder
+	w := csv.NewWriter(&b)
+
+	header := []string{"ID", "EmployeeID", "TitleTH", "FirstNameTH", "LastNameTH", "TitleEN", "FirstNameEN", "LastNameEN", "DateOfBirth", "Gender", "Department", "Role", "Phone", "Email", "Password"}
+	if err := w.Write(header); err != nil {
+		return nil, err
+	}
+
+	// Write rows
+	for _, emp := range results {
+		record := []string{
+			fmt.Sprintf("%d", emp.ID),
+			emp.EmployeeID,
+			emp.TitleTH,
+			emp.FirstNameTH,
+			emp.LastNameTH,
+			emp.TitleEN,
+			emp.FirstNameEN,
+			emp.LastNameEN,
+			emp.DateOfBirth,
+			emp.Gender,
+			emp.Department,
+			emp.Role,
+			emp.Phone,
+			emp.Email,
+			emp.Password,
+		}
+		if err := w.Write(record); err != nil {
+			return nil, err
+		}
+	}
+	w.Flush()
+
+	if err := w.Error(); err != nil {
+		return nil, err
+	}
+
+	return []byte(b.String()), nil
 }

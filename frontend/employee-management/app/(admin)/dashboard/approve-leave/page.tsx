@@ -43,6 +43,7 @@ import {
   } from "@/components/ui/select"
   import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
 import getAllAttendances from "@/lib/GetAllAttendances"
+import DownloadLeave from "@/lib/DownloadLeave"
 dayjs.extend(utc);
 
 export default function Page() {
@@ -61,6 +62,20 @@ export default function Page() {
     const [name2, setName2] = useState('')
     const [json1, setJson1] = useState<DataJson>()
     const [json2, setJson2] = useState<DataJson>()
+
+    const [downloadUrl, setDownloadUrl] = useState<string | null>();
+
+    const handleDownload = async () => {
+        if (!session) return;
+        
+        try {
+            const blob = await DownloadLeave(session.user.token);
+            const url = URL.createObjectURL(blob);
+            setDownloadUrl(url);
+        } catch (error) {
+            console.error("Error downloading attendance data:", error);
+        }
+    };
 
     const sortItem = (item : Leave[] , sort :boolean) => {
         if ( item === null) return [];
@@ -143,6 +158,11 @@ export default function Page() {
             setJson2(res)
         })
     }, [selectedOption1 , date1 , sort1, currentPageSuccess,selectedOption2 , date2 , sort2, currentPagePending , name1 , name2]);
+
+    useEffect(() => {
+        handleDownload();
+    }, []);
+
     return(
         <main className='py-[5%] px-[5%] h-auto md:w-[80%] 2xl:w-[70%] flex flex-col gap-10'>
             <div>
@@ -554,6 +574,20 @@ export default function Page() {
                     </PaginationItem>
                 </PaginationContent>
                 </Pagination>
+            </div>
+            <div>
+                <h1 className="font-bold text-2xl">
+                    Download Leaves Data
+                </h1>
+            </div>
+            <div className="self-center">
+                {downloadUrl ? 
+                    <a href={downloadUrl} download="leaves.csv">
+                        <Button>
+                            Download
+                        </Button>
+                    </a> : null
+                }
             </div>
         </main>
     )
