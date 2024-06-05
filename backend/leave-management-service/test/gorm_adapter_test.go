@@ -41,14 +41,15 @@ func getLeaveData() repository.Leave {
 }
 
 func TestGetAll(t *testing.T) {
+	//!error
 	t.Run("Valid-GetAll", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 		repo := adapter.NewGormAdapter(db)
 
-		mock.ExpectQuery(`select`).
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		_, err := repo.GetAll()
+		_, err := repo.GetAll(repository.Query{})
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -57,9 +58,9 @@ func TestGetAll(t *testing.T) {
 		defer sqlDB.Close()
 		repo := adapter.NewGormAdapter(db)
 
-		mock.ExpectQuery(`select`).
+		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
-		_, err := repo.GetAll()
+		_, err := repo.GetAll(repository.Query{})
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})
@@ -234,6 +235,7 @@ func TestUpdateStatus(t *testing.T) {
 }
 
 func TestGetAllMe(t *testing.T) {
+	//!error
 	t.Run("Valid-GetAllMe", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
@@ -241,7 +243,7 @@ func TestGetAllMe(t *testing.T) {
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		_, err := repo.GetAllMe("E12777")
+		_, err := repo.GetAllMe(repository.Query{}, "E12777")
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -252,7 +254,7 @@ func TestGetAllMe(t *testing.T) {
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
-		_, err := repo.GetAllMe("E12777")
+		_, err := repo.GetAllMe(repository.Query{}, "E12777")
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})

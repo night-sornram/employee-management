@@ -58,29 +58,27 @@ func (_m *LeaveRepository) Delete(id int) error {
 	return r0
 }
 
-// GetAll provides a mock function with given fields:
-func (_m *LeaveRepository) GetAll() ([]repository.Leave, error) {
-	ret := _m.Called()
+// GetAll provides a mock function with given fields: query
+func (_m *LeaveRepository) GetAll(query repository.Query) (repository.DataJson, error) {
+	ret := _m.Called(query)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAll")
 	}
 
-	var r0 []repository.Leave
+	var r0 repository.DataJson
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]repository.Leave, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(repository.Query) (repository.DataJson, error)); ok {
+		return rf(query)
 	}
-	if rf, ok := ret.Get(0).(func() []repository.Leave); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(repository.Query) repository.DataJson); ok {
+		r0 = rf(query)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]repository.Leave)
-		}
+		r0 = ret.Get(0).(repository.DataJson)
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(repository.Query) error); ok {
+		r1 = rf(query)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -88,29 +86,27 @@ func (_m *LeaveRepository) GetAll() ([]repository.Leave, error) {
 	return r0, r1
 }
 
-// GetAllMe provides a mock function with given fields: eid
-func (_m *LeaveRepository) GetAllMe(eid string) ([]repository.Leave, error) {
-	ret := _m.Called(eid)
+// GetAllMe provides a mock function with given fields: query, eid
+func (_m *LeaveRepository) GetAllMe(query repository.Query, eid string) (repository.DataJson, error) {
+	ret := _m.Called(query, eid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAllMe")
 	}
 
-	var r0 []repository.Leave
+	var r0 repository.DataJson
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) ([]repository.Leave, error)); ok {
-		return rf(eid)
+	if rf, ok := ret.Get(0).(func(repository.Query, string) (repository.DataJson, error)); ok {
+		return rf(query, eid)
 	}
-	if rf, ok := ret.Get(0).(func(string) []repository.Leave); ok {
-		r0 = rf(eid)
+	if rf, ok := ret.Get(0).(func(repository.Query, string) repository.DataJson); ok {
+		r0 = rf(query, eid)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]repository.Leave)
-		}
+		r0 = ret.Get(0).(repository.DataJson)
 	}
 
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(eid)
+	if rf, ok := ret.Get(1).(func(repository.Query, string) error); ok {
+		r1 = rf(query, eid)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -2,8 +2,8 @@ package test
 
 import (
 	"errors"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
-	"github.com/night-sornram/employee-management/leave-management-service/repository/mocks"
+	"github.com/night-sornram/employee-management/employee-service/repository"
+	"github.com/night-sornram/employee-management/employee-service/repository/mocks"
 	"github.com/stretchr/testify/mock"
 	"testing"
 

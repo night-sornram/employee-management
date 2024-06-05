@@ -20,7 +20,7 @@ func TestGetLeavesHandler(t *testing.T) {
 		app := fiber.New()
 		app.Get("/leaves", handle.GetLeaves)
 
-		mockService.On("GetLeaves").Return([]repository.Leave{}, nil)
+		mockService.On("GetLeaves", mock.Anything).Return(repository.DataJson{}, nil)
 
 		req := httptest.NewRequest("GET", "/leaves", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -37,7 +37,7 @@ func TestGetLeavesHandler(t *testing.T) {
 		app.Get("/leaves", handle.GetLeaves)
 
 		//mock error
-		mockService.On("GetLeaves").Return([]repository.Leave{}, errors.New("invalid"))
+		mockService.On("GetLeaves", mock.Anything).Return(repository.DataJson{}, errors.New("invalid"))
 
 		req := httptest.NewRequest("GET", "/leaves", nil)
 		req.Header.Set("Content-Type", "application/json")

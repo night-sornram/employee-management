@@ -13,18 +13,18 @@ import (
 func TestGetLeaves(t *testing.T) {
 	t.Run("Valid-GetLeaves", func(t *testing.T) {
 		mockRepo := new(mocks.LeaveRepository)
-		mockRepo.On("GetAll").Return([]repository.Leave{}, nil)
+		mockRepo.On("GetAll", mock.Anything).Return(repository.DataJson{}, nil)
 
 		service := repository.NewLeaveService(mockRepo)
-		_, err := service.GetLeaves()
+		_, err := service.GetLeaves(repository.Query{})
 		assert.NoError(t, err)
 	})
 	t.Run("Invalid-GetLeaves", func(t *testing.T) {
 		mockRepo := new(mocks.LeaveRepository)
-		mockRepo.On("GetAll").Return([]repository.Leave{}, errors.New("invalid"))
+		mockRepo.On("GetAll", mock.Anything).Return(repository.DataJson{}, errors.New("invalid"))
 
 		service := repository.NewLeaveService(mockRepo)
-		_, err := service.GetLeaves()
+		_, err := service.GetLeaves(repository.Query{})
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})
@@ -199,21 +199,21 @@ func TestUpdateStatusLeave(t *testing.T) {
 	})
 }
 
-func TestGetMyLeaves(t *testing.T) {
-	t.Run("Valid-GetMyLeaves", func(t *testing.T) {
+func TestGetAllMeLeaves(t *testing.T) {
+	t.Run("Valid-GetAllMeLeaves", func(t *testing.T) {
 		mockRepo := new(mocks.LeaveRepository)
-		mockRepo.On("GetAllMe", "E0001").Return([]repository.Leave{}, nil)
+		mockRepo.On("GetAllMe", mock.Anything, "E0001").Return(repository.DataJson{}, nil)
 
 		service := repository.NewLeaveService(mockRepo)
-		_, err := service.GetAllMe("E0001")
+		_, err := service.GetAllMe(repository.Query{}, "E0001")
 		assert.NoError(t, err)
 	})
-	t.Run("Invalid-GetMyLeaves", func(t *testing.T) {
+	t.Run("Invalid-GetAllMeLeaves", func(t *testing.T) {
 		mockRepo := new(mocks.LeaveRepository)
-		mockRepo.On("GetAllMe", "E0001").Return([]repository.Leave{}, errors.New("invalid"))
+		mockRepo.On("GetAllMe", mock.Anything, "E0001").Return(repository.DataJson{}, errors.New("invalid"))
 
 		service := repository.NewLeaveService(mockRepo)
-		_, err := service.GetAllMe("E0001")
+		_, err := service.GetAllMe(repository.Query{}, "E0001")
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})
