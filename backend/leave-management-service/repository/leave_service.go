@@ -8,13 +8,13 @@ import (
 )
 
 type LeaveService interface {
-	GetLeaves() ([]Leave, error)
+	GetLeaves(query Query) (DataJson, error)
 	GetLeave(id int) (Leave, error)
 	CreateLeave(leave Leave) (Leave, error)
 	UpdateLeave(id int, leave Leave) (Leave, error)
 	DeleteLeave(id int) error
 	UpdateStatus(id int, leave LeaveStatus) (Leave, error)
-	GetAllMe(eid string) ([]Leave, error)
+	GetAllMe(query Query, eid string) (DataJson, error)
 }
 
 type LeaveServiceDB struct {
@@ -27,8 +27,8 @@ func NewLeaveService(repo LeaveRepository) LeaveService {
 	}
 }
 
-func (u *LeaveServiceDB) GetLeaves() ([]Leave, error) {
-	return u.repo.GetAll()
+func (u *LeaveServiceDB) GetLeaves(query Query) (DataJson, error) {
+	return u.repo.GetAll(query)
 }
 
 func (u *LeaveServiceDB) GetLeave(id int) (Leave, error) {
@@ -47,8 +47,8 @@ func (u *LeaveServiceDB) DeleteLeave(id int) error {
 	return u.repo.Delete(id)
 }
 
-func (u *LeaveServiceDB) GetAllMe(eid string) ([]Leave, error) {
-	return u.repo.GetAllMe(eid)
+func (u *LeaveServiceDB) GetAllMe(query Query, eid string) (DataJson, error) {
+	return u.repo.GetAllMe(query, eid)
 }
 
 type Attendance struct {

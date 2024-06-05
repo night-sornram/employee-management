@@ -4,6 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"strconv"
 )
 
 type handlerFiber struct {
@@ -17,7 +18,35 @@ func NewHandlerFiber(service repository.LeaveService) handlerFiber {
 }
 
 func (f *handlerFiber) GetLeaves(c *fiber.Ctx) error {
-	leaves, err := f.service.GetLeaves()
+	query := repository.Query{
+		Date:    "",
+		Page:    1,
+		Name:    "",
+		PerPage: 8,
+		Status:  "",
+		Option:  "",
+	}
+
+	if d := c.Query("date"); d != "" {
+		query.Date = d
+	}
+
+	if n := c.Query("name"); n != "" {
+		query.Name = n
+	}
+
+	if s := c.Query("status"); s != "" {
+		query.Status = s
+	}
+
+	if o := c.Query("option"); o != "" {
+		query.Option = o
+	}
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	query.Page = page
+
+	leaves, err := f.service.GetLeaves(query)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
@@ -143,7 +172,28 @@ func (f *handlerFiber) GetAllMe(c *fiber.Ctx) error {
 			"message": "Not found",
 		})
 	}
-	leaves, err := f.service.GetAllMe(eid)
+
+	query := repository.Query{
+		Date:    "",
+		Page:    1,
+		Name:    "",
+		PerPage: 8,
+		Status:  "",
+		Option:  "",
+	}
+
+	if d := c.Query("date"); d != "" {
+		query.Date = d
+	}
+
+	if o := c.Query("option"); o != "" {
+		query.Option = o
+	}
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	query.Page = page
+
+	leaves, err := f.service.GetAllMe(query, eid)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

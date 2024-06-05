@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"github.com/night-sornram/employee-management/employee-service/repository"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"

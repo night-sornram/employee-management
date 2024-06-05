@@ -1,5 +1,5 @@
-export default async function GetMyLeaves (eid: string, token: string) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves/me/${eid}`, {
+export default async function GetMyLeaves (eid: string, token: string,query: string) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_LEAVE_URL}/api/leaves/me/${eid}${query}`, {
         method: 'GET',
         mode: 'cors',
         headers: {

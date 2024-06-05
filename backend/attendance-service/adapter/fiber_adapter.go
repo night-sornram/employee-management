@@ -4,20 +4,44 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
+	"strconv"
 )
 
 type handlerFiber struct {
 	service repository.AttendanceService
 }
 
-func NewhandlerFiber(service repository.AttendanceService) handlerFiber {
+func NewHandlerFiber(service repository.AttendanceService) handlerFiber {
 	return handlerFiber{
 		service: service,
 	}
 }
 
 func (f *handlerFiber) GetAttendances(c *fiber.Ctx) error {
-	attendances, err := f.service.GetAttendances()
+	query := repository.Query{
+		Date:    "",
+		Page:    1,
+		Name:    "",
+		PerPage: 8,
+		Option:  "",
+	}
+
+	if d := c.Query("date"); d != "" {
+		query.Date = d
+	}
+
+	if n := c.Query("name"); n != "" {
+		query.Name = n
+	}
+
+	if o := c.Query("option"); o != "" {
+		query.Option = o
+	}
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	query.Page = page
+
+	attendances, err := f.service.GetAttendances(query)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -153,13 +177,33 @@ func (f *handlerFiber) GetMyAttendances(c *fiber.Ctx) error {
 			"message": "Not found",
 		})
 	}
-	attendances, err := f.service.GetMyAttendances(eid)
+
+	query := repository.Query{
+		Date:    "",
+		Page:    1,
+		Name:    "",
+		PerPage: 8,
+		Option:  "",
+	}
+
+	if d := c.Query("date"); d != "" {
+		query.Date = d
+	}
+
+	if o := c.Query("option"); o != "" {
+		query.Option = o
+	}
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	query.Page = page
+
+	data, err := f.service.GetMyAttendances(query, eid)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
-	return c.Status(fiber.StatusOK).JSON(attendances)
+	return c.Status(fiber.StatusOK).JSON(data)
 }
 
 func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
@@ -237,4 +281,18 @@ func (f *handlerFiber) GetAllLate(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(attendances)
+}
+
+func (f *handlerFiber) DownloadCSV(c *fiber.Ctx) error {
+	query := c.Query("query")
+	//if query == "" {
+	//	return c.Status(fiber.StatusBadRequest).SendString("Query is missing")
+	//}
+	data, err := f.service.DownloadCSV(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Nope")
+	}
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=data.csv")
+	c.Set(fiber.HeaderContentType, "text/csv")
+	return c.Send(data)
 }

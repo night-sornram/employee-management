@@ -31,7 +31,7 @@ const LoginPage = () => {
           redirect: false,
           callbackUrl: "/",
     });
-    router.push('/attendance/checkin');
+    router.push('/');
   };
         
   

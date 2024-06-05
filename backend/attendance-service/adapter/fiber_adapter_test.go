@@ -63,7 +63,7 @@ func (m *MockLeaveService) GetMyAttendances(eid string) ([]repository.Attendance
 func TestGetAttendancesHandler(t *testing.T) {
 	t.Run("Valid-GetAttendances", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances", handle.GetAttendances)
 
@@ -79,7 +79,7 @@ func TestGetAttendancesHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetAttendances", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances", handle.GetAttendances)
 
@@ -98,7 +98,7 @@ func TestGetAttendancesHandler(t *testing.T) {
 func TestGetAttendanceHandler(t *testing.T) {
 	t.Run("Valid-GetAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -114,7 +114,7 @@ func TestGetAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-GetAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -128,7 +128,7 @@ func TestGetAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -148,7 +148,7 @@ func TestGetAttendanceHandler(t *testing.T) {
 func TestCreateAttendanceHandler(t *testing.T) {
 	t.Run("Valid-CreateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -172,7 +172,7 @@ func TestCreateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-CreateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -186,7 +186,7 @@ func TestCreateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-Validator-CreateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -207,7 +207,7 @@ func TestCreateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-CreateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -235,7 +235,7 @@ func TestCreateAttendanceHandler(t *testing.T) {
 func TestUpdateAttendanceHandler(t *testing.T) {
 	t.Run("Valid-UpdateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -258,7 +258,7 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-UpdateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -280,7 +280,7 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-UpdateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -294,7 +294,7 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-Validator-UpdateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -314,7 +314,7 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-UpdateAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -340,7 +340,7 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 func TestDeleteAttendanceHandler(t *testing.T) {
 	t.Run("Valid-DeleteAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -356,7 +356,7 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-DeleteAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -369,7 +369,7 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 	})
 	t.Run("Invalid-DeleteAttendance", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -388,7 +388,7 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 func TestCheckInHandler(t *testing.T) {
 	t.Run("Valid-CheckIn", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -406,7 +406,7 @@ func TestCheckInHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-CheckIn", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -420,7 +420,7 @@ func TestCheckInHandler(t *testing.T) {
 	})
 	t.Run("Invalid-CheckIn", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -443,7 +443,7 @@ func TestCheckInHandler(t *testing.T) {
 func TestCheckOutHandler(t *testing.T) {
 	t.Run("Valid-CheckOut", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -462,7 +462,7 @@ func TestCheckOutHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-CheckOut", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -476,7 +476,7 @@ func TestCheckOutHandler(t *testing.T) {
 	})
 	t.Run("Invalid-CheckOut", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -498,7 +498,7 @@ func TestCheckOutHandler(t *testing.T) {
 func TestGetMyAttendancesHandler(t *testing.T) {
 	t.Run("Valid-GetMyAttendances", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
 
@@ -514,7 +514,7 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-GetMyAttendances", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/", handle.GetMyAttendances)
 
@@ -528,7 +528,7 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetMyAttendances", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
 
@@ -548,7 +548,7 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 func TestCheckTodayHandler(t *testing.T) {
 	t.Run("Valid-CheckToday", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
@@ -566,7 +566,7 @@ func TestCheckTodayHandler(t *testing.T) {
 	})
 	t.Run("Valid-ID-0-CheckToday", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
@@ -584,7 +584,7 @@ func TestCheckTodayHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-CheckToday", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/", handle.CheckToday)
 
@@ -598,7 +598,7 @@ func TestCheckTodayHandler(t *testing.T) {
 	})
 	t.Run("Invalid-CheckToday", func(t *testing.T) {
 		mockService := new(MockLeaveService)
-		handle := NewhandlerFiber(mockService)
+		handle := NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 

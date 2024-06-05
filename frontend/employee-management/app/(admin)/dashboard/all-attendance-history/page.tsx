@@ -24,7 +24,7 @@ import {
 import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Attendance, UserJson } from "@/interface";
+import { Attendance, DataJson, UserJson } from "@/interface";
 import getAllAttendances from "@/lib/GetAllAttendances";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -40,7 +40,8 @@ import {
     PaginationPrevious,
   } from "@/components/ui/pagination"
 import { Input } from "@/components/ui/input";
-  
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export default function AllAttendanceHistoryPage () {
@@ -48,16 +49,15 @@ export default function AllAttendanceHistoryPage () {
     const { data: session } = useSession()
     const [data, setData] = useState<Attendance[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage  = 10
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const [selectedOption, setSelectedOption] = useState('all')
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
     const [name, setName] = useState<string>("")
-    let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const [json, setJson] = useState<DataJson>()
+
 
     const sortItem = (item : Attendance[]) => {
+        if ( item === null) return [];
         if(sort){
             return item.sort(function(a,b){
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -77,41 +77,43 @@ export default function AllAttendanceHistoryPage () {
                 window.location.href = "/";
             };
         }
-        if(date === undefined){
+        let query : string = `?page=${currentPage}`
         
-            if(selectedOption === "month"){
-                getAllAttendances( session.user.token).then((res) => {
-                    setData(sortItem(res.filter((att : Attendance) => {
-                        return dayjs(att.date).local().format('MM/YYYY') === dayjs(date).local().format('MM/YYYY')
-                    })));
-                });
-            }
-            else if (selectedOption === "year"){
-                getAllAttendances( session.user.token).then((res) => {
-                    setData(sortItem(res.filter(
-                        (att : Attendance) => {
-                            return dayjs(att.date).local().format('YYYY') === dayjs(date).local().format('YYYY')
-                        }
-                    )));
-                });
-            }
-            else {
-                getAllAttendances( session.user.token).then((res) => {
-                    setData(sortItem(res));
-                });
-            }
+        if(date){
+            let year = date.toLocaleString("default", { year: "numeric" });
+            let month = date.toLocaleString("default", { month: "2-digit" });
+            let day = date.toLocaleString("default", { day: "2-digit" });
+
+            let formattedDate = year + "-" + month + "-" + day;
+            query += `&date=${formattedDate}`
+        }
+
+        if (name !== ""){
+            query += `&name=${name}`
+        }
+
+        if (selectedOption === "all"){
+            query += `&option=All`
+        }
+        else if (selectedOption === "year"){
+            query += `&option=Year`
         }
         else{
-            getAllAttendances( session.user.token).then((res) => {
-                setData(res.filter((att : Attendance) => {
-                    return dayjs(att.date).local().format('DD/MM/YYYY') === dayjs(date).local().format('DD/MM/YYYY')
-                    }));
-            });
+            query += `&option=Month`
         }
-    }, [selectedOption , sort, date ]);
+
+        console.log(query)
+        
+        getAllAttendances(session.user.token , query).then((res) => {
+            setData(
+                sortItem(res.data)
+            );
+            setJson(res)
+        })
+    }, [selectedOption , date , sort, currentPage , name]);
     
     return (
-        <main className='py-[3%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
+        <main className='py-[5%] px-[5%]  md:w-[80%] 2xl:w-[60%] flex flex-col gap-10'>
             <div>
                 <h1 className="font-bold text-2xl">
                     Employee Attendance
@@ -227,14 +229,12 @@ export default function AllAttendanceHistoryPage () {
                     </TableHeader>
                     <TableBody>
                         {
-                            currentItems.filter(
-                                (att) => {
-                                    return( att.employee_name + " " + att.employee_lastname).toLowerCase().includes(name.toLowerCase())
-                                }
-                            ).map((att) => 
+                            data.map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
-                                    {dayjs(att.date).local().format('DD/MM/YYYY')}
+                                    {
+                                        dayjs(att.date, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')   
+                                    }
                                 </TableCell>
                                 <TableCell>
                                     {att.employee_name} {att.employee_lastname}
@@ -282,29 +282,36 @@ export default function AllAttendanceHistoryPage () {
                     <PaginationItem>
                         <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(currentPage > 1){
+                                    if(json && json.page > 1){
                                         setCurrentPage(currentPage - 1)
                                     }}}
                             />
                     </PaginationItem>
                     <Input type="number" className=" w-10" value={currentPage} onChange={(e)=>
                         {
-                            e.currentTarget.value === "" ? setCurrentPage(1) :
-                            parseInt(e.currentTarget.value) > Math.ceil(data.length / itemsPerPage) ?
-                            setCurrentPage(Math.ceil(data.length / itemsPerPage))
-                            :
-                            parseInt(e.currentTarget.value) < 1 ?
-                            setCurrentPage(1)
-                            :
-                            setCurrentPage(parseInt(e.currentTarget.value))}
+                            if (json){
+                                if (e.currentTarget.value === ""){
+                                    setCurrentPage(1)
+                                }
+                                else if(parseInt(e.currentTarget.value) > json.last_page){
+                                    setCurrentPage(json.last_page)
+                                }
+                                else if(parseInt(e.currentTarget.value) < 1){
+                                    setCurrentPage(1)
+                                }
+                                else{
+                                    setCurrentPage(parseInt(e.currentTarget.value))
+                                }
+                            }
                         }
+                    }
                     />
-                    <input type="text" className=" w-10 text-center outline-none ring-0" value={"/  " + (Math.ceil(data.length / itemsPerPage) === 0 ? 1 : Math.ceil(data.length / itemsPerPage)) } readOnly/>
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json?.last_page}` } readOnly/>
 
                     <PaginationItem>
                         <PaginationNext className=" cursor-pointer" onClick={()=>
                             {
-                                if(currentPage < Math.ceil(data.length / itemsPerPage)){
+                                if(json && json.page < json.last_page && json.last_page > 1){
                                     setCurrentPage(currentPage + 1)
                                 }}
                             }

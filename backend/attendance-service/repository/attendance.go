@@ -20,6 +20,20 @@ type CheckIn struct {
 	CheckIn    time.Time `db:"check_in" json:"check_in"`
 }
 
+type Query struct {
+	Date    string `json:"date"`
+	Page    int    `json:"page"`
+	PerPage int    `json:"per_page"`
+	Name    string `json:"name"`
+	Option  string `json:"option"`
+}
+
+type DataJson struct {
+	Data     []Attendance `json:"data"`
+	Total    int          `json:"total"`
+	Page     int          `json:"page"`
+	LastPage int          `json:"last_page"`
+}
 type GetMonth struct {
 	Month int `db:"month" json:"month" validate:"required"`
 	Year  int `db:"year" json:"year" validate:"required"`
