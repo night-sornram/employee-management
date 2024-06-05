@@ -1,8 +1,9 @@
-package adapter
+package test
 
 import (
 	"database/sql"
 	"errors"
+	"github.com/night-sornram/employee-management/leave-management-service/adapter"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -32,7 +33,7 @@ func TestGetAll(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -44,7 +45,7 @@ func TestGetAll(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -60,7 +61,7 @@ func TestGetByID(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -72,7 +73,7 @@ func TestGetByID(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -88,7 +89,7 @@ func TestCreate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT INTO "employees"`).
@@ -103,7 +104,7 @@ func TestCreate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT INTO "employees"`).
@@ -122,7 +123,7 @@ func TestUpdate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		employee := repository.Employee{
 			EmployeeID:  "ADMIN",
@@ -154,7 +155,7 @@ func TestUpdate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		employee := repository.Employee{
 			EmployeeID:  "ADMIN",
@@ -190,7 +191,7 @@ func TestDelete(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
@@ -205,7 +206,7 @@ func TestDelete(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
@@ -224,7 +225,7 @@ func TestLogin(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
 
@@ -239,7 +240,7 @@ func TestLogin(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -256,7 +257,7 @@ func TestGetMe(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -269,7 +270,7 @@ func TestGetMe(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -286,7 +287,7 @@ func TestChangePassword(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
 
@@ -307,7 +308,7 @@ func TestChangePassword(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -321,7 +322,7 @@ func TestChangePassword(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), 14)
 

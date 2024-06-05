@@ -1,8 +1,10 @@
-package adapter
+package test
 
 import (
 	"bytes"
 	"errors"
+	"github.com/night-sornram/employee-management/leave-management-service/adapter"
+	"github.com/night-sornram/employee-management/leave-management-service/repository/mocks"
 	"net/http/httptest"
 	"testing"
 
@@ -12,59 +14,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockEmployeeService struct {
-	mock.Mock
-}
-
-func (m *MockEmployeeService) GetEmployees() ([]repository.Employee, error) {
-	args := m.Called()
-	return args.Get(0).([]repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) GetEmployee(eid string) (repository.Employee, error) {
-	args := m.Called(eid)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) CreateEmployee(leave repository.Employee) (repository.Employee, error) {
-	args := m.Called(leave)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) UpdateEmployee(id string, leave repository.Employee) (repository.Employee, error) {
-	args := m.Called(id, leave)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) DeleteEmployee(id int) error {
-	args := m.Called(id)
-	return args.Error(0)
-}
-
-func (m *MockEmployeeService) Login(id string, password string) (repository.Employee, error) {
-	args := m.Called(id, password)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) Logout() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
-func (m *MockEmployeeService) GetMe(id string) (repository.Employee, error) {
-	args := m.Called(id)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
-func (m *MockEmployeeService) ChangePassword(id string, password string, new_password string) (repository.Employee, error) {
-	args := m.Called(id, password, new_password)
-	return args.Get(0).(repository.Employee), args.Error(1)
-}
-
 func TestGetEmployeesHandler(t *testing.T) {
 	t.Run("Valid-GetEmployees", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees", handle.GetEmployees)
 
@@ -79,8 +32,8 @@ func TestGetEmployeesHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-GetEmployees", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees", handle.GetEmployees)
 
@@ -99,14 +52,14 @@ func TestGetEmployeesHandler(t *testing.T) {
 
 func TestGetEmployeeHandler(t *testing.T) {
 	t.Run("Valid-GetEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees/:id", handle.GetEmployee)
 
-		mockService.On("GetEmployee", 1).Return(repository.Employee{}, nil)
+		mockService.On("GetEmployee", "EMP0001").Return(repository.Employee{}, nil)
 
-		req := httptest.NewRequest("GET", "/api/employees/1", nil)
+		req := httptest.NewRequest("GET", "/api/employees/EMP0001", nil)
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -114,29 +67,15 @@ func TestGetEmployeeHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusOK, resp.StatusCode)
 		mockService.AssertExpectations(t)
 	})
-	t.Run("Invalid-ID-GetEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
-		app := fiber.New()
-		app.Get("/api/employees/:id", handle.GetEmployee)
-
-		//ID "one" is invalid
-		req := httptest.NewRequest("GET", "/api/employees/one", nil)
-		req.Header.Set("Content-Type", "application/json")
-		resp, err := app.Test(req)
-
-		assert.NoError(t, err)
-		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
-	})
 	t.Run("Invalid-GetEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees/:id", handle.GetEmployee)
 
-		mockService.On("GetEmployee", 1).Return(repository.Employee{}, errors.New("invalid"))
+		mockService.On("GetEmployee", "EMP0001").Return(repository.Employee{}, errors.New("invalid"))
 
-		req := httptest.NewRequest("GET", "/api/employees/1", nil)
+		req := httptest.NewRequest("GET", "/api/employees/EMP0001", nil)
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -148,8 +87,8 @@ func TestGetEmployeeHandler(t *testing.T) {
 
 func TestCreateEmployeeHandler(t *testing.T) {
 	t.Run("Valid-CreateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -181,8 +120,8 @@ func TestCreateEmployeeHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-CreateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -195,8 +134,8 @@ func TestCreateEmployeeHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CreateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -231,8 +170,8 @@ func TestCreateEmployeeHandler(t *testing.T) {
 
 func TestUpdateEmployeeHandler(t *testing.T) {
 	t.Run("Valid-UpdateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -264,8 +203,8 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-UpdateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -278,8 +217,8 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-UpdateEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -314,8 +253,8 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 
 func TestDeleteEmployeeHandler(t *testing.T) {
 	t.Run("Valid-DeleteEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -330,8 +269,8 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-DeleteEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -344,8 +283,8 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-DeleteEmployee", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -363,8 +302,8 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 
 func TestLoginHandler(t *testing.T) {
 	t.Run("Valid-LoginFiber", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -397,8 +336,8 @@ func TestLoginHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-LoginFiber", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -411,8 +350,8 @@ func TestLoginHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-LoginFiber", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -449,8 +388,8 @@ func TestLoginHandler(t *testing.T) {
 
 func TestLogoutHandler(t *testing.T) {
 	t.Run("Valid-Logout", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/logout", handle.Logout)
 
@@ -466,8 +405,8 @@ func TestLogoutHandler(t *testing.T) {
 
 func TestGetMeHandler(t *testing.T) {
 	t.Run("Valid-GetMe", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -475,7 +414,7 @@ func TestGetMeHandler(t *testing.T) {
 
 		req := httptest.NewRequest("GET", "/me", nil)
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3MTQwNjg2LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.ViTG1GkFIQYknj2msORXASJsStL93oD-JT2y3oxS_Jw")
+		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3NTk5NDc5LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.e-7Fg8KuhYxgokKsSjQyjDqh_Lu720yt_YiKER7vMig")
 		resp, err := app.Test(req)
 
 		assert.NoError(t, err)
@@ -483,8 +422,8 @@ func TestGetMeHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-Token-GetMe", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -498,23 +437,23 @@ func TestGetMeHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-Bearer-GetMe", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
 		//Bearer token is missing
 		req := httptest.NewRequest("GET", "/me", nil)
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3MTQwNjg2LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.ViTG1GkFIQYknj2msORXASJsStL93oD-JT2y3oxS_Jw")
+		req.Header.Set("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3NTk5NDc5LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.e-7Fg8KuhYxgokKsSjQyjDqh_Lu720yt_YiKER7vMig")
 		resp, err := app.Test(req)
 
 		assert.NoError(t, err)
 		assert.Equal(t, fiber.StatusUnauthorized, resp.StatusCode)
 	})
 	t.Run("Invalid-JWT-GetMe", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -528,8 +467,8 @@ func TestGetMeHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusUnauthorized, resp.StatusCode)
 	})
 	t.Run("Invalid-GetMe", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -537,7 +476,7 @@ func TestGetMeHandler(t *testing.T) {
 
 		req := httptest.NewRequest("GET", "/me", nil)
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3MTQwNjg2LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.ViTG1GkFIQYknj2msORXASJsStL93oD-JT2y3oxS_Jw")
+		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzE3NTk5NDc5LCJpc3MiOiJBRE1JTiIsInJvbGUiOiJhZG1pbiJ9.e-7Fg8KuhYxgokKsSjQyjDqh_Lu720yt_YiKER7vMig")
 		resp, err := app.Test(req)
 
 		assert.NoError(t, err)
@@ -548,8 +487,8 @@ func TestGetMeHandler(t *testing.T) {
 
 func TestChangePasswordHandler(t *testing.T) {
 	t.Run("Valid-ChangePassword", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 
@@ -570,8 +509,8 @@ func TestChangePasswordHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-ChangePassword", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 
@@ -584,8 +523,8 @@ func TestChangePasswordHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-ChangePassword", func(t *testing.T) {
-		mockService := new(MockEmployeeService)
-		handle := NewHandleFiber(mockService)
+		mockService := new(mocks.EmployeeService)
+		handle := adapter.NewHandleFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 

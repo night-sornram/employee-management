@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/night-sornram/employee-management/employee-service/repository"
@@ -75,8 +74,6 @@ func (g *GormAdapter) Login(id string, password string) (repository.Employee, er
 	// -- sha256 --
 	hash := sha256.Sum256([]byte(password))
 	hashPassword := base64.StdEncoding.EncodeToString(hash[:])
-	log.Print(hash)
-	log.Print(Employee.Password)
 	if Employee.Password != hashPassword {
 		return repository.Employee{}, errors.New("incorrect password")
 	}

@@ -1,63 +1,26 @@
-package adapter
+package test
 
 import (
 	"bytes"
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/night-sornram/employee-management/leave-management-service/adapter"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"github.com/night-sornram/employee-management/leave-management-service/repository/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http/httptest"
 	"testing"
 )
 
-type MockLeaveService struct {
-	mock.Mock
-}
-
-func (m *MockLeaveService) GetLeaves() ([]repository.Leave, error) {
-	args := m.Called()
-	return args.Get(0).([]repository.Leave), args.Error(1)
-}
-
-func (m *MockLeaveService) GetLeave(id int) (repository.Leave, error) {
-	args := m.Called(id)
-	return args.Get(0).(repository.Leave), args.Error(1)
-}
-
-func (m *MockLeaveService) CreateLeave(leave repository.Leave) (repository.Leave, error) {
-	args := m.Called(leave)
-	return args.Get(0).(repository.Leave), args.Error(1)
-}
-
-func (m *MockLeaveService) UpdateLeave(id int, leave repository.Leave) (repository.Leave, error) {
-	args := m.Called(id, leave)
-	return args.Get(0).(repository.Leave), args.Error(1)
-}
-
-func (m *MockLeaveService) DeleteLeave(id int) error {
-	args := m.Called(id)
-	return args.Error(0)
-}
-
-func (m *MockLeaveService) UpdateStatus(id int, leave repository.LeaveStatus) (repository.Leave, error) {
-	args := m.Called(id, leave)
-	return args.Get(0).(repository.Leave), args.Error(1)
-}
-
-func (m *MockLeaveService) GetAllMe(eid string) ([]repository.Leave, error) {
-	args := m.Called(eid)
-	return args.Get(0).([]repository.Leave), args.Error(1)
-}
-
 func TestGetLeavesHandler(t *testing.T) {
 	t.Run("Valid-GetLeaves", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/leaves", handle.GetLeaves)
 
-		mockService.On("GetLeaves").Return([]repository.Leave{}, nil)
+		mockService.On("GetLeaves", mock.Anything).Return(repository.DataJson{}, nil)
 
 		req := httptest.NewRequest("GET", "/leaves", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -68,13 +31,13 @@ func TestGetLeavesHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-GetLeaves", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/leaves", handle.GetLeaves)
 
 		//mock error
-		mockService.On("GetLeaves").Return([]repository.Leave{}, errors.New("invalid"))
+		mockService.On("GetLeaves", mock.Anything).Return(repository.DataJson{}, errors.New("invalid"))
 
 		req := httptest.NewRequest("GET", "/leaves", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -88,8 +51,8 @@ func TestGetLeavesHandler(t *testing.T) {
 
 func TestGetLeaveHandler(t *testing.T) {
 	t.Run("Valid-GetLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/leaves/:id", handle.GetLeave)
 
@@ -104,8 +67,8 @@ func TestGetLeaveHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-GetLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/leaves/:id", handle.GetLeave)
 
@@ -118,8 +81,8 @@ func TestGetLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-GetLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/leaves/:id", handle.GetLeave)
 
@@ -138,8 +101,8 @@ func TestGetLeaveHandler(t *testing.T) {
 
 func TestCreateLeaveHandler(t *testing.T) {
 	t.Run("Valid-CreateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/leaves", handle.CreateLeave)
 
@@ -165,8 +128,8 @@ func TestCreateLeaveHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-CreateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/leaves", handle.CreateLeave)
 
@@ -179,8 +142,8 @@ func TestCreateLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-Validator-CreateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/leaves", handle.CreateLeave)
 
@@ -203,8 +166,8 @@ func TestCreateLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CreateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/leaves", handle.CreateLeave)
 
@@ -235,8 +198,8 @@ func TestCreateLeaveHandler(t *testing.T) {
 func TestUpdateLeaveHandler(t *testing.T) {
 
 	t.Run("Valid-UpdateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -259,8 +222,8 @@ func TestUpdateLeaveHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-UpdateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -281,8 +244,8 @@ func TestUpdateLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-BodyParser-UpdateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -295,8 +258,8 @@ func TestUpdateLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-Validator-UpdateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -316,8 +279,8 @@ func TestUpdateLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-UpdateLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/:id", handle.UpdateLeave)
 
@@ -344,8 +307,8 @@ func TestUpdateLeaveHandler(t *testing.T) {
 
 func TestDeleteLeaveHandler(t *testing.T) {
 	t.Run("Valid-DeleteLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/leaves/:id", handle.DeleteLeave)
 		mockService.On("DeleteLeave", 1).Return(nil)
@@ -359,8 +322,8 @@ func TestDeleteLeaveHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-DeleteLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/leaves/:id", handle.DeleteLeave)
 
@@ -373,8 +336,8 @@ func TestDeleteLeaveHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-DeleteLeave", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/leaves/:id", handle.DeleteLeave)
 
@@ -393,8 +356,8 @@ func TestDeleteLeaveHandler(t *testing.T) {
 
 func TestUpdateStatusHandler(t *testing.T) {
 	t.Run("Valid-UpdateStatus", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
@@ -415,8 +378,8 @@ func TestUpdateStatusHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-UpdateStatus", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
@@ -435,8 +398,8 @@ func TestUpdateStatusHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-BodyParser-UpdateStatus", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
@@ -450,8 +413,8 @@ func TestUpdateStatusHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-Validator-UpdateStatus", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
@@ -470,8 +433,8 @@ func TestUpdateStatusHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Valid-UpdateStatus", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.LeaveService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/leaves/approval/:id", handle.UpdateStatus)
 
