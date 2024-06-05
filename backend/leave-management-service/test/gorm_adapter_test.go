@@ -1,9 +1,10 @@
-package adapter
+package test
 
 import (
 	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/night-sornram/employee-management/leave-management-service/adapter"
 	"github.com/night-sornram/employee-management/leave-management-service/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
@@ -43,7 +44,7 @@ func TestGetAll(t *testing.T) {
 	t.Run("Valid-GetAll", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`select`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -54,7 +55,7 @@ func TestGetAll(t *testing.T) {
 	t.Run("Invalid-GetAll", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`select`).
 			WillReturnError(errors.New("invalid"))
@@ -68,7 +69,7 @@ func TestGetByID(t *testing.T) {
 	t.Run("Valid-GetByID", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WithArgs(1, 1).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -79,7 +80,7 @@ func TestGetByID(t *testing.T) {
 	t.Run("Invalid-GetByID", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
 		_, err := repo.GetByID(1)
@@ -92,7 +93,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Valid-Create", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT`).
@@ -106,7 +107,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Invalid-Create", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT`).
@@ -123,7 +124,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Valid-Update", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		leave := getLeaveData()
 		mock.ExpectBegin()
@@ -138,7 +139,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Invalid-Update", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		leave := getLeaveData()
 		mock.ExpectBegin()
@@ -157,7 +158,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Valid Delete", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
@@ -171,7 +172,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Valid Delete", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
@@ -187,7 +188,7 @@ func TestDelete(t *testing.T) {
 func TestUpdateStatus(t *testing.T) {
 	t.Run("Valid-UpdateStatus", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		defer sqlDB.Close()
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -202,7 +203,7 @@ func TestUpdateStatus(t *testing.T) {
 	})
 	t.Run("Invalid-Select-UpdateStatus", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		defer sqlDB.Close()
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
@@ -217,7 +218,7 @@ func TestUpdateStatus(t *testing.T) {
 	})
 	t.Run("Invalid-Update-UpdateStatus", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		defer sqlDB.Close()
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -236,7 +237,7 @@ func TestGetAllMe(t *testing.T) {
 	t.Run("Valid-GetAllMe", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -247,7 +248,7 @@ func TestGetAllMe(t *testing.T) {
 	t.Run("Invalid-GetAllMe", func(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
