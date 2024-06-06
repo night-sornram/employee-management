@@ -60,6 +60,10 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 	password := sha256.Sum256([]byte(Employee.Password))
 	Employee.Password = base64.StdEncoding.EncodeToString(password[:])
 
+	// data, _ := json.Marshal(Employee)
+
+	// h.message.PublishOnQueue(data, "employee")
+
 	newEmployee, err := h.service.CreateEmployee(Employee)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
