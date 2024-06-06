@@ -12,8 +12,8 @@
 
 -- ID and Password --
 <br />Employee: 
-    <br />- ID: EMP0000
-    <br />- Pass: 123456
+    <br />- ID: ```EMP0000```
+    <br />- Pass: ```123456```
 <br />Admin:
-    <br />- ID: ADMIN
-    <br />- Pass: 123456
+    <br />- ID: ```ADMIN```
+    <br />- Pass: ```123456```
