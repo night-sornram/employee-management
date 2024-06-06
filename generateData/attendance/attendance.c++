@@ -16,9 +16,9 @@ int main() {
         string employeeName = "";
         string employeeLastName = "";
 
-        for (size_t j = 0; j < 3; j++)
+        for (size_t j = 0; j < 2; j++)
         {
-            if (day > 30) {
+            if (day > 29) {
                 day = 1;
                 month++;
                 if (month > 12) {
@@ -34,9 +34,17 @@ int main() {
             << leaveID << "', '" << employeeName << "', '" << employeeLastName << "')," << endl;
             day++;
         }
+
+        date = to_string(year) + "-" + string(2 - (to_string(month)).length(), '0') + to_string(month) + "-"  + string(2 - (to_string(day)).length(), '0') + to_string(day) ;
+        string checkIn = to_string(year) + "-" + string(2 - (to_string(month)).length(), '0') + to_string(month) + "-" + string(2 - (to_string(day)).length(), '0') + to_string(day) + "T04:00:00Z";
+        string checkOut = to_string(year) + "-" + string(2 - (to_string(month)).length(), '0') + to_string(month) + "-" + string(2 - (to_string(day)).length(), '0') + to_string(day) + "T12:00:00Z";
+        cout << "('" << formattedEmpId << "', '" << checkIn << "', '" << checkOut << "', '" << date << "', '"
+        << leaveID << "', '" << employeeName << "', '" << employeeLastName << "')," << endl;
+        day++;
+
         leaveID = i + 1;
-        string checkIn = "0001-01-01T00:00:00Z";
-        string checkOut = "0001-01-01T00:00:00Z";
+        checkIn = "0001-01-01T00:00:00Z";
+        checkOut = "0001-01-01T00:00:00Z";
         cout << "('" << formattedEmpId << "', '" << checkIn << "', '" << checkOut << "', '" << date << "', '"
             << leaveID << "', '" << employeeName << "', '" << employeeLastName << "')," << endl;
         day -= 1;

@@ -30,7 +30,7 @@ int main() {
                 << manager << "', '" << employeeName << "', '" << employeeLastName << "')," << endl;
         day++;
 
-        if (day > 30) {
+        if (day > 29) {
             day = 1;
             month++;
             if (month > 12) {
