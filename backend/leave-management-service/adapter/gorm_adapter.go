@@ -3,11 +3,12 @@ package adapter
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/night-sornram/employee-management/leave-management-service/repository"
-	"gorm.io/gorm"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/night-sornram/employee-management/leave-management-service/repository"
+	"gorm.io/gorm"
 )
 
 type GormAdapter struct {
@@ -186,8 +187,8 @@ func (g *GormAdapter) UpdateStatus(id int, leave repository.Leave) (repository.L
 
 func (g *GormAdapter) GetAllMe(query repository.Query, eid string) (repository.DataJson, error) {
 	var leaves []repository.Leave
-	sql := `SELECT * FROM leaves a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`
+	sql := fmt.Sprintf(`SELECT * FROM leaves a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
+	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id AND a.employee_id = '%s'`, eid)
 
 	if query.Option == "All" || query.Option == "" {
 		sql = fmt.Sprintf("%s WHERE 1=1", sql)

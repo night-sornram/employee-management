@@ -41,7 +41,9 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-  import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
+import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat)
 dayjs.extend(utc);
 
 export default function Page() {
@@ -52,9 +54,6 @@ export default function Page() {
     const [data, setData] = useState<Leave[]>([]);
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
-
-    const approved: string[] = ["approved", "Approved", "approve", "Approve"];
-    const denied: string[] = ["denied", "Denied", "deny", "Deny"];
 
     const sortItem = (item : Leave[]) => {
 
@@ -121,7 +120,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {data.filter((leave) => leave.status == 'Approved').length}
+                        {data.filter((leave) => leave.status == 'approved').length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -131,7 +130,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {data.filter((leave) => leave.status == 'Denied').length}
+                        {data.filter((leave) => leave.status == 'denied').length}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -141,7 +140,7 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {data.filter((leave) => leave.status == 'Pending').length}
+                        {data.filter((leave) => leave.status == 'pending').length}
                     </CardContent>
                 </Card>
             </div>
@@ -235,23 +234,23 @@ export default function Page() {
                             data.map((leave) => 
                             <TableRow key={leave.id}>
                                 <TableCell>
-                                    {dayjs(leave.date_start).format('DD/MM/YYYY')}
+                                    {dayjs(leave.date_start, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(leave.date_end).format('DD/MM/YYYY')}
+                                    {dayjs(leave.date_end, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
-                                    {dayjs(leave.date_end).diff(dayjs(leave.date_start), 'day') + 1}
+                                    {dayjs(leave.date_end , ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).diff(dayjs(leave.date_start, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]), 'day') + 1}
                                 </TableCell>
                                 <TableCell>
                                     {leave.category}
                                 </TableCell>
                                 {
-                                    approved.includes(leave.status) ? 
+                                    leave.status === 'approved' ? 
                                     <TableCell className=" flex flex-row">
                                         <CheckIcon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> : 
-                                    denied.includes(leave.status) ?
+                                    leave.status === 'denied' ?
                                     <TableCell className=" flex flex-row">
                                         <Cross1Icon className="mr-2 h-5 w-5"/> {leave.status}
                                     </TableCell> :
