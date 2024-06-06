@@ -40,7 +40,9 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-  import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
+import { TextAlignBottomIcon , TextAlignTopIcon} from '@radix-ui/react-icons'
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat)
 dayjs.extend(utc);
 
 export default  function Page() {
@@ -222,7 +224,7 @@ export default  function Page() {
                             data.map((att) => 
                             <TableRow key={att.id}>
                                 <TableCell>
-                                    {dayjs(att.date).local().format('DD/MM/YYYY')}
+                                    {dayjs(att.date, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')}
                                 </TableCell>
                                 <TableCell>
                                     {att.leave_id !== -1 ? "LEAVE" : 
