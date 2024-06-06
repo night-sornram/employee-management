@@ -5,15 +5,15 @@
     email: ```admin@admin.com```
     password: ```root```
 4. register new server
-    Host name: ```db```
-    Port: ```5432```
-    Username: ```postgres```
-    Password: ```password```
+    <br />Host name: ```db```
+    <br />Port: ```5432```
+    <br />Username: ```postgres```
+    <br />Password: ```password```
 
 -- ID and Password --
-Employee: 
-    - ID: EMP0000
-    - Pass: 123456
-Admin:
-    - ID: ADMIN
-    - Pass: 123456
+<br />Employee: 
+    <br />- ID: EMP0000
+    <br />- Pass: 123456
+<br />Admin:
+    <br />- ID: ADMIN
+    <br />- Pass: 123456
