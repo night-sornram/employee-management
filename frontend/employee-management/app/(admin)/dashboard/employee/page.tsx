@@ -42,6 +42,7 @@ import {
 import { Input } from "@/components/ui/input";
 import GetEmployee from "@/lib/GetEmployee";
 import Link from "next/link"
+import DownloadEmployee from "@/lib/DownloadEmployee"
   
 dayjs.extend(utc);
 
@@ -56,6 +57,25 @@ export default function AllAttendanceHistoryPage () {
     const [name, setName] = useState<string>("")
     let currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
     const [staticData , setStaticData] = useState<UserJson[]>([])
+
+    const [downloadUrl, setDownloadUrl] = useState<string | null>();
+
+    const handleDownload = async () => {
+        if (!session) return;
+        
+        try {
+            const blob = await DownloadEmployee(session.user.token);
+            const url = URL.createObjectURL(blob);
+            setDownloadUrl(url);
+        } catch (error) {
+            console.error("Error downloading attendance data:", error);
+        }
+    };
+
+    useEffect(() => {
+        handleDownload();
+    }, []);
+
     useEffect(() => {
         if (!session) {
             return () => {
@@ -197,6 +217,20 @@ export default function AllAttendanceHistoryPage () {
                     </PaginationItem>
                 </PaginationContent>
             </Pagination>
+            <div>
+                <h1 className="font-bold text-2xl">
+                    Download Employees Data
+                </h1>
+            </div>
+            <div className="self-center">
+                {downloadUrl ? 
+                    <a href={downloadUrl} download="leaves.csv">
+                        <Button>
+                            Download
+                        </Button>
+                    </a> : null
+                }
+            </div>
         </main>
     );
 }

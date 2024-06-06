@@ -51,10 +51,15 @@ func (h *handleFiber) CreateEmployee(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+
+	// -- bcrypt --
 	//password, _ := bcrypt.GenerateFromPassword([]byte(Employee.Password), 14)
 	//Employee.Password = string(password)
+
+	// -- sha256 --
 	password := sha256.Sum256([]byte(Employee.Password))
 	Employee.Password = base64.StdEncoding.EncodeToString(password[:])
+
 	newEmployee, err := h.service.CreateEmployee(Employee)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -223,4 +228,18 @@ func (h *handleFiber) ChangePassword(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 	})
+}
+
+func (f *handleFiber) DownloadCSV(c *fiber.Ctx) error {
+	query := c.Query("query")
+	//if query == "" {
+	//	return c.Status(fiber.StatusBadRequest).SendString("Query is missing")
+	//}
+	data, err := f.service.DownloadCSV(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Nope")
+	}
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=data.csv")
+	c.Set(fiber.HeaderContentType, "text/csv")
+	return c.Send(data)
 }

@@ -10,6 +10,7 @@ type EmployeeService interface {
 	Logout() error
 	GetMe(id string) (Employee, error)
 	ChangePassword(id string, password string, new_password string) (Employee, error)
+	DownloadCSV(query string) ([]byte, error)
 }
 
 type EmployeeServiceDB struct {
@@ -56,4 +57,8 @@ func (u *EmployeeServiceDB) GetMe(id string) (Employee, error) {
 
 func (u *EmployeeServiceDB) ChangePassword(id string, password string, new_password string) (Employee, error) {
 	return u.repo.ChangePassword(id, password, new_password)
+}
+
+func (u *EmployeeServiceDB) DownloadCSV(query string) ([]byte, error) {
+	return u.repo.GetCSV(query)
 }

@@ -23,7 +23,7 @@ const LoginPage = () => {
   const [id, setId] = useState("");
   const [pass, setPass] = useState("");
   const router = useRouter();
-    const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         await signIn("credentials", {
           id: id, 

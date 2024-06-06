@@ -46,6 +46,7 @@ func main() {
 
 	app.Use("/api", middleware.Protected())
 	app.Get("/api/employees", middleware.Authorize("admin"), handle.GetEmployees)
+	app.Get("/api/employees/download", middleware.Authorize("admin"), handle.DownloadCSV)
 	app.Get("/api/employees/:id", middleware.Authorize("admin", "user"), handle.GetEmployee)
 	app.Post("/api/employees", middleware.Authorize("admin", "user"), handle.CreateEmployee)
 	app.Put("/api/employees/:id", middleware.Authorize("admin", "user"), handle.UpdateEmployee)
