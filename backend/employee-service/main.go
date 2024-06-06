@@ -35,7 +35,7 @@ func main() {
 
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewEmployeeService(repo)
-	handle := adapter.NewHandleFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 	// handle := adapter.NewHandleFiber(service, &amqp)
 
 	err = db.AutoMigrate(&repository.Employee{})

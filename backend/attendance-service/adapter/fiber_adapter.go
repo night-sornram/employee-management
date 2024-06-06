@@ -1,10 +1,11 @@
 package adapter
 
 import (
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
-	"strconv"
 )
 
 type handlerFiber struct {
