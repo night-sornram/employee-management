@@ -50,14 +50,6 @@ func (f *HandlerFiber) CreateNotification(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	err := validate.Struct(notification)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
-
 	newNotification, err := f.service.CreateNotification(notification)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

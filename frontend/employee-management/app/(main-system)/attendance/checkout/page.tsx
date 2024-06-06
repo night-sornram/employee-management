@@ -37,7 +37,9 @@ export default function Page() {
                  GetTodayCheckIn(session.user.employee_id, session.user.token).then((res) => {
                     setData(res)
                 })
-            }
+                console.log()
+                }
+            
     },[])
 
     if (!session) {
@@ -106,7 +108,7 @@ export default function Page() {
                         )
                         :
                         ( 
-                            data.check_out === "0001-01-01T07:00:00+07:00"?
+                            (new Date(data.check_out).toISOString()) === new Date("0001-01-01").toISOString() ?
                             (
                             <Alert className=" w-full h-20" variant="default">
                                 <ExitIcon className="h-4 w-4" />
@@ -171,7 +173,7 @@ export default function Page() {
                             )
                             :
                             (
-                                data.check_out === "0001-01-01T07:00:00+07:00" ?
+                                (new Date(data.check_out).toISOString()) === new Date("0001-01-01").toISOString() ?
                                 (
                                     <Input disabled type="string" placeholder={time.toUTCString()} />
                                 )
@@ -206,7 +208,7 @@ export default function Page() {
                         )
                         :
                         (
-                            data.check_out === "0001-01-01T07:00:00+07:00"
+                            (new Date(data.check_out).toISOString()) === new Date("0001-01-01").toISOString()
                             ?   
                             (
                                 <Button onClick={handleCheckOut}  className=" w-full flex justify-center" >Check-Out</Button>
