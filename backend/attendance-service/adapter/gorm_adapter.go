@@ -323,7 +323,8 @@ func (g *GormAdapter) GetAllLate() ([]repository.Attendance, error) {
 func (g *GormAdapter) GetCSV(query string) ([]byte, error) {
 	var results []repository.Attendance
 	if err := g.db.Raw(`SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
-	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`).Scan(&results).Error; err != nil {
+		AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id 
+		WHERE EXTRACT(HOUR FROM check_in) > 1 OR (EXTRACT(HOUR FROM check_in) = 1 AND EXTRACT(MINUTE FROM check_in) > 30);`).Scan(&results).Error; err != nil {
 		return nil, err
 	}
 	if len(results) == 0 {
@@ -353,6 +354,7 @@ func (g *GormAdapter) GetCSV(query string) ([]byte, error) {
 			return nil, err
 		}
 	}
+
 	w.Flush()
 
 	if err := w.Error(); err != nil {

@@ -10,6 +10,7 @@ export default async function DownloadAttendance (token: string) {
         throw new Error("Cannot get attendances for some reason");
     }
     // Read the response as a blob
+
     const blob = await response.blob();
 
     return blob;

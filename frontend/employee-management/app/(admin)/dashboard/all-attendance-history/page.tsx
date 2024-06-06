@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CalendarIcon } from "@radix-ui/react-icons"
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
  
 import { cn } from "@/lib/utils"
@@ -43,6 +43,7 @@ import { Input } from "@/components/ui/input";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import DownloadAttendance from "@/lib/DownloadAttendance"
 import Link from "next/link"
+import { Skeleton } from "@/components/ui/skeleton"
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
@@ -357,10 +358,15 @@ export default function AllAttendanceHistoryPage () {
             <div className="self-center">
                 {downloadUrl ? 
                     <a href={downloadUrl} download="attendances.csv">
-                        <Button>
+                        <Button className=" w-40 flex justify-center">
                             Download
                         </Button>
-                    </a> : null
+                    </a> : 
+                    <Button className="w-40 flex justify-center" disabled>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        Please wait
+                    </Button>
+
                 }
             </div>
         </main>

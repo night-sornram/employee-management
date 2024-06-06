@@ -158,6 +158,7 @@ export default function Page() {
             );
             setJson2(res)
         })
+        
     }, [selectedOption1 , date1 , sort1, currentPageSuccess,selectedOption2 , date2 , sort2, currentPagePending , name1 , name2]);
 
     useEffect(() => {
@@ -225,6 +226,7 @@ export default function Page() {
                         <Select  value={selectedOption1}
                         onValueChange={(value) => {
                             setSelectedOption1(value)
+                            setCurrentPagePending(1)
                         }}>
                             <SelectTrigger className="w-2/12">
                                 <SelectValue placeholder="Select a fruit" />
