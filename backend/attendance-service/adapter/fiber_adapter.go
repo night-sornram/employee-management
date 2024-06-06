@@ -24,6 +24,7 @@ func (f *handlerFiber) GetAttendances(c *fiber.Ctx) error {
 		Name:    "",
 		PerPage: 8,
 		Option:  "",
+		LeaveID: 0,
 	}
 
 	if d := c.Query("date"); d != "" {
@@ -40,6 +41,9 @@ func (f *handlerFiber) GetAttendances(c *fiber.Ctx) error {
 
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	query.Page = page
+
+	leaveID, _ := strconv.Atoi(c.Query("leave_id", "0"))
+	query.LeaveID = leaveID
 
 	attendances, err := f.service.GetAttendances(query)
 
@@ -213,7 +217,12 @@ func (f *handlerFiber) CheckToday(c *fiber.Ctx) error {
 			"message": "Not found",
 		})
 	}
-	attendance, _ := f.service.CheckToday(eid)
+	attendance, err := f.service.CheckToday(eid)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
 	if attendance.ID == 0 {
 		return c.Status(fiber.StatusOK).JSON(nil)
 	}

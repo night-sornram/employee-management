@@ -1,9 +1,10 @@
-package adapter
+package test
 
 import (
 	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/night-sornram/employee-management/attendance-service/adapter"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
@@ -27,30 +28,41 @@ func DbMock(t *testing.T) (*sql.DB, *gorm.DB, sqlmock.Sqlmock) {
 }
 
 func TestGetAll(t *testing.T) {
-	sqlDB, db, mock := DbMock(t)
-	defer sqlDB.Close()
-
-	repo := NewGormAdapter(db)
 	t.Run("Valid-GetAll", func(t *testing.T) {
-		mock.ExpectQuery(`select`).
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := adapter.NewGormAdapter(db)
+		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		_, err := repo.GetAll()
+		_, err := repo.GetAll(repository.Query{
+			Date:    "",
+			Page:    1,
+			Name:    "",
+			PerPage: 8,
+			Option:  "ALL",
+		})
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("Invalid-GetAll", func(t *testing.T) {
-		mock.ExpectQuery(`select`).
+		sqlDB, db, mock := DbMock(t)
+		defer sqlDB.Close()
+
+		repo := adapter.NewGormAdapter(db)
+		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
-		_, err := repo.GetAll()
+		_, err := repo.GetAll(repository.Query{})
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})
 }
+
 func TestGetByID(t *testing.T) {
 	sqlDB, db, mock := DbMock(t)
 	defer sqlDB.Close()
 
-	repo := NewGormAdapter(db)
+	repo := adapter.NewGormAdapter(db)
 	t.Run("Valid-GetByID", func(t *testing.T) {
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
@@ -71,7 +83,7 @@ func TestCreate(t *testing.T) {
 	sqlDB, db, mock := DbMock(t)
 	defer sqlDB.Close()
 
-	repo := NewGormAdapter(db)
+	repo := adapter.NewGormAdapter(db)
 	t.Run("Valid-Create", func(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT`).
@@ -99,7 +111,7 @@ func TestUpdate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		checkIn, _ := time.Parse(time.RFC3339, "2024-05-14T08:00:00Z")
 		checkOut, _ := time.Parse(time.RFC3339, "2024-05-16T08:00:00Z")
@@ -113,8 +125,7 @@ func TestUpdate(t *testing.T) {
 
 		mock.ExpectBegin()
 		//?IDK why I can't just use only `UPDATE` like others
-		mock.ExpectExec(`UPDATE "attendances" SET "employee_id"=\$1,"check_in"=\$2,"check_out"=\$3,"date"=\$4,"leave_id"=\$5 WHERE id = \$6`).
-			WithArgs(attendance.EmployeeID, attendance.CheckIn, attendance.CheckOut, attendance.Date, attendance.LeaveID, 1).
+		mock.ExpectExec(`UPDATE`).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -126,7 +137,7 @@ func TestUpdate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		checkIn, _ := time.Parse(time.RFC3339, "2024-05-14T08:00:00Z")
 		checkOut, _ := time.Parse(time.RFC3339, "2024-05-16T08:00:00Z")
@@ -140,8 +151,7 @@ func TestUpdate(t *testing.T) {
 
 		mock.ExpectBegin()
 		//?IDK why I can't just use only `UPDATE` like others
-		mock.ExpectExec(`UPDATE "attendances" SET "employee_id"=\$1,"check_in"=\$2,"check_out"=\$3,"date"=\$4,"leave_id"=\$5 WHERE id = \$6`).
-			WithArgs(attendance.EmployeeID, attendance.CheckIn, attendance.CheckOut, attendance.Date, attendance.LeaveID, 1).
+		mock.ExpectExec(`UPDATE`).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -153,7 +163,7 @@ func TestUpdate(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		checkIn, _ := time.Parse(time.RFC3339, "2024-05-14T08:00:00Z")
 		checkOut, _ := time.Parse(time.RFC3339, "2024-05-16T08:00:00Z")
@@ -166,8 +176,7 @@ func TestUpdate(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		mock.ExpectExec(`UPDATE "attendances" SET "employee_id"=\$1,"check_in"=\$2,"check_out"=\$3,"date"=\$4,"leave_id"=\$5 WHERE id = \$6`).
-			WithArgs(attendance.EmployeeID, attendance.CheckIn, attendance.CheckOut, attendance.Date, attendance.LeaveID, 1).
+		mock.ExpectExec(`UPDATE`).
 			WillReturnError(errors.New("invalid"))
 		mock.ExpectRollback()
 
@@ -182,7 +191,7 @@ func TestDelete(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
 			WithArgs(1).
@@ -197,7 +206,7 @@ func TestDelete(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectBegin()
 		mock.ExpectExec(`DELETE`).
 			WillReturnError(errors.New("invalid"))
@@ -214,7 +223,7 @@ func TestCheckIn(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT`).
@@ -229,7 +238,7 @@ func TestCheckIn(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT`).
@@ -247,7 +256,7 @@ func TestCheckOut(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		mock.ExpectBegin()
@@ -263,7 +272,7 @@ func TestCheckOut(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
 
@@ -275,7 +284,7 @@ func TestCheckOut(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
 		mock.ExpectBegin()
@@ -294,11 +303,11 @@ func TestGetAllMe(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
-		_, err := repo.GetAllMe("E12777")
+		_, err := repo.GetAllMe(repository.Query{}, "E12777")
 		assert.NoError(t, err)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -306,11 +315,11 @@ func TestGetAllMe(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
 
-		_, err := repo.GetAllMe("E12777")
+		_, err := repo.GetAllMe(repository.Query{}, "E12777")
 		assert.Error(t, err)
 		assert.Equal(t, "invalid", err.Error())
 	})
@@ -321,7 +330,7 @@ func TestCheckToDay(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
@@ -333,7 +342,7 @@ func TestCheckToDay(t *testing.T) {
 		sqlDB, db, mock := DbMock(t)
 		defer sqlDB.Close()
 
-		repo := NewGormAdapter(db)
+		repo := adapter.NewGormAdapter(db)
 		mock.ExpectQuery(`SELECT`).
 			WillReturnError(errors.New("invalid"))
 

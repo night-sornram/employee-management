@@ -34,10 +34,10 @@ func (g *GormAdapter) GetAll(query repository.Query) (repository.DataJson, error
 	}
 
 	if query.Status != "" {
-		if query.Status == "Pending" {
-			sql = fmt.Sprintf("%s AND (a.category = 'Pending') ", sql)
+		if query.Status == "pending" {
+			sql = fmt.Sprintf("%s AND (a.status = 'pending') ", sql)
 		} else {
-			sql = fmt.Sprintf("%s AND (a.category = 'Approved' OR a.category = 'Denied' ) ", sql)
+			sql = fmt.Sprintf("%s AND (a.status = 'approved' OR a.status = 'denied' ) ", sql)
 		}
 	}
 

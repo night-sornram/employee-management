@@ -98,7 +98,7 @@ export default function Page() {
                 window.location.href = "/";
             };
         }
-        let query1 : string = `?page=${currentPagePending}&status=Pending`
+        let query1 : string = `?page=${currentPagePending}&status=pending`
         
         if(date1){
             let year = date1.toLocaleString("default", { year: "numeric" });
@@ -120,6 +120,7 @@ export default function Page() {
         else{
             query1 += `&option=Month`
         }
+        console.log(query1)
         GetLeaveAdmin( session.user.token , query1).then((res) => {
             setPending(
                 sortItem(res.data , sort1)
@@ -127,7 +128,7 @@ export default function Page() {
             setJson1(res)
         })
 
-        let query2 : string = `?page=${currentPageSuccess}&status=Success`
+        let query2 : string = `?page=${currentPageSuccess}&status=approved`
         
         if(date2){
             let year = date2.toLocaleString("default", { year: "numeric" });
@@ -174,31 +175,21 @@ export default function Page() {
                 <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
-                            Approved Leave
+                            Success Request
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == "approved").length}
+                        {json2?.total}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
                     <CardHeader>
                         <CardTitle className="text-lg">
-                            Denied Leave
+                            Pending Request
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {success.filter((leave) => leave.status == "denied").length}
-                    </CardContent>
-                </Card>
-                <Card className="w-[320px]">
-                    <CardHeader>
-                        <CardTitle className="text-lg">
-                            Pending Leave
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {pending.length}
+                        {json1?.total}
                     </CardContent>
                 </Card>
             </div>

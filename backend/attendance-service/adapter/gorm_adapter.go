@@ -29,7 +29,7 @@ func (g *GormAdapter) GetAll(query repository.Query) (repository.DataJson, error
 	sql := `SELECT * FROM attendances a JOIN dblink('dbname=employee', 'select employee_id, first_name_en, last_name_en from employees') 
 	AS employees(employee_id text, employee_name text, employee_lastname text) on a.employee_id = employees.employee_id`
 
-	if query.Option == "All" {
+	if query.Option == "All" || query.Option == "" {
 		sql = fmt.Sprintf("%s WHERE 1=1", sql)
 	} else if query.Option == "Month" {
 		sql = fmt.Sprintf("%s WHERE substring(CAST(a.date AS TEXT),1,7) = '%s'  ", sql, time.Now().Format("2006-01-02")[0:7])
@@ -37,11 +37,14 @@ func (g *GormAdapter) GetAll(query repository.Query) (repository.DataJson, error
 		sql = fmt.Sprintf("%s WHERE substring(CAST(a.date AS TEXT),1,4) = '%s'  ", sql, time.Now().Format("2006-01-02")[0:4])
 	}
 
-	fmt.Println(sql)
+	if query.LeaveID == -1 {
+		sql = fmt.Sprintf("%s AND (a.leave_id = -1) ", sql)
+	}
 
+	fmt.Println(sql)
 	if query.Date == "" {
 		if query.Name == "" {
-			err := g.db.Find(&attendances).Error
+			err := g.db.Raw(sql).Scan(&attendances).Error
 			if err != nil {
 				return repository.DataJson{}, err
 			}

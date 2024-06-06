@@ -16,7 +16,7 @@ type handleFiber struct {
 	service repository.EmployeeService
 }
 
-func NewHandleFiber(service repository.EmployeeService) *handleFiber {
+func NewHandlerFiber(service repository.EmployeeService) *handleFiber {
 	return &handleFiber{
 		service: service,
 	}

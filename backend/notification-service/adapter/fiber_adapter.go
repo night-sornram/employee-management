@@ -10,7 +10,7 @@ type HandlerFiber struct {
 	service repository.NotificationService
 }
 
-func NewhandlerFiber(service repository.NotificationService) HandlerFiber {
+func NewHandlerFiber(service repository.NotificationService) HandlerFiber {
 	return HandlerFiber{
 		service: service,
 	}
