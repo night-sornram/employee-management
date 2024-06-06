@@ -5,26 +5,23 @@
 using namespace std;
 
 int main() {
-    string empId, thaiTitle, thaiFirstName, thaiLastName;
-    string engTitle, engFirstName, engLastName;
-    string dob, gender, department, position;
-    string phone, email, password;
-
+    string departmentList[6] = {"R&D", "IT", "Software Development", "Product Management", "QA", "HR"};
+    string genderList[2] = {"Male", "Female"};
     for(int i = 0; i < 100; i++){
         string formattedEmpId = "EMP" + string(4 - (to_string(i)).length(), '0') + to_string(i);
-        thaiTitle = "นาย";
-        thaiFirstName = "thaiFirstName" + to_string(i);
-        thaiLastName = "thaiLastName" + to_string(i);
-        engTitle = "Mr.";
-        engFirstName = "engFirstName"  + to_string(i);
-        engLastName = "engLastName" + to_string(i);
-        dob = "1980-01-01";
-        gender = "Male";
-        department = "IT";
-        position = "user";
-        phone = "0812345678";
-        email = "uesr" + to_string(i) + "@example.com";
-        password = "jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=";
+        string thaiTitle = "นาย";
+        string thaiFirstName = "thaiFirstName_" + to_string(i);
+        string thaiLastName = "thaiLastName_" + to_string(i);
+        string engTitle = "Mr.";
+        string engFirstName = "engFirstName_"  + to_string(i);
+        string engLastName = "engLastName_" + to_string(i);
+        string dob = "1980-01-01";
+        string gender = genderList[i%2];
+        string department = departmentList[i%6];
+        string position = "user";
+        string phone = "0812345678";
+        string email = "uesr" + to_string(i) + "@example.com";
+        string password = "jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=";
         
         cout << "('" << formattedEmpId << "', '" << thaiTitle << "', '" << thaiFirstName << "', '" << thaiLastName << "', '"
          << engTitle << "', '" << engFirstName << "', '" << engLastName << "', '" << dob << "', '"

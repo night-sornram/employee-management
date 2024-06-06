@@ -262,7 +262,7 @@ export default function AllAttendanceHistoryPage () {
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {
-                                        dayjs(att.date, ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YY", "DD-MM-YYYY", "YYYY-MM-DD"]).local().format('DD/MM/YYYY')   
+                                        dayjs(att.date, ["YYYY-MM-DD"]).local().format('DD/MM/YYYY')
                                     }
                                 </TableCell>
                                 <TableCell>

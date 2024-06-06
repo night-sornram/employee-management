@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{URL}}:8081/api/attendances
+  url: {{URL}}:8081/api/attendances/?leave_id=-1
   body: none
   auth: bearer
+}
+
+query {
+  leave_id: -1
 }
 
 auth:bearer {
