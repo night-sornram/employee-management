@@ -67,9 +67,9 @@ func (g *GormAdapter) Login(id string, password string) (repository.Employee, er
 		return repository.Employee{}, err
 	}
 	// -- bcrypt --
-	//if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
-	//	return repository.Employee{}, err
-	//}
+	// if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
+	// 	return repository.Employee{}, err
+	// }
 
 	// -- sha256 --
 	hash := sha256.Sum256([]byte(password))
@@ -96,8 +96,10 @@ func (g *GormAdapter) ChangePassword(id string, password string, new_password st
 	if err := g.db.Where("employee_id = ?", id).First(&Employee).Error; err != nil {
 		return repository.Employee{}, err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(Employee.Password), []byte(password)); err != nil {
-		return repository.Employee{}, err
+	hash := sha256.Sum256([]byte(password))
+	hashPassword := base64.StdEncoding.EncodeToString(hash[:])
+	if Employee.Password != hashPassword {
+		return repository.Employee{}, errors.New("incorrect password")
 	}
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(new_password), 14)
 	Employee.Password = string(hashedPassword)

@@ -4,7 +4,11 @@ go 1.22.3
 
 require github.com/stretchr/testify v1.9.0
 
-require github.com/stretchr/objx v0.5.2 // indirect
+require (
+	github.com/kr/text v0.2.0 // indirect
+	github.com/rogpeppe/go-internal v1.12.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
+)
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
@@ -13,9 +17,9 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.20.0 // indirect
-	github.com/gofiber/fiber/v2 v2.52.4 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/go-playground/validator/v10 v10.20.0
+	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -39,6 +43,6 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.5.7 // indirect
-	gorm.io/gorm v1.25.10 // indirect
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.10
 )

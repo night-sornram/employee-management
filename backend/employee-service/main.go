@@ -29,9 +29,14 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
+	// amqp := adapter.MessagingClient{}
+	// amqp.ConnectToBroker("amqp://user:password@rabbitmq/")
+	// defer amqp.Close()
+
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewEmployeeService(repo)
 	handle := adapter.NewHandleFiber(service)
+	// handle := adapter.NewHandleFiber(service, &amqp)
 
 	err = db.AutoMigrate(&repository.Employee{})
 	if err != nil {
@@ -56,5 +61,11 @@ func main() {
 	err = app.Listen("0.0.0.0:8080")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
+	}
+}
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Panicf("%s: %s", msg, err)
 	}
 }
