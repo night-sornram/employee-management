@@ -49,13 +49,15 @@ dayjs.extend(utc);
 export default function AllAttendanceHistoryPage () {
 
     const { data: session } = useSession()
-    const [data, setData] = useState<Attendance[]>([]);
+    const [data1, setData1] = useState<Attendance[]>([]);
+    const [data2, setData2] = useState<Attendance[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedOption, setSelectedOption] = useState('all')
     const [date, setDate] = useState<Date>()
     const [sort , setSort] = useState(true)
     const [name, setName] = useState<string>("")
-    const [json, setJson] = useState<DataJson>()
+    const [json1, setJson1] = useState<DataJson>()
+    const [json2, setJson2] = useState<DataJson>()
 
     const [downloadUrl, setDownloadUrl] = useState<string | null>();
 
@@ -117,13 +119,21 @@ export default function AllAttendanceHistoryPage () {
             query += `&option=Month`
         }
 
-        console.log(query)
-        
         getAllAttendances(session.user.token , query).then((res) => {
-            setData(
+            setData1(
                 sortItem(res.data)
             );
-            setJson(res)
+            setJson1(res)
+            console.log("json1", res)
+        })
+
+        query += `&leave_id=-1`
+        getAllAttendances(session.user.token , query).then((res) => {
+            setData2(
+                sortItem(res.data)
+            );
+            setJson2(res)
+            console.log("json2", res)
         })
     }, [selectedOption , date , sort, currentPage , name]);
     
@@ -146,7 +156,7 @@ export default function AllAttendanceHistoryPage () {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {data.length - data.filter((att) => att.leave_id !== -1).length}
+                        {json2?.total}
                     </CardContent>
                 </Card>
                 <Card className="w-[320px]">
@@ -156,7 +166,7 @@ export default function AllAttendanceHistoryPage () {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {data.filter((att) => att.leave_id !== -1).length}
+                        {(json1?.total || 0) - (json2?.total || 0)}
                     </CardContent>
                 </Card>
             </div>
@@ -248,7 +258,7 @@ export default function AllAttendanceHistoryPage () {
                     </TableHeader>
                     <TableBody>
                         {
-                            data.map((att) => 
+                            data1.map((att) =>
                             <TableRow key={att.id}>
                                 <TableCell>
                                     {
@@ -301,19 +311,19 @@ export default function AllAttendanceHistoryPage () {
                     <PaginationItem>
                         <PaginationPrevious className=" cursor-pointer" onClick={()=>
                                 {
-                                    if(json && json.page > 1){
+                                    if(json1 && json1.page > 1){
                                         setCurrentPage(currentPage - 1)
                                     }}}
                             />
                     </PaginationItem>
                     <Input type="number" className=" w-10" value={currentPage} onChange={(e)=>
                         {
-                            if (json){
+                            if (json1){
                                 if (e.currentTarget.value === ""){
                                     setCurrentPage(1)
                                 }
-                                else if(parseInt(e.currentTarget.value) > json.last_page){
-                                    setCurrentPage(json.last_page)
+                                else if(parseInt(e.currentTarget.value) > json1.last_page){
+                                    setCurrentPage(json1.last_page)
                                 }
                                 else if(parseInt(e.currentTarget.value) < 1){
                                     setCurrentPage(1)
@@ -325,12 +335,12 @@ export default function AllAttendanceHistoryPage () {
                         }
                     }
                     />
-                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json?.last_page}` } readOnly/>
+                    <input type="text" className=" bg-transparent w-10 text-center outline-none ring-0" value={`/  ${json1?.last_page}` } readOnly/>
 
                     <PaginationItem>
                         <PaginationNext className=" cursor-pointer" onClick={()=>
                             {
-                                if(json && json.page < json.last_page && json.last_page > 1){
+                                if(json1 && json1.page < json1.last_page && json1.last_page > 1){
                                     setCurrentPage(currentPage + 1)
                                 }}
                             }

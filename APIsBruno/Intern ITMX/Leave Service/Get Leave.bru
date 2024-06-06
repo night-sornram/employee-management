@@ -5,9 +5,15 @@ meta {
 }
 
 get {
-  url: {{URL}}:8082/api/leaves
+  url: {{URL}}:8082/api/leaves/?page=1&status=Pending&option=All
   body: none
   auth: bearer
+}
+
+query {
+  page: 1
+  status: Pending
+  option: All
 }
 
 auth:bearer {

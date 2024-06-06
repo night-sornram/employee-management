@@ -26,6 +26,7 @@ type Query struct {
 	PerPage int    `json:"per_page"`
 	Name    string `json:"name"`
 	Option  string `json:"option"`
+	LeaveID int    `json:"leave_id"`
 }
 
 type DataJson struct {
