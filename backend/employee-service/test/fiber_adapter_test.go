@@ -3,8 +3,8 @@ package test
 import (
 	"bytes"
 	"errors"
-	"github.com/night-sornram/employee-management/leave-management-service/adapter"
-	"github.com/night-sornram/employee-management/leave-management-service/repository/mocks"
+	"github.com/night-sornram/employee-management/employee-service/adapter"
+	"github.com/night-sornram/employee-management/employee-service/repository/mocks"
 	"net/http/httptest"
 	"testing"
 
@@ -17,7 +17,7 @@ import (
 func TestGetEmployeesHandler(t *testing.T) {
 	t.Run("Valid-GetEmployees", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees", handle.GetEmployees)
 
@@ -33,7 +33,7 @@ func TestGetEmployeesHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetEmployees", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees", handle.GetEmployees)
 
@@ -53,7 +53,7 @@ func TestGetEmployeesHandler(t *testing.T) {
 func TestGetEmployeeHandler(t *testing.T) {
 	t.Run("Valid-GetEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees/:id", handle.GetEmployee)
 
@@ -69,7 +69,7 @@ func TestGetEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/employees/:id", handle.GetEmployee)
 
@@ -88,7 +88,7 @@ func TestGetEmployeeHandler(t *testing.T) {
 func TestCreateEmployeeHandler(t *testing.T) {
 	t.Run("Valid-CreateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -121,7 +121,7 @@ func TestCreateEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-CreateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -135,7 +135,7 @@ func TestCreateEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-CreateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/employees", handle.CreateEmployee)
 
@@ -171,7 +171,7 @@ func TestCreateEmployeeHandler(t *testing.T) {
 func TestUpdateEmployeeHandler(t *testing.T) {
 	t.Run("Valid-UpdateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -204,7 +204,7 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-UpdateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -218,7 +218,7 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-UpdateEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/employees/:id", handle.UpdateEmployee)
 
@@ -254,7 +254,7 @@ func TestUpdateEmployeeHandler(t *testing.T) {
 func TestDeleteEmployeeHandler(t *testing.T) {
 	t.Run("Valid-DeleteEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -270,7 +270,7 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ID-DeleteEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -284,7 +284,7 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-DeleteEmployee", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/employees/:id", handle.DeleteEmployee)
 
@@ -303,7 +303,7 @@ func TestDeleteEmployeeHandler(t *testing.T) {
 func TestLoginHandler(t *testing.T) {
 	t.Run("Valid-LoginFiber", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -337,7 +337,7 @@ func TestLoginHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-LoginFiber", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -351,7 +351,7 @@ func TestLoginHandler(t *testing.T) {
 	})
 	t.Run("Invalid-LoginFiber", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/login", handle.Login)
 
@@ -389,7 +389,7 @@ func TestLoginHandler(t *testing.T) {
 func TestLogoutHandler(t *testing.T) {
 	t.Run("Valid-Logout", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/logout", handle.Logout)
 
@@ -406,7 +406,7 @@ func TestLogoutHandler(t *testing.T) {
 func TestGetMeHandler(t *testing.T) {
 	t.Run("Valid-GetMe", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -423,7 +423,7 @@ func TestGetMeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-Token-GetMe", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -438,7 +438,7 @@ func TestGetMeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-Bearer-GetMe", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -453,7 +453,7 @@ func TestGetMeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-JWT-GetMe", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -468,7 +468,7 @@ func TestGetMeHandler(t *testing.T) {
 	})
 	t.Run("Invalid-GetMe", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/me", handle.GetMe)
 
@@ -488,7 +488,7 @@ func TestGetMeHandler(t *testing.T) {
 func TestChangePasswordHandler(t *testing.T) {
 	t.Run("Valid-ChangePassword", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 
@@ -510,7 +510,7 @@ func TestChangePasswordHandler(t *testing.T) {
 	})
 	t.Run("Invalid-BodyParser-ChangePassword", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 
@@ -524,7 +524,7 @@ func TestChangePasswordHandler(t *testing.T) {
 	})
 	t.Run("Invalid-ChangePassword", func(t *testing.T) {
 		mockService := new(mocks.EmployeeService)
-		handle := adapter.NewHandleFiber(mockService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/changePassword", handle.ChangePassword)
 

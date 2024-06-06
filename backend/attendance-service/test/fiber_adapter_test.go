@@ -1,73 +1,26 @@
-package adapter
+package test
 
 import (
 	"bytes"
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/night-sornram/employee-management/attendance-service/adapter"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
+	"github.com/night-sornram/employee-management/attendance-service/repository/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http/httptest"
 	"testing"
 )
 
-type MockLeaveService struct {
-	mock.Mock
-}
-
-func (m *MockLeaveService) GetAttendances() ([]repository.Attendance, error) {
-	args := m.Called()
-	return args.Get(0).([]repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) GetAttendance(id int) (repository.Attendance, error) {
-	args := m.Called(id)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) CreateAttendance(leave repository.Attendance) (repository.Attendance, error) {
-	args := m.Called(leave)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) UpdateAttendance(id int, leave repository.Attendance) (repository.Attendance, error) {
-	args := m.Called(id, leave)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) DeleteAttendance(id int) error {
-	args := m.Called(id)
-	return args.Error(0)
-}
-
-func (m *MockLeaveService) CheckIn(eid string) (repository.Attendance, error) {
-	args := m.Called(eid)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) CheckOut(id int) (repository.Attendance, error) {
-	args := m.Called(id)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) CheckToday(eid string) (repository.Attendance, error) {
-	args := m.Called(eid)
-	return args.Get(0).(repository.Attendance), args.Error(1)
-}
-
-func (m *MockLeaveService) GetMyAttendances(eid string) ([]repository.Attendance, error) {
-	args := m.Called(eid)
-	return args.Get(0).([]repository.Attendance), args.Error(1)
-}
-
 func TestGetAttendancesHandler(t *testing.T) {
 	t.Run("Valid-GetAttendances", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances", handle.GetAttendances)
 
-		mockService.On("GetAttendances").Return([]repository.Attendance{}, nil)
+		mockService.On("GetAttendances", mock.Anything).Return(repository.DataJson{}, nil)
 
 		req := httptest.NewRequest("GET", "/api/attendances", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -78,12 +31,12 @@ func TestGetAttendancesHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-GetAttendances", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances", handle.GetAttendances)
 
-		mockService.On("GetAttendances").Return([]repository.Attendance{}, errors.New("invalid"))
+		mockService.On("GetAttendances", mock.Anything).Return(repository.DataJson{}, errors.New("invalid"))
 
 		req := httptest.NewRequest("GET", "/api/attendances", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -97,8 +50,8 @@ func TestGetAttendancesHandler(t *testing.T) {
 
 func TestGetAttendanceHandler(t *testing.T) {
 	t.Run("Valid-GetAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -113,8 +66,8 @@ func TestGetAttendanceHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-GetAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -127,8 +80,8 @@ func TestGetAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-GetAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/:id", handle.GetAttendance)
 
@@ -147,8 +100,8 @@ func TestGetAttendanceHandler(t *testing.T) {
 
 func TestCreateAttendanceHandler(t *testing.T) {
 	t.Run("Valid-CreateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -171,8 +124,8 @@ func TestCreateAttendanceHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-CreateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -185,8 +138,8 @@ func TestCreateAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-Validator-CreateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -206,8 +159,8 @@ func TestCreateAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CreateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances", handle.CreateAttendance)
 
@@ -234,8 +187,8 @@ func TestCreateAttendanceHandler(t *testing.T) {
 
 func TestUpdateAttendanceHandler(t *testing.T) {
 	t.Run("Valid-UpdateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -257,8 +210,8 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-UpdateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -279,8 +232,8 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-BodyParser-UpdateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -293,8 +246,8 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-Validator-UpdateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -313,8 +266,8 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-UpdateAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/:id", handle.UpdateAttendance)
 
@@ -339,8 +292,8 @@ func TestUpdateAttendanceHandler(t *testing.T) {
 
 func TestDeleteAttendanceHandler(t *testing.T) {
 	t.Run("Valid-DeleteAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -355,8 +308,8 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-DeleteAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -368,8 +321,8 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-DeleteAttendance", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Delete("/api/attendances/:id", handle.DeleteAttendance)
 
@@ -387,8 +340,8 @@ func TestDeleteAttendanceHandler(t *testing.T) {
 
 func TestCheckInHandler(t *testing.T) {
 	t.Run("Valid-CheckIn", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -405,8 +358,8 @@ func TestCheckInHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-CheckIn", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -419,8 +372,8 @@ func TestCheckInHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CheckIn", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Post("/api/attendances/check-in", handle.CheckIn)
 
@@ -442,8 +395,8 @@ func TestCheckInHandler(t *testing.T) {
 
 func TestCheckOutHandler(t *testing.T) {
 	t.Run("Valid-CheckOut", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -461,8 +414,8 @@ func TestCheckOutHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-BodyParser-CheckOut", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -475,8 +428,8 @@ func TestCheckOutHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CheckOut", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Put("/api/attendances/check-out", handle.CheckOut)
 
@@ -497,12 +450,12 @@ func TestCheckOutHandler(t *testing.T) {
 
 func TestGetMyAttendancesHandler(t *testing.T) {
 	t.Run("Valid-GetMyAttendances", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
 
-		mockService.On("GetMyAttendances", "E12777").Return([]repository.Attendance{}, nil)
+		mockService.On("GetMyAttendances", mock.Anything, "E12777").Return(repository.DataJson{}, nil)
 
 		req := httptest.NewRequest("GET", "/api/attendances/me/E12777", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -513,8 +466,8 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-GetMyAttendances", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/", handle.GetMyAttendances)
 
@@ -527,13 +480,13 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-GetMyAttendances", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/me/:eid", handle.GetMyAttendances)
 
 		//mock error
-		mockService.On("GetMyAttendances", "E12777").Return([]repository.Attendance{}, errors.New("invalid"))
+		mockService.On("GetMyAttendances", mock.Anything, "E12777").Return(repository.DataJson{}, errors.New("invalid"))
 
 		req := httptest.NewRequest("GET", "/api/attendances/me/E12777", nil)
 		req.Header.Set("Content-Type", "application/json")
@@ -547,8 +500,8 @@ func TestGetMyAttendancesHandler(t *testing.T) {
 
 func TestCheckTodayHandler(t *testing.T) {
 	t.Run("Valid-CheckToday", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
@@ -565,8 +518,8 @@ func TestCheckTodayHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Valid-ID-0-CheckToday", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 
@@ -583,8 +536,8 @@ func TestCheckTodayHandler(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 	t.Run("Invalid-ID-CheckToday", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/", handle.CheckToday)
 
@@ -597,8 +550,8 @@ func TestCheckTodayHandler(t *testing.T) {
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
 	t.Run("Invalid-CheckToday", func(t *testing.T) {
-		mockService := new(MockLeaveService)
-		handle := NewHandlerFiber(mockService)
+		mockService := new(mocks.AttendanceService)
+		handle := adapter.NewHandlerFiber(mockService)
 		app := fiber.New()
 		app.Get("/api/attendances/check-today/:eid", handle.CheckToday)
 

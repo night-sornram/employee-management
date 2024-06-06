@@ -37,7 +37,7 @@ func main() {
 
 	repo := adapter.NewGormAdapter(db)
 	service := repository.NewNotificationService(repo)
-	handle := adapter.NewhandlerFiber(service)
+	handle := adapter.NewHandlerFiber(service)
 
 	app.Use(cors.New())
 
