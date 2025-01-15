@@ -99,9 +99,6 @@ func (u *LeaveServiceDB) UpdateStatus(id int, leave LeaveStatus) (Leave, error) 
 		for d := existsLeave.DateStart; !d.After(existsLeave.DateEnd); d = d.AddDate(0, 0, 1) {
 			payload := Attendance{
 				EmployeeID: existsLeave.EmployeeID,
-				CheckIn:    d,
-				CheckOut:   d,
-				Date:       d,
 				LeaveID:    existsLeave.ID,
 			}
 			err := PostAttendance(payload)

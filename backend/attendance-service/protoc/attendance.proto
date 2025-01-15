@@ -1,0 +1,23 @@
+syntax="proto3";
+
+package attendance;
+
+option go_package = "github.com/night-sornram/employee-management/attendance-service/protoc";
+
+//import "google/protobuf/timestamp.proto";
+//
+message Attendance {
+  string employee_id = 1;
+//  google.protobuf.Timestamp check_in = 2;
+//  google.protobuf.Timestamp check_out = 3;
+//  google.protobuf.Timestamp date = 4;
+  string leave_id = 5;
+}
+
+message AttendanceResponse {
+  int32 status = 1;
+}
+
+service LeaveService {
+  rpc PostAttendance(Attendance) returns (AttendanceResponse);
+}

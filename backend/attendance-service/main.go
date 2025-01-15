@@ -1,17 +1,55 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"google.golang.org/grpc"
 	"log"
+	"net"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/night-sornram/employee-management/attendance-service/adapter"
 	"github.com/night-sornram/employee-management/attendance-service/middleware"
 	"github.com/night-sornram/employee-management/attendance-service/repository"
+	//"google.golang.org/grpc"
+	pb "github.com/night-sornram/employee-management/attendance-service/protoc"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+// gRPC
+type AttendanceServerImpl struct {
+	pb.UnimplementedLeaveServiceServer
+}
+
+func (s *AttendanceServerImpl) PostAttendance(ctx context.Context, attendance *pb.Attendance) (*pb.AttendanceResponse, error) {
+	fmt.Println("Ping Recived")
+
+	resp := pb.AttendanceResponse{
+		Status: 200,
+	}
+
+	return &resp, nil
+}
+
+func StartPingPongServer() {
+	server := AttendanceServerImpl{}
+
+	lis, err := net.Listen("tcp", "localhost:8080")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	grpcServer := grpc.NewServer()
+	pb.RegisterLeaveServiceServer(grpcServer, &server)
+
+	fmt.Println("gRPC started")
+
+	if err = grpcServer.Serve(lis); err != nil {
+		panic(err.Error())
+	}
+}
 
 func main() {
 	app := fiber.New()
@@ -60,6 +98,8 @@ func main() {
 	app.Get("/api/attendances/late/year/:year", handle.GetYearLate)
 	app.Get("/api/attendances/late/all", handle.GetAllLate)
 	app.Get("/api/attendances/:id", handle.GetAttendance)
+
+	defer StartPingPongServer()
 
 	err = app.Listen("0.0.0.0:8081")
 	if err != nil {
