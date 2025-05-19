@@ -82,3 +82,5 @@ For database administration, pgAdmin is available at `localhost:5050`:
 
 - Email: `admin@admin.com`
 - Password: `root`
+
+For more information about this repository, please [![](https://deepwiki.com/badge.svg)](https://deepwiki.com/night-sornram/employee-management/1-overview)
